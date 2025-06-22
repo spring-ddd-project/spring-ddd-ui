@@ -8,7 +8,7 @@
     "url": "git+https://github.com/vbenjs/vue-vben-admin.git",
     "directory": "apps/web-ele"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "author": {
     "name": "vben",
     "email": "ann.vben@gmail.com",
