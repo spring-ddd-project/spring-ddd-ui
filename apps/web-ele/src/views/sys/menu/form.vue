@@ -6,7 +6,7 @@ import { useVbenModal } from '@vben/common-ui';
 import { ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
-import { create } from '#/api/sys/menu';
+import { create, getParentTree } from '#/api/sys/menu';
 
 const props = defineProps<{
   gridApi: any;
@@ -14,7 +14,7 @@ const props = defineProps<{
 
 const writeForm = ref();
 
-const menuTreeData = ref([]);
+const menuTreeData = ref();
 
 const [Form, formApi] = useVbenForm({
   showDefaultActions: false,
@@ -23,7 +23,11 @@ const [Form, formApi] = useVbenForm({
     componentProps: {
       class: 'w-full',
     },
+    colon: true,
+    labelWidth: 120,
   },
+  submitOnChange: true,
+  wrapperClass: 'grid-cols-1 md:grid-cols-2',
   schema: [
     {
       component: 'RadioGroup',
@@ -43,18 +47,21 @@ const [Form, formApi] = useVbenForm({
           },
         ],
       },
-      fieldName: 'radioGroup',
+      defaultValue: '1',
+      fieldName: 'menuType',
       label: 'Menu Type',
       rules: 'required',
     },
     {
-      component: 'TreeSelect',
+      component: 'ApiTreeSelect',
       componentProps: {
         allowClear: true,
         placeholder: 'please select',
         showSearch: true,
-        treeData: menuTreeData,
-        treeNodeFilterProp: 'label',
+        treeNodeFilterProp: 'name',
+        api: getParentTree,
+        labelField: 'name',
+        valueField: 'id',
       },
       fieldName: 'treeSelect',
       label: 'Parent Menu',
@@ -77,21 +84,61 @@ const [Form, formApi] = useVbenForm({
       fieldName: 'path',
       label: 'Path',
       rules: 'required',
+      dependencies: {
+        if(values) {
+          return values.menuType !== '3';
+        },
+        triggerFields: ['menuType'],
+      },
     },
     {
       component: 'Input',
       fieldName: 'component',
       label: 'Component',
+      dependencies: {
+        if(values) {
+          return values.menuType === '2';
+        },
+        triggerFields: ['menuType'],
+      },
     },
     {
       component: 'Input',
       fieldName: 'redirect',
       label: 'Redirect',
+      dependencies: {
+        if(values) {
+          return values.menuType === '1';
+        },
+        triggerFields: ['menuType'],
+      },
     },
     {
       component: 'Input',
       fieldName: 'permission',
       label: 'Permission',
+      dependencies: {
+        if(values) {
+          return values.menuType !== '1';
+        },
+        triggerFields: ['menuType'],
+      },
+    },
+    {
+      component: 'IconPicker',
+      fieldName: 'icon',
+      label: 'Icon',
+      componentProps: {
+        placeholder: 'Please select an icon',
+        allowClear: true,
+      },
+      rules: 'required',
+      dependencies: {
+        if(values) {
+          return values.menuType !== '3';
+        },
+        triggerFields: ['menuType'],
+      },
     },
     {
       component: 'InputNumber',
@@ -99,33 +146,68 @@ const [Form, formApi] = useVbenForm({
       label: 'Menu Order',
     },
     {
-      component: 'Select',
+      component: 'Switch',
+      componentProps: {
+        class: 'w-auto',
+      },
       fieldName: 'affixTab',
       label: 'Affix Tab',
-      componentProps: {
-        filterable: true,
-        options: [
-          { value: true, label: 'Yes' },
-          { value: false, label: 'No' },
-        ],
+      dependencies: {
+        if(values) {
+          return values.menuType === '2';
+        },
+        triggerFields: ['menuType'],
       },
     },
     {
-      component: 'Select',
+      component: 'Switch',
+      componentProps: {
+        class: 'w-auto',
+      },
       fieldName: 'noBasicLayout',
       label: 'No Basic Layout',
-      componentProps: {
-        filterable: true,
-        options: [
-          { value: true, label: 'Yes' },
-          { value: false, label: 'No' },
-        ],
+      dependencies: {
+        if(values) {
+          return values.menuType === '2';
+        },
+        triggerFields: ['menuType'],
       },
     },
     {
-      component: 'DatePicker',
-      fieldName: 'createBy',
-      label: '创建人',
+      component: 'Switch',
+      componentProps: {
+        class: 'w-auto',
+      },
+      fieldName: 'visible',
+      label: 'Visible',
+      dependencies: {
+        if(values) {
+          return values.menuType !== '3';
+        },
+        triggerFields: ['menuType'],
+      },
+    },
+    {
+      component: 'Switch',
+      componentProps: {
+        class: 'w-auto',
+      },
+      fieldName: 'embedded',
+      label: 'Embedded',
+      dependencies: {
+        if(values) {
+          return values.menuType === '2';
+        },
+        triggerFields: ['menuType'],
+      },
+    },
+    {
+      component: 'Switch',
+      componentProps: {
+        class: 'w-auto',
+      },
+      fieldName: 'menuStatus',
+      label: 'MenuStatus',
     },
   ],
 });
@@ -162,7 +244,7 @@ defineExpose({ open, close });
 </script>
 
 <template>
-  <Modal class="w-[600px]" title="新增">
-    <Form />
+  <Modal class="w-[60%]" title="新增">
+    <Form style="width: auto" />
   </Modal>
 </template>

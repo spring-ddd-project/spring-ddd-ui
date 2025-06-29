@@ -2,5 +2,8 @@
   "title": "System Management",
   "menu": {
     "title": "Menu Management"
+  },
+  "role": {
+    "title": "Role Management"
   }
 }
