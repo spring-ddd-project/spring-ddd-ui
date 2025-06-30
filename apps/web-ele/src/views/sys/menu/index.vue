@@ -1,35 +1,44 @@
 <script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
+import { ref } from 'vue';
+
+import { confirm, Page } from '@vben/common-ui';
+
 import { ElButton, ElMessage } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getMenusPage } from '#/api/sys/menu';
+import { delById, getMenusPage } from '#/api/sys/menu';
+
+import MenuForm from './form.vue';
+
+const menuFormRef = ref();
 
 interface RowType {
-  category: string;
-  color: string;
   id: string;
-  price: string;
-  productName: string;
-  releaseDate: string;
+  parentId: null | number;
+  name: string;
+  permission: string;
+  path: string;
+  menuType: number;
 }
 
 const gridOptions: VxeGridProps<RowType> = {
-  checkboxConfig: {
-    highlight: true,
-  },
   columns: [
-    { title: '序号', type: 'seq', width: 50 },
-    { align: 'left', title: '#', type: 'checkbox', width: 50 },
-    { field: 'name', title: 'Menu Name' },
+    { field: 'name', title: 'Menu Name', align: 'left', treeNode: true },
     { field: 'component', title: 'Component' },
     { field: 'permission', title: 'Permission' },
     { field: 'path', title: 'Path' },
     { field: 'menuType', title: 'Menu Type' },
+    {
+      field: 'action',
+      fixed: 'right',
+      slots: { default: 'action' },
+      title: 'Operation',
+      width: 120,
+    },
   ],
   exportConfig: {},
-  // height: 'auto', // 如果设置为 auto，则必须确保存在父节点且不允许存在相邻元素，否则会出现高度闪动问题
   keepSource: true,
   proxyConfig: {
     ajax: {
@@ -40,6 +49,15 @@ const gridOptions: VxeGridProps<RowType> = {
         });
       },
     },
+  },
+  editConfig: {
+    mode: 'row',
+    trigger: 'click',
+  },
+  treeConfig: {
+    parentField: 'parentId',
+    rowField: 'id',
+    transform: true,
   },
   toolbarConfig: {
     custom: true,
@@ -53,19 +71,65 @@ const gridOptions: VxeGridProps<RowType> = {
 const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions,
 });
+
+const openForm = () => {
+  menuFormRef.value?.open();
+};
+
+const editRow = (row: RowType) => {
+  menuFormRef.value?.open(row);
+};
+
+const expandAll = () => {
+  gridApi.grid?.setAllTreeExpand(true);
+};
+
+const collapseAll = () => {
+  gridApi.grid?.setAllTreeExpand(false);
+};
+
+const deleteById = (row: RowType) => {
+  confirm({
+    content: 'Confirm deletion?',
+    icon: 'error',
+  }).then(async () => {
+    await delById({
+      id: row.id,
+    })
+      .then(async () => {
+        await gridApi.reload();
+        ElMessage.success('Deletion successful');
+      })
+      .catch(() => {
+        ElMessage.error('Deletion failed');
+      });
+  });
+};
 </script>
 
 <template>
-  <div class="vp-raw w-full">
-    <Grid>
-      <template #toolbar-tools>
-        <ElButton class="mr-2" type="primary" @click="() => gridApi.query()">
-          刷新当前页面
-        </ElButton>
-        <ElButton type="primary" @click="() => gridApi.reload()">
-          刷新并返回第一页
-        </ElButton>
-      </template>
-    </Grid>
-  </div>
+  <Page>
+    <div class="vp-raw h-[300px] w-full">
+      <Grid>
+        <template #toolbar-tools>
+          <ElButton class="mr-2" type="primary" @click="expandAll">
+            Expand All
+          </ElButton>
+          <ElButton type="primary" @click="collapseAll"> Collapse All</ElButton>
+        </template>
+        <template #toolbar-actions>
+          <ElButton class="mr-2" type="primary" @click="openForm">
+            Add
+          </ElButton>
+        </template>
+        <template #action="{ row }">
+          <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
+          <ElButton type="danger" link @click="deleteById(row)">
+            Delete
+          </ElButton>
+        </template>
+      </Grid>
+    </div>
+    <MenuForm ref="menuFormRef" :grid-api="gridApi" />
+  </Page>
 </template>
