@@ -3,12 +3,12 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
 
-import { Page } from '@vben/common-ui';
+import { confirm, Page } from '@vben/common-ui';
 
-import { ElButton } from 'element-plus';
+import { ElButton, ElMessage } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getMenusPage } from '#/api/sys/menu';
+import { delById, getMenusPage } from '#/api/sys/menu';
 
 import MenuForm from './form.vue';
 
@@ -87,6 +87,24 @@ const expandAll = () => {
 const collapseAll = () => {
   gridApi.grid?.setAllTreeExpand(false);
 };
+
+const deleteById = (row: RowType) => {
+  confirm({
+    content: 'Confirm deletion?',
+    icon: 'error',
+  }).then(async () => {
+    await delById({
+      id: row.id,
+    })
+      .then(async () => {
+        await gridApi.reload();
+        ElMessage.success('Deletion successful');
+      })
+      .catch(() => {
+        ElMessage.error('Deletion failed');
+      });
+  });
+};
 </script>
 
 <template>
@@ -103,11 +121,12 @@ const collapseAll = () => {
           <ElButton class="mr-2" type="primary" @click="openForm">
             Add
           </ElButton>
-          <ElButton class="mr-2" type="danger"> Delete</ElButton>
         </template>
         <template #action="{ row }">
-          <ElButton type="primary" link> Edit</ElButton>
-          <ElButton type="danger" link> Delete</ElButton>
+          <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
+          <ElButton type="danger" link @click="deleteById(row)">
+            Delete
+          </ElButton>
         </template>
       </Grid>
     </div>

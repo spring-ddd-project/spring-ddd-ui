@@ -6,15 +6,13 @@ import { useVbenModal } from '@vben/common-ui';
 import { ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
-import { create, getParentTree } from '#/api/sys/menu';
+import { create, getParentTree, update } from "#/api/sys/menu";
 
 const props = defineProps<{
   gridApi: any;
 }>();
 
-const writeForm = ref();
-
-const menuTreeData = ref();
+const writeForm = ref<Record<string, any>>({});
 
 const [Form, formApi] = useVbenForm({
   showDefaultActions: false,
@@ -24,7 +22,7 @@ const [Form, formApi] = useVbenForm({
       class: 'w-full',
     },
     colon: true,
-    labelWidth: 120,
+    labelWidth: 130,
   },
   submitOnChange: true,
   wrapperClass: 'grid-cols-1 md:grid-cols-2',
@@ -35,19 +33,19 @@ const [Form, formApi] = useVbenForm({
         options: [
           {
             label: 'Catalog',
-            value: '1',
+            value: 1,
           },
           {
             label: 'Menu',
-            value: '2',
+            value: 2,
           },
           {
             label: 'Button',
-            value: '3',
+            value: 3,
           },
         ],
       },
-      defaultValue: '1',
+      defaultValue: 1,
       fieldName: 'menuType',
       label: 'Menu Type',
       rules: 'required',
@@ -56,20 +54,23 @@ const [Form, formApi] = useVbenForm({
       component: 'ApiTreeSelect',
       componentProps: {
         allowClear: true,
-        placeholder: 'please select',
+        placeholder: 'If left blank, this will be set as the root menu.',
         showSearch: true,
         treeNodeFilterProp: 'name',
         api: getParentTree,
+        resultField: 'data',
         labelField: 'name',
         valueField: 'id',
+        childrenField: 'children',
+        checkStrictly: true,
       },
-      fieldName: 'treeSelect',
+      fieldName: 'parentId',
       label: 'Parent Menu',
-      rules: 'required',
+      help: 'Leave blank to make this a root menu.',
     },
     {
       component: 'Input',
-      fieldName: 'title',
+      fieldName: 'meta.title',
       label: 'Global Title',
       rules: 'required',
     },
@@ -86,7 +87,7 @@ const [Form, formApi] = useVbenForm({
       rules: 'required',
       dependencies: {
         if(values) {
-          return values.menuType !== '3';
+          return values.menuType !== 3;
         },
         triggerFields: ['menuType'],
       },
@@ -97,7 +98,7 @@ const [Form, formApi] = useVbenForm({
       label: 'Component',
       dependencies: {
         if(values) {
-          return values.menuType === '2';
+          return values.menuType === 2;
         },
         triggerFields: ['menuType'],
       },
@@ -108,7 +109,7 @@ const [Form, formApi] = useVbenForm({
       label: 'Redirect',
       dependencies: {
         if(values) {
-          return values.menuType === '1';
+          return values.menuType === 1;
         },
         triggerFields: ['menuType'],
       },
@@ -119,7 +120,7 @@ const [Form, formApi] = useVbenForm({
       label: 'Permission',
       dependencies: {
         if(values) {
-          return values.menuType !== '1';
+          return values.menuType !== 1;
         },
         triggerFields: ['menuType'],
       },
@@ -135,26 +136,27 @@ const [Form, formApi] = useVbenForm({
       rules: 'required',
       dependencies: {
         if(values) {
-          return values.menuType !== '3';
+          return values.menuType !== 3;
         },
         triggerFields: ['menuType'],
       },
     },
     {
       component: 'InputNumber',
-      fieldName: 'order',
+      fieldName: 'meta.order',
       label: 'Menu Order',
+      rules: 'required',
     },
     {
       component: 'Switch',
       componentProps: {
         class: 'w-auto',
       },
-      fieldName: 'affixTab',
+      fieldName: 'meta.affixTab',
       label: 'Affix Tab',
       dependencies: {
         if(values) {
-          return values.menuType === '2';
+          return values.menuType === 2;
         },
         triggerFields: ['menuType'],
       },
@@ -164,11 +166,11 @@ const [Form, formApi] = useVbenForm({
       componentProps: {
         class: 'w-auto',
       },
-      fieldName: 'noBasicLayout',
+      fieldName: 'meta.noBasicLayout',
       label: 'No Basic Layout',
       dependencies: {
         if(values) {
-          return values.menuType === '2';
+          return values.menuType === 2;
         },
         triggerFields: ['menuType'],
       },
@@ -182,10 +184,11 @@ const [Form, formApi] = useVbenForm({
       label: 'Visible',
       dependencies: {
         if(values) {
-          return values.menuType !== '3';
+          return values.menuType !== 3;
         },
         triggerFields: ['menuType'],
       },
+      defaultValue: true,
     },
     {
       component: 'Switch',
@@ -196,7 +199,7 @@ const [Form, formApi] = useVbenForm({
       label: 'Embedded',
       dependencies: {
         if(values) {
-          return values.menuType === '2';
+          return values.menuType === 2;
         },
         triggerFields: ['menuType'],
       },
@@ -208,6 +211,7 @@ const [Form, formApi] = useVbenForm({
       },
       fieldName: 'menuStatus',
       label: 'MenuStatus',
+      defaultValue: true,
     },
   ],
 });
@@ -218,11 +222,17 @@ const [Modal, modalApi] = useVbenModal({
       modalApi.setState({ loading: true });
       if (e.valid) {
         Object.assign(writeForm.value, await formApi.getValues());
-        await create(writeForm.value);
-        ElMessage.success('保存成功');
+        writeForm.value.order = writeForm.value.meta?.order;
+        writeForm.value.title = writeForm.value.meta?.title;
+        writeForm.value.affixTab = writeForm.value.meta?.affixTab;
+        writeForm.value.noBasicLayout = writeForm.value.meta?.noBasicLayout;
+        await (writeForm.value.id
+          ? update(writeForm.value)
+          : create(writeForm.value));
+        ElMessage.success('Saved successfully');
         props.gridApi.reload();
       } else {
-        ElMessage.error('校验失败');
+        ElMessage.error('Validation failed');
       }
       await modalApi.setState({ loading: false }).close();
     });
@@ -244,7 +254,7 @@ defineExpose({ open, close });
 </script>
 
 <template>
-  <Modal class="w-[60%]" title="新增">
+  <Modal class="w-[65%]" title="Data handling">
     <Form style="width: auto" />
   </Modal>
 </template>
