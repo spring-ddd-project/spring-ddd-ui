@@ -120,7 +120,7 @@ const [Form, formApi] = useVbenForm({
       label: 'Permission',
       dependencies: {
         if(values) {
-          return values.menuType !== 1;
+          return values.menuType === 3;
         },
         triggerFields: ['menuType'],
       },
