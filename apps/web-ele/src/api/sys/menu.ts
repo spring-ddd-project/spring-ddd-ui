@@ -13,7 +13,7 @@ export async function update(data: any) {
 }
 
 export async function getParentTree() {
-  return requestClient.post('/sys/menu/all');
+  return requestClient.post('/sys/menu/getParentTree');
 }
 
 export async function delById(data: any) {
