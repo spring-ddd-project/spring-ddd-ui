@@ -4,9 +4,14 @@
     "title": "Menu Management",
     "create": "Add",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "all": "All"
   },
   "role": {
     "title": "Role Management"
+  },
+  "user": {
+    "title": "User Management",
+    "userInfo": "User Info"
   }
 }

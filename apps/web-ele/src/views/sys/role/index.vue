@@ -8,7 +8,7 @@ import { confirm, Page } from '@vben/common-ui';
 import { ElButton, ElMessage } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { delById, getMenusPage } from '#/api/sys/menu/menu';
+import { delRoleById, getRolePage } from '#/api/sys/role/role';
 
 import MenuForm from './form.vue';
 
@@ -16,20 +16,20 @@ const menuFormRef = ref();
 
 interface RowType {
   id: string;
-  parentId: null | number;
-  name: string;
-  permission: string;
-  path: string;
-  menuType: number;
+  roleName: string;
+  roleCode: string;
+  roleDesc: string;
+  dataScope: number;
+  roleStatus: boolean;
 }
 
 const gridOptions: VxeGridProps<RowType> = {
   columns: [
-    { field: 'name', title: 'Menu Name', align: 'left', treeNode: true },
-    { field: 'component', title: 'Component' },
-    { field: 'permission', title: 'Permission' },
-    { field: 'path', title: 'Path' },
-    { field: 'menuType', title: 'Menu Type' },
+    { field: 'roleName', title: 'Role Name', align: 'left', treeNode: true },
+    { field: 'roleCode', title: 'Role Code' },
+    { field: 'roleDesc', title: 'Role Description' },
+    { field: 'dataScope', title: 'Data Scope' },
+    { field: 'roleStatus', title: 'Role Status' },
     {
       field: 'action',
       fixed: 'right',
@@ -43,7 +43,7 @@ const gridOptions: VxeGridProps<RowType> = {
   proxyConfig: {
     ajax: {
       query: async ({ page }) => {
-        return await getMenusPage({
+        return await getRolePage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
         });
