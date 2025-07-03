@@ -5,7 +5,8 @@
     "create": "Add",
     "edit": "Edit",
     "delete": "Delete",
-    "all": "All"
+    "index": "Index",
+    "parentTree": "Parent Tree"
   },
   "role": {
     "title": "Role Management"
