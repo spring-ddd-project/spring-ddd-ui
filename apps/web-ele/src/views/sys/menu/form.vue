@@ -98,10 +98,11 @@ const [Form, formApi] = useVbenForm({
       label: 'Component',
       dependencies: {
         if(values) {
-          return values.menuType === 2;
+          return values.menuType !== 1;
         },
         triggerFields: ['menuType'],
       },
+      help: "This corresponds to the index.vue path and also serves as the backend API endpoint. If it's a button, it purely represents a backend endpoint.",
     },
     {
       component: 'Input',
@@ -120,10 +121,11 @@ const [Form, formApi] = useVbenForm({
       label: 'Permission',
       dependencies: {
         if(values) {
-          return values.menuType === 3;
+          return values.menuType !== 1;
         },
         triggerFields: ['menuType'],
       },
+      help: 'Permission keys must be assigned to both the menu index page and any associated buttons.',
     },
     {
       component: 'IconPicker',
