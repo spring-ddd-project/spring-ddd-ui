@@ -72,6 +72,12 @@ const [Form, formApi] = useVbenForm({
       component: 'Input',
       fieldName: 'meta.title',
       label: 'Global Title',
+      dependencies: {
+        if(values) {
+          return values.menuType !== 3;
+        },
+        triggerFields: ['menuType'],
+      },
       rules: 'required',
     },
     {

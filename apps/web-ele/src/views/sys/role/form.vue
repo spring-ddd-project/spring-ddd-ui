@@ -6,7 +6,7 @@ import { useVbenModal } from '@vben/common-ui';
 import { ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
-import { create, getParentTree, update } from "#/api/sys/menu/menu";
+import { create, getParentTree, update } from '#/api/sys/menu/menu';
 
 const props = defineProps<{
   gridApi: any;

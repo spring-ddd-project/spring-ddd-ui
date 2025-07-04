@@ -35,7 +35,7 @@ const gridOptions: VxeGridProps<RowType> = {
       fixed: 'right',
       slots: { default: 'action' },
       title: 'Operation',
-      width: 120,
+      width: 150,
     },
   ],
   exportConfig: {},
@@ -93,7 +93,7 @@ const deleteById = (row: RowType) => {
     content: 'Confirm deletion?',
     icon: 'error',
   }).then(async () => {
-    await delById({
+    await delRoleById({
       id: row.id,
     })
       .then(async () => {
@@ -123,6 +123,7 @@ const deleteById = (row: RowType) => {
           </ElButton>
         </template>
         <template #action="{ row }">
+          <ElButton type="primary" link @click="editRow(row)"> Link </ElButton>
           <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
           <ElButton type="danger" link @click="deleteById(row)">
             Delete
