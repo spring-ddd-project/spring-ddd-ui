@@ -1,12 +1,7 @@
 {
   "title": "System Management",
   "menu": {
-    "title": "Menu Management",
-    "create": "Add",
-    "edit": "Edit",
-    "delete": "Delete",
-    "index": "Index",
-    "parentTree": "Parent Tree"
+    "title": "Menu Management"
   },
   "role": {
     "title": "Role Management"

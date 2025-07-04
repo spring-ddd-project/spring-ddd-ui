@@ -6,7 +6,11 @@ import { useVbenModal } from '@vben/common-ui';
 import { ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
-import { create, getParentTree, update } from "#/api/sys/menu/menu";
+import {
+  create,
+  getMenuTreeWithoutPermission,
+  update,
+} from '#/api/sys/menu/menu';
 
 const props = defineProps<{
   gridApi: any;
@@ -57,7 +61,7 @@ const [Form, formApi] = useVbenForm({
         placeholder: 'If left blank, this will be set as the root menu.',
         showSearch: true,
         treeNodeFilterProp: 'name',
-        api: getParentTree,
+        api: getMenuTreeWithoutPermission,
         resultField: 'data',
         labelField: 'name',
         valueField: 'id',
@@ -72,6 +76,12 @@ const [Form, formApi] = useVbenForm({
       component: 'Input',
       fieldName: 'meta.title',
       label: 'Global Title',
+      dependencies: {
+        if(values) {
+          return values.menuType !== 3;
+        },
+        triggerFields: ['menuType'],
+      },
       rules: 'required',
     },
     {
@@ -246,6 +256,7 @@ const open = (row: any) => {
     writeForm.value = row;
     formApi.setValues(row);
   } else {
+    writeForm.value = {};
     formApi.setValues({});
   }
   modalApi.open();
