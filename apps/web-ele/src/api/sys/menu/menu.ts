@@ -12,8 +12,8 @@ export async function update(data: any) {
   return requestClient.put('/sys/menu/update', data);
 }
 
-export async function getParentTree() {
-  return requestClient.post('/sys/menu/getParentTree');
+export async function getMenuTreeWithoutPermission() {
+  return requestClient.post('/sys/menu/getMenuTreeWithoutPermission');
 }
 
 export async function delById(data: any) {
