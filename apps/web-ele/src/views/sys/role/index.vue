@@ -11,8 +11,10 @@ import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { delRoleById, getRolePage } from '#/api/sys/role/role';
 
 import MenuForm from './form.vue';
+import GrantingPermissionsForm from './link.vue';
 
 const menuFormRef = ref();
+const grantingPermissionsRef = ref();
 
 interface RowType {
   id: string;
@@ -72,6 +74,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions,
 });
 
+const linkForm = (row: RowType) => {
+  grantingPermissionsRef.value?.open(row);
+};
+
 const openForm = () => {
   menuFormRef.value?.open();
 };
@@ -123,7 +129,7 @@ const deleteById = (row: RowType) => {
           </ElButton>
         </template>
         <template #action="{ row }">
-          <ElButton type="primary" link @click="editRow(row)"> Link </ElButton>
+          <ElButton type="primary" link @click="linkForm(row)"> Link </ElButton>
           <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
           <ElButton type="danger" link @click="deleteById(row)">
             Delete
@@ -132,5 +138,6 @@ const deleteById = (row: RowType) => {
       </Grid>
     </div>
     <MenuForm ref="menuFormRef" :grid-api="gridApi" />
+    <GrantingPermissionsForm ref="grantingPermissionsRef" />
   </Page>
 </template>

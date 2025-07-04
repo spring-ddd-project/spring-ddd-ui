@@ -1,18 +1,19 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 
-import { useVbenModal } from '@vben/common-ui';
+import { useVbenDrawer, useVbenModal } from '@vben/common-ui';
 
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElTreeV2 } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
-import {
-  create,
-  getMenuTreeWithoutPermission,
-  update,
-} from '#/api/sys/menu/menu';
+import { create, getMenuTreeWithPermission, update } from '#/api/sys/menu/menu';
 
 const writeForm = ref<Record<string, any>>({});
+const treeData = ref<any>([]);
+const defaultProps = {
+  children: 'children',
+  label: 'name',
+};
 
 const [Form, formApi] = useVbenForm({
   showDefaultActions: false,
@@ -33,14 +34,13 @@ const [Form, formApi] = useVbenForm({
         allowClear: true,
         showSearch: true,
         treeNodeFilterProp: 'name',
-        api: getMenuTreeWithoutPermission,
+        api: getMenuTreeWithPermission,
         resultField: 'data',
         labelField: 'name',
         valueField: 'id',
         childrenField: 'children',
         multiple: true,
-        treeCheckable: true,
-        treeDefaultExpandAll: true,
+        showCheckBox: true,
       },
       fieldName: 'parentId',
       label: 'Parent Menu',
@@ -48,10 +48,18 @@ const [Form, formApi] = useVbenForm({
   ],
 });
 
-const [Modal, modalApi] = useVbenModal({
+const [Drawer, drawerApi] = useVbenDrawer({
+  onOpenChange: (open) => {
+    if (open) {
+      drawerApi.setState({ loading: true });
+      getMenuTreeWithPermission().then((resp: any) => {
+        treeData.value = resp;
+      });
+    }
+  },
   onConfirm: () => {
     formApi.validate().then(async (e) => {
-      modalApi.setState({ loading: true });
+      drawerApi.setState({ loading: true });
       if (e.valid) {
         Object.assign(writeForm.value, await formApi.getValues());
         writeForm.value.order = writeForm.value.meta?.order;
@@ -65,7 +73,7 @@ const [Modal, modalApi] = useVbenModal({
       } else {
         ElMessage.error('Validation failed');
       }
-      await modalApi.setState({ loading: false }).close();
+      await drawerApi.setState({ loading: false }).close();
     });
   },
 });
@@ -77,15 +85,22 @@ const open = (row: any) => {
   } else {
     formApi.setValues({});
   }
-  modalApi.open();
+  drawerApi.open();
 };
-const close = () => modalApi.close();
+const close = () => drawerApi.close();
 
 defineExpose({ open, close });
 </script>
 
 <template>
-  <Modal class="w-[65%]" title="Data handling">
-    <Form style="width: auto" />
-  </Modal>
+  <Drawer class="w-[600px]" title="Granting Permission">
+    <!--    <Form style="width: auto" />-->
+    <ElTreeV2
+      :data="treeData"
+      show-checkbox
+      node-key="id"
+      default-expand-all
+      :props="defaultProps"
+    />
+  </Drawer>
 </template>

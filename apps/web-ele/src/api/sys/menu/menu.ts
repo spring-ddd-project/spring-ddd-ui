@@ -16,6 +16,10 @@ export async function getMenuTreeWithoutPermission() {
   return requestClient.post('/sys/menu/getMenuTreeWithoutPermission');
 }
 
+export async function getMenuTreeWithPermission() {
+  return requestClient.post('/sys/menu/getMenuTreeWithPermission');
+}
+
 export async function delById(data: any) {
   return requestClient.post('/sys/menu/delete', data);
 }
