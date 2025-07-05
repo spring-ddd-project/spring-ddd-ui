@@ -37,7 +37,7 @@ const gridOptions: VxeGridProps<RowType> = {
       fixed: 'right',
       slots: { default: 'action' },
       title: 'Operation',
-      width: 150,
+      width: 350,
     },
   ],
   exportConfig: {},
@@ -129,7 +129,12 @@ const deleteById = (row: RowType) => {
           </ElButton>
         </template>
         <template #action="{ row }">
-          <ElButton type="primary" link @click="linkForm(row)"> Link </ElButton>
+          <ElButton type="primary" link @click="linkForm(row)">
+            Assign Permissions
+          </ElButton>
+          <ElButton type="primary" link @click="linkForm(row)">
+            Assign Users
+          </ElButton>
           <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
           <ElButton type="danger" link @click="deleteById(row)">
             Delete

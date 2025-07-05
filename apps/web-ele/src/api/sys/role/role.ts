@@ -15,3 +15,19 @@ export async function updateRole(data: any) {
 export async function delRoleById(data: any) {
   return requestClient.post('/sys/role/delete', data);
 }
+
+export async function linkRoleAndMenus(data: any) {
+  return requestClient.post('/sys/role/linkRoleAndMenus', null, {
+    params: {
+      roleId: data.roleId,
+      menuIds: data.menuIds,
+    },
+  });
+}
+export async function queryMenusByRoleId(data: any) {
+  return requestClient.post('/sys/role/queryMenusByRoleId', null, {
+    params: {
+      roleId: data.roleId,
+    },
+  });
+}
