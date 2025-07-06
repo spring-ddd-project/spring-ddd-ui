@@ -1,2 +1,3 @@
-export * from './menu/menu';
-export * from './role/role';
+export * from './menu/';
+export * from './role/';
+export * from './user/';

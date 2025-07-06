@@ -8,12 +8,12 @@ import { confirm, Page } from '@vben/common-ui';
 import { ElButton, ElMessage } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { delRoleById, getRolePage } from '#/api/sys/role/role';
+import { delRoleById, getRolePage } from '#/api/sys/role';
 
-import MenuForm from './form.vue';
+import RoleForm from './form.vue';
 import GrantingPermissionsForm from './link.vue';
 
-const menuFormRef = ref();
+const roleFormRef = ref();
 const grantingPermissionsRef = ref();
 
 interface RowType {
@@ -23,6 +23,7 @@ interface RowType {
   roleDesc: string;
   dataScope: number;
   roleStatus: boolean;
+  ownerStatus: boolean;
 }
 
 const gridOptions: VxeGridProps<RowType> = {
@@ -31,13 +32,14 @@ const gridOptions: VxeGridProps<RowType> = {
     { field: 'roleCode', title: 'Role Code' },
     { field: 'roleDesc', title: 'Role Description' },
     { field: 'dataScope', title: 'Data Scope' },
+    { field: 'ownerStatus', title: 'Owner' },
     { field: 'roleStatus', title: 'Role Status' },
     {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
       title: 'Operation',
-      width: 150,
+      width: 200,
     },
   ],
   exportConfig: {},
@@ -79,11 +81,11 @@ const linkForm = (row: RowType) => {
 };
 
 const openForm = () => {
-  menuFormRef.value?.open();
+  roleFormRef.value?.open();
 };
 
 const editRow = (row: RowType) => {
-  menuFormRef.value?.open(row);
+  roleFormRef.value?.open(row);
 };
 
 const expandAll = () => {
@@ -129,7 +131,9 @@ const deleteById = (row: RowType) => {
           </ElButton>
         </template>
         <template #action="{ row }">
-          <ElButton type="primary" link @click="linkForm(row)"> Link </ElButton>
+          <ElButton type="success" link @click="linkForm(row)">
+            Permissions
+          </ElButton>
           <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
           <ElButton type="danger" link @click="deleteById(row)">
             Delete
@@ -137,7 +141,7 @@ const deleteById = (row: RowType) => {
         </template>
       </Grid>
     </div>
-    <MenuForm ref="menuFormRef" :grid-api="gridApi" />
+    <RoleForm ref="roleFormRef" :grid-api="gridApi" />
     <GrantingPermissionsForm ref="grantingPermissionsRef" />
   </Page>
 </template>

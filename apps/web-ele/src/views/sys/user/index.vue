@@ -8,34 +8,42 @@ import { confirm, Page } from '@vben/common-ui';
 import { ElButton, ElMessage } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { delById, getMenusPage } from '#/api/sys/menu';
+import { delUserById, getUserPage } from '#/api/sys/user';
 
-import MenuForm from './form.vue';
+import UserForm from './form.vue';
 
-const menuFormRef = ref();
+const userFormRef = ref();
 
 interface RowType {
   id: string;
-  parentId: null | number;
-  name: string;
-  permission: string;
-  path: string;
-  menuType: number;
+  username: string;
+  phone: string;
+  avatar: string;
+  email: string;
+  sex: boolean;
+  lockStatus: boolean;
 }
 
 const gridOptions: VxeGridProps<RowType> = {
+  checkboxConfig: {
+    highlight: true,
+    labelField: 'name',
+  },
   columns: [
-    { field: 'name', title: 'Menu Name', align: 'left', treeNode: true },
-    { field: 'component', title: 'Component' },
-    { field: 'permission', title: 'Permission' },
-    { field: 'path', title: 'Path' },
-    { field: 'menuType', title: 'Menu Type' },
+    { title: '序号', type: 'seq', width: 50 },
+    { align: 'left', title: '#', type: 'checkbox', width: 50 },
+    { field: 'username', title: 'User Name', align: 'left', treeNode: true },
+    { field: 'phone', title: 'phone' },
+    { field: 'avatar', title: 'avatar' },
+    { field: 'email', title: 'email' },
+    { field: 'sex', title: 'sex' },
+    { field: 'lockStatus', title: 'Lock Status' },
     {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
       title: 'Operation',
-      width: 120,
+      width: 200,
     },
   ],
   exportConfig: {},
@@ -43,7 +51,7 @@ const gridOptions: VxeGridProps<RowType> = {
   proxyConfig: {
     ajax: {
       query: async ({ page }) => {
-        return await getMenusPage({
+        return await getUserPage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
         });
@@ -73,11 +81,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
 });
 
 const openForm = () => {
-  menuFormRef.value?.open();
+  userFormRef.value?.open();
 };
 
 const editRow = (row: RowType) => {
-  menuFormRef.value?.open(row);
+  userFormRef.value?.open(row);
 };
 
 const expandAll = () => {
@@ -93,7 +101,7 @@ const deleteById = (row: RowType) => {
     content: 'Confirm deletion?',
     icon: 'error',
   }).then(async () => {
-    await delById({
+    await delUserById({
       id: row.id,
     })
       .then(async () => {
@@ -130,6 +138,6 @@ const deleteById = (row: RowType) => {
         </template>
       </Grid>
     </div>
-    <MenuForm ref="menuFormRef" :grid-api="gridApi" />
+    <UserForm ref="userFormRef" :grid-api="gridApi" />
   </Page>
 </template>

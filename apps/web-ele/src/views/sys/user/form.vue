@@ -6,7 +6,7 @@ import { useVbenModal } from '@vben/common-ui';
 import { ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
-import { createRole, updateRole } from '#/api/sys/role';
+import { createUser, updateUser } from '#/api/sys/user/';
 
 const props = defineProps<{
   gridApi: any;
@@ -28,63 +28,58 @@ const [Form, formApi] = useVbenForm({
   schema: [
     {
       component: 'Input',
-      fieldName: 'roleName',
-      label: 'Role Name',
+      fieldName: 'username',
+      label: 'User Name',
       rules: 'required',
     },
     {
-      component: 'Input',
-      fieldName: 'roleCode',
-      label: 'Role Code',
+      component: 'VbenInputPassword',
+      fieldName: 'password',
+      label: 'Password',
       rules: 'required',
     },
     {
-      component: 'Input',
-      fieldName: 'roleDesc',
-      label: 'Role Description',
-      rules: 'required',
-    },
-    {
-      component: 'Select',
+      component: 'RadioGroup',
       componentProps: {
-        allowClear: true,
-        filterOption: true,
         options: [
           {
-            label: 'All',
-            value: 1,
+            label: 'Male',
+            value: true,
           },
           {
-            label: 'Department',
-            value: 2,
+            label: 'Female',
+            value: false,
           },
         ],
-        placeholder: 'Please select the data access scope',
-        showSearch: true,
       },
-      fieldName: 'roleScope',
-      defaultValue: 1,
-      label: 'Role Scope',
-      rules: 'required',
-    },
-    {
-      component: 'Switch',
-      componentProps: {
-        class: 'w-auto',
-      },
-      fieldName: 'ownerStatus',
-      label: 'Is Owner',
-      defaultValue: false,
-      rules: 'required',
-    },
-    {
-      component: 'Switch',
-      componentProps: {
-        class: 'w-auto',
-      },
-      fieldName: 'roleStatus',
-      label: 'Role Status',
       defaultValue: true,
+      fieldName: 'sex',
+      label: 'Sex',
+      rules: 'required',
+    },
+    {
+      component: 'Input',
+      fieldName: 'phone',
+      label: 'Phone',
+    },
+    {
+      component: 'Input',
+      fieldName: 'avatar',
+      label: 'Avatar',
+    },
+    {
+      component: 'Input',
+      fieldName: 'email',
+      label: 'Email',
+    },
+    {
+      component: 'Switch',
+      componentProps: {
+        class: 'w-auto',
+      },
+      fieldName: 'lockStatus',
+      label: 'Lock Status',
+      defaultValue: false,
     },
   ],
 });
@@ -95,8 +90,8 @@ const [Modal, modalApi] = useVbenModal({
       if (e.valid) {
         Object.assign(writeForm.value, await formApi.getValues());
         await (writeForm.value.id
-          ? updateRole(writeForm.value)
-          : createRole(writeForm.value));
+          ? updateUser(writeForm.value)
+          : createUser(writeForm.value));
         ElMessage.success('Saved successfully');
         props.gridApi.reload();
       } else {
@@ -108,6 +103,7 @@ const [Modal, modalApi] = useVbenModal({
 });
 
 const open = (row: any) => {
+  writeForm.value = {};
   if (row?.id) {
     writeForm.value = row;
     formApi.setValues(row);
