@@ -6,11 +6,7 @@ import { useVbenModal } from '@vben/common-ui';
 import { ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
-import {
-  create,
-  getMenuTreeWithoutPermission,
-  update,
-} from '#/api/sys/menu/menu';
+import { createRole, updateRole } from '#/api/sys/role/role';
 
 const props = defineProps<{
   gridApi: any;
@@ -29,126 +25,46 @@ const [Form, formApi] = useVbenForm({
     labelWidth: 130,
   },
   submitOnChange: true,
-  wrapperClass: 'grid-cols-1 md:grid-cols-2',
   schema: [
     {
-      component: 'RadioGroup',
+      component: 'Input',
+      fieldName: 'roleName',
+      label: 'Role Name',
+      rules: 'required',
+    },
+    {
+      component: 'Input',
+      fieldName: 'roleCode',
+      label: 'Role Code',
+      rules: 'required',
+    },
+    {
+      component: 'Input',
+      fieldName: 'roleDesc',
+      label: 'Role Description',
+      rules: 'required',
+    },
+    {
+      component: 'Select',
       componentProps: {
+        allowClear: true,
+        filterOption: true,
         options: [
           {
-            label: 'Catalog',
+            label: 'All',
             value: 1,
           },
           {
-            label: 'Menu',
+            label: 'Department',
             value: 2,
           },
-          {
-            label: 'Button',
-            value: 3,
-          },
         ],
-      },
-      defaultValue: 1,
-      fieldName: 'menuType',
-      label: 'Menu Type',
-      rules: 'required',
-    },
-    {
-      component: 'ApiTreeSelect',
-      componentProps: {
-        allowClear: true,
-        placeholder: 'If left blank, this will be set as the root menu.',
+        placeholder: 'Please select the data access scope',
         showSearch: true,
-        treeNodeFilterProp: 'name',
-        api: getMenuTreeWithoutPermission,
-        resultField: 'data',
-        labelField: 'name',
-        valueField: 'id',
-        childrenField: 'children',
-        checkStrictly: true,
       },
-      fieldName: 'parentId',
-      label: 'Parent Menu',
-      help: 'Leave blank to make this a root menu.',
-    },
-    {
-      component: 'Input',
-      fieldName: 'meta.title',
-      label: 'Global Title',
-      rules: 'required',
-    },
-    {
-      component: 'Input',
-      fieldName: 'name',
-      label: 'Menu Name',
-      rules: 'required',
-    },
-    {
-      component: 'Input',
-      fieldName: 'path',
-      label: 'Path',
-      rules: 'required',
-      dependencies: {
-        if(values) {
-          return values.menuType !== 3;
-        },
-        triggerFields: ['menuType'],
-      },
-    },
-    {
-      component: 'Input',
-      fieldName: 'component',
-      label: 'Component',
-      dependencies: {
-        if(values) {
-          return values.menuType === 2;
-        },
-        triggerFields: ['menuType'],
-      },
-    },
-    {
-      component: 'Input',
-      fieldName: 'redirect',
-      label: 'Redirect',
-      dependencies: {
-        if(values) {
-          return values.menuType === 1;
-        },
-        triggerFields: ['menuType'],
-      },
-    },
-    {
-      component: 'Input',
-      fieldName: 'permission',
-      label: 'Permission',
-      dependencies: {
-        if(values) {
-          return values.menuType === 3;
-        },
-        triggerFields: ['menuType'],
-      },
-    },
-    {
-      component: 'IconPicker',
-      fieldName: 'icon',
-      label: 'Icon',
-      componentProps: {
-        placeholder: 'Please select an icon',
-        allowClear: true,
-      },
-      rules: 'required',
-      dependencies: {
-        if(values) {
-          return values.menuType !== 3;
-        },
-        triggerFields: ['menuType'],
-      },
-    },
-    {
-      component: 'InputNumber',
-      fieldName: 'meta.order',
-      label: 'Menu Order',
+      fieldName: 'roleScope',
+      defaultValue: 1,
+      label: 'Role Scope',
       rules: 'required',
     },
     {
@@ -156,65 +72,18 @@ const [Form, formApi] = useVbenForm({
       componentProps: {
         class: 'w-auto',
       },
-      fieldName: 'meta.affixTab',
-      label: 'Affix Tab',
-      dependencies: {
-        if(values) {
-          return values.menuType === 2;
-        },
-        triggerFields: ['menuType'],
-      },
+      fieldName: 'ownerStatus',
+      label: 'Is Owner',
+      defaultValue: false,
+      rules: 'required',
     },
     {
       component: 'Switch',
       componentProps: {
         class: 'w-auto',
       },
-      fieldName: 'meta.noBasicLayout',
-      label: 'No Basic Layout',
-      dependencies: {
-        if(values) {
-          return values.menuType === 2;
-        },
-        triggerFields: ['menuType'],
-      },
-    },
-    {
-      component: 'Switch',
-      componentProps: {
-        class: 'w-auto',
-      },
-      fieldName: 'visible',
-      label: 'Visible',
-      dependencies: {
-        if(values) {
-          return values.menuType !== 3;
-        },
-        triggerFields: ['menuType'],
-      },
-      defaultValue: true,
-    },
-    {
-      component: 'Switch',
-      componentProps: {
-        class: 'w-auto',
-      },
-      fieldName: 'embedded',
-      label: 'Embedded',
-      dependencies: {
-        if(values) {
-          return values.menuType === 2;
-        },
-        triggerFields: ['menuType'],
-      },
-    },
-    {
-      component: 'Switch',
-      componentProps: {
-        class: 'w-auto',
-      },
-      fieldName: 'menuStatus',
-      label: 'MenuStatus',
+      fieldName: 'roleStatus',
+      label: 'Role Status',
       defaultValue: true,
     },
   ],
@@ -223,16 +92,11 @@ const [Form, formApi] = useVbenForm({
 const [Modal, modalApi] = useVbenModal({
   onConfirm: () => {
     formApi.validate().then(async (e) => {
-      modalApi.setState({ loading: true });
       if (e.valid) {
         Object.assign(writeForm.value, await formApi.getValues());
-        writeForm.value.order = writeForm.value.meta?.order;
-        writeForm.value.title = writeForm.value.meta?.title;
-        writeForm.value.affixTab = writeForm.value.meta?.affixTab;
-        writeForm.value.noBasicLayout = writeForm.value.meta?.noBasicLayout;
         await (writeForm.value.id
-          ? update(writeForm.value)
-          : create(writeForm.value));
+          ? updateRole(writeForm.value)
+          : createRole(writeForm.value));
         ElMessage.success('Saved successfully');
         props.gridApi.reload();
       } else {
@@ -258,7 +122,7 @@ defineExpose({ open, close });
 </script>
 
 <template>
-  <Modal class="w-[65%]" title="Data handling">
+  <Modal class="w-[40%]" title="Data handling">
     <Form style="width: auto" />
   </Modal>
 </template>
