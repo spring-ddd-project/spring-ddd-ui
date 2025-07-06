@@ -8,7 +8,7 @@ import { confirm, Page } from '@vben/common-ui';
 import { ElButton, ElMessage } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { delRoleById, getRolePage } from '#/api/sys/role/role';
+import { delRoleById, getRolePage } from '#/api/sys/role';
 
 import RoleForm from './form.vue';
 import GrantingPermissionsForm from './link.vue';
@@ -23,6 +23,7 @@ interface RowType {
   roleDesc: string;
   dataScope: number;
   roleStatus: boolean;
+  ownerStatus: boolean;
 }
 
 const gridOptions: VxeGridProps<RowType> = {

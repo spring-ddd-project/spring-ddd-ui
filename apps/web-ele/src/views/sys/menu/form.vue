@@ -6,11 +6,7 @@ import { useVbenModal } from '@vben/common-ui';
 import { ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
-import {
-  create,
-  getMenuTreeWithoutPermission,
-  update,
-} from '#/api/sys/menu/menu';
+import { create, getMenuTreeWithoutPermission, update } from '#/api/sys/menu';
 
 const props = defineProps<{
   gridApi: any;

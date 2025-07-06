@@ -8,8 +8,8 @@ import { IconifyIcon } from '@vben/icons';
 
 import { ElMessage } from 'element-plus';
 
-import { getMenuTreeWithPermission } from '#/api/sys/menu/menu';
-import { linkRoleAndMenus, queryMenusByRoleId } from '#/api/sys/role/role';
+import { getMenuTreeWithPermission } from '#/api/sys/menu';
+import { linkRoleAndMenus, queryMenusByRoleId } from '#/api/sys/role';
 
 const writeForm = ref<Record<string, any>>({});
 const treeData = ref<any>([]);
