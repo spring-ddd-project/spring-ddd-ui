@@ -33,7 +33,6 @@ const [Form, formApi] = useVbenForm({
         valueField: 'id',
         clearable: true,
         multiple: true,
-        collapseTagsTooltip: true,
       },
       fieldName: 'roleIds',
       label: 'Roles',
