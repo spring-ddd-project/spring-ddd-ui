@@ -1,22 +1,16 @@
 <script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
-import { ref } from 'vue';
-
-import { confirm, Page } from '@vben/common-ui';
+import { confirm, useVbenModal } from '@vben/common-ui';
 
 import { ElButton, ElMessage } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { delUserById, getUserPage } from '#/api/sys/user';
+import { getRecyclePage, wipeUserById } from '#/api/sys/user';
 
-import UserForm from './form.vue';
-import RecycleForm from './recycle.vue';
-import LinkForm from './link.vue';
-
-const userFormRef = ref();
-const recycleFormRef = ref();
-const linkFormRef = ref();
+const props = defineProps<{
+  gridApi: any;
+}>();
 
 interface RowType {
   id: string;
@@ -47,7 +41,7 @@ const gridOptions: VxeGridProps<RowType> = {
       fixed: 'right',
       slots: { default: 'action' },
       title: 'Operation',
-      width: 200,
+      width: 150,
     },
   ],
   exportConfig: {},
@@ -55,7 +49,7 @@ const gridOptions: VxeGridProps<RowType> = {
   proxyConfig: {
     ajax: {
       query: async ({ page }) => {
-        return await getUserPage({
+        return await getRecyclePage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
         });
@@ -80,66 +74,53 @@ const gridOptions: VxeGridProps<RowType> = {
   },
 };
 
-const [Grid, gridApi] = useVbenVxeGrid({
+const [Grid, localGridApi] = useVbenVxeGrid({
   gridOptions,
 });
 
-const openRecycleForm = () => {
-  recycleFormRef.value?.open();
-};
-
-const openForm = () => {
-  userFormRef.value?.open();
-};
-
-const editRow = (row: RowType) => {
-  userFormRef.value?.open(row);
-};
-
-const linkRow = (row: RowType) => {
-  linkFormRef.value?.open(row);
-};
-
-const deleteById = (row: RowType) => {
+const wipeById = (row: RowType) => {
   confirm({
     content: 'Confirm deletion?',
     icon: 'error',
   }).then(async () => {
-    await delUserById({
-      id: row.id,
-    })
+    await wipeUserById([row.id])
       .then(async () => {
-        await gridApi.reload();
+        await localGridApi.reload();
         ElMessage.success('Deletion successful');
+        await props.gridApi.reload();
       })
       .catch(() => {
         ElMessage.error('Deletion failed');
       });
   });
 };
+
+const [Modal, modalApi] = useVbenModal({
+  onClosed: () => {
+    modalApi.setData({ loading: false }).close();
+  },
+  showConfirmButton: false,
+  showCancelButton: false,
+});
+
+const open = () => {
+  modalApi.open();
+};
+const close = () => modalApi.close();
+
+defineExpose({ open, close });
 </script>
 
 <template>
-  <Page>
+  <Modal class="w-[70%]" title="Data Recycle">
     <Grid>
       <template #toolbar-actions>
-        <ElButton class="mr-2" bg text type="primary" @click="openForm">
-          Add
-        </ElButton>
-        <ElButton class="mr-2" bg text type="danger" @click="openRecycleForm">
-          Recycle
-        </ElButton>
+        <ElButton class="mr-2" bg text type="danger"> Wipe </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="success" link @click="linkRow(row)"> Roles </ElButton>
-        <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
-        <ElButton type="danger" link @click="deleteById(row)">
-          Delete
-        </ElButton>
+        <ElButton type="success" link> restore </ElButton>
+        <ElButton type="danger" link @click="wipeById(row)"> wipe </ElButton>
       </template>
     </Grid>
-    <UserForm ref="userFormRef" :grid-api="gridApi" />
-    <RecycleForm ref="recycleFormRef" :grid-api="gridApi" />
-    <LinkForm ref="linkFormRef" />
-  </Page>
+  </Modal>
 </template>

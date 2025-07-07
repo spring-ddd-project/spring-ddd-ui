@@ -88,14 +88,6 @@ const editRow = (row: RowType) => {
   roleFormRef.value?.open(row);
 };
 
-const expandAll = () => {
-  gridApi.grid?.setAllTreeExpand(true);
-};
-
-const collapseAll = () => {
-  gridApi.grid?.setAllTreeExpand(false);
-};
-
 const deleteById = (row: RowType) => {
   confirm({
     content: 'Confirm deletion?',
@@ -117,30 +109,22 @@ const deleteById = (row: RowType) => {
 
 <template>
   <Page>
-    <div class="vp-raw h-[300px] w-full">
-      <Grid>
-        <template #toolbar-tools>
-          <ElButton class="mr-2" type="primary" @click="expandAll">
-            Expand All
-          </ElButton>
-          <ElButton type="primary" @click="collapseAll"> Collapse All</ElButton>
-        </template>
-        <template #toolbar-actions>
-          <ElButton class="mr-2" type="primary" @click="openForm">
-            Add
-          </ElButton>
-        </template>
-        <template #action="{ row }">
-          <ElButton type="success" link @click="linkForm(row)">
-            Permissions
-          </ElButton>
-          <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
-          <ElButton type="danger" link @click="deleteById(row)">
-            Delete
-          </ElButton>
-        </template>
-      </Grid>
-    </div>
+    <Grid>
+      <template #toolbar-actions>
+        <ElButton class="mr-2" bg text type="primary" @click="openForm">
+          Add
+        </ElButton>
+      </template>
+      <template #action="{ row }">
+        <ElButton type="success" link @click="linkForm(row)">
+          Permissions
+        </ElButton>
+        <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
+        <ElButton type="danger" link @click="deleteById(row)">
+          Delete
+        </ElButton>
+      </template>
+    </Grid>
     <RoleForm ref="roleFormRef" :grid-api="gridApi" />
     <GrantingPermissionsForm ref="grantingPermissionsRef" />
   </Page>
