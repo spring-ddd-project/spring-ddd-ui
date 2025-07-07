@@ -27,3 +27,20 @@ export async function wipeUserById(data: any) {
     },
   });
 }
+
+export async function linkUserAndRole(data: any) {
+  return requestClient.post('/sys/user/linkUserAndRole', null, {
+    params: {
+      userId: data.userId,
+      roleIds: data.roleIds,
+    },
+  });
+}
+
+export async function queryRolesByUserId(data: any) {
+  return requestClient.post('/sys/user/queryRolesByUserId', null, {
+    params: {
+      userId: data.userId,
+    },
+  });
+}

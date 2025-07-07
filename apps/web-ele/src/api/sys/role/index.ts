@@ -4,6 +4,10 @@ export async function getRolePage(data: any) {
   return requestClient.post('/sys/role/index', data);
 }
 
+export async function getAllRole(data: any) {
+  return requestClient.post('/sys/role/all', data);
+}
+
 export async function createRole(data: any) {
   return requestClient.post('/sys/role/create', data);
 }

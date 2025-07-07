@@ -12,9 +12,11 @@ import { delUserById, getUserPage } from '#/api/sys/user';
 
 import UserForm from './form.vue';
 import RecycleForm from './recycle.vue';
+import LinkForm from './link.vue';
 
 const userFormRef = ref();
 const recycleFormRef = ref();
+const linkFormRef = ref();
 
 interface RowType {
   id: string;
@@ -94,6 +96,10 @@ const editRow = (row: RowType) => {
   userFormRef.value?.open(row);
 };
 
+const linkRow = (row: RowType) => {
+  linkFormRef.value?.open(row);
+};
+
 const deleteById = (row: RowType) => {
   confirm({
     content: 'Confirm deletion?',
@@ -125,6 +131,7 @@ const deleteById = (row: RowType) => {
         </ElButton>
       </template>
       <template #action="{ row }">
+        <ElButton type="success" link @click="linkRow(row)"> Roles </ElButton>
         <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
         <ElButton type="danger" link @click="deleteById(row)">
           Delete
@@ -133,5 +140,6 @@ const deleteById = (row: RowType) => {
     </Grid>
     <UserForm ref="userFormRef" :grid-api="gridApi" />
     <RecycleForm ref="recycleFormRef" :grid-api="gridApi" />
+    <LinkForm ref="linkFormRef" />
   </Page>
 </template>
