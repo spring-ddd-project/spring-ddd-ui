@@ -50,6 +50,9 @@ const gridOptions: VxeGridProps<RowType> = {
       },
     },
   },
+  pagerConfig: {
+    enabled: false,
+  },
   editConfig: {
     mode: 'row',
     trigger: 'click',
@@ -109,27 +112,27 @@ const deleteById = (row: RowType) => {
 
 <template>
   <Page>
-    <div class="vp-raw h-[300px] w-full">
-      <Grid>
-        <template #toolbar-tools>
-          <ElButton class="mr-2" type="primary" @click="expandAll">
-            Expand All
-          </ElButton>
-          <ElButton type="primary" @click="collapseAll"> Collapse All</ElButton>
-        </template>
-        <template #toolbar-actions>
-          <ElButton class="mr-2" type="primary" @click="openForm">
-            Add
-          </ElButton>
-        </template>
-        <template #action="{ row }">
-          <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
-          <ElButton type="danger" link @click="deleteById(row)">
-            Delete
-          </ElButton>
-        </template>
-      </Grid>
-    </div>
+    <Grid>
+      <template #toolbar-tools>
+        <ElButton class="mr-2" bg text type="primary" @click="expandAll">
+          Expand All
+        </ElButton>
+        <ElButton type="primary" bg text @click="collapseAll">
+          Collapse All
+        </ElButton>
+      </template>
+      <template #toolbar-actions>
+        <ElButton class="mr-2" bg text type="primary" @click="openForm">
+          Add
+        </ElButton>
+      </template>
+      <template #action="{ row }">
+        <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
+        <ElButton type="danger" link @click="deleteById(row)">
+          Delete
+        </ElButton>
+      </template>
+    </Grid>
     <MenuForm ref="menuFormRef" :grid-api="gridApi" />
   </Page>
 </template>
