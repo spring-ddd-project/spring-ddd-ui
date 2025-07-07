@@ -4,6 +4,10 @@ export async function getUserPage(data: any) {
   return requestClient.post('/sys/user/index', data);
 }
 
+export async function getRecyclePage(data: any) {
+  return requestClient.post('/sys/user/recycle', data);
+}
+
 export async function createUser(data: any) {
   return requestClient.post('/sys/user/create', data);
 }
@@ -14,4 +18,12 @@ export async function updateUser(data: any) {
 
 export async function delUserById(data: any) {
   return requestClient.post('/sys/user/delete', data);
+}
+
+export async function wipeUserById(data: any) {
+  return requestClient.delete('/sys/user/wipe', {
+    params: {
+      ids: data,
+    },
+  });
 }
