@@ -9,5 +9,8 @@
   "user": {
     "title": "User Management",
     "userInfo": "User Info"
+  },
+  "dept": {
+    "title": "Department Management"
   }
 }
