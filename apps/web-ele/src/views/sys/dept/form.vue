@@ -6,7 +6,7 @@ import { useVbenModal } from '@vben/common-ui';
 import { ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
-import { create, getMenuTreeWithoutPermission, update } from '#/api/sys/menu';
+import { createDept, getTree, updateDept } from '#/api/sys/dept';
 
 const props = defineProps<{
   gridApi: any;
@@ -22,28 +22,27 @@ const [Form, formApi] = useVbenForm({
       class: 'w-full',
     },
     colon: true,
-    labelWidth: 130,
+    labelWidth: 200,
   },
   submitOnChange: true,
-  wrapperClass: 'grid-cols-1 md:grid-cols-2',
   schema: [
     {
       component: 'ApiTreeSelect',
       componentProps: {
         allowClear: true,
-        placeholder: 'If left blank, this will be set as the root menu.',
+        placeholder: 'If left blank, this will be set as the root department.',
         showSearch: true,
-        treeNodeFilterProp: 'name',
-        api: getMenuTreeWithoutPermission,
+        treeNodeFilterProp: 'deptName',
+        api: getTree,
         resultField: 'data',
-        labelField: 'name',
+        labelField: 'deptName',
         valueField: 'id',
         childrenField: 'children',
         checkStrictly: true,
       },
       fieldName: 'parentId',
-      label: 'Parent Menu',
-      help: 'Leave blank to make this a root menu.',
+      label: 'Parent Department',
+      help: 'Leave blank to make this a root department.',
     },
     {
       component: 'Input',
@@ -72,16 +71,11 @@ const [Form, formApi] = useVbenForm({
 const [Modal, modalApi] = useVbenModal({
   onConfirm: () => {
     formApi.validate().then(async (e) => {
-      modalApi.setState({ loading: true });
       if (e.valid) {
         Object.assign(writeForm.value, await formApi.getValues());
-        writeForm.value.order = writeForm.value.meta?.order;
-        writeForm.value.title = writeForm.value.meta?.title;
-        writeForm.value.affixTab = writeForm.value.meta?.affixTab;
-        writeForm.value.noBasicLayout = writeForm.value.meta?.noBasicLayout;
         await (writeForm.value.id
-          ? update(writeForm.value)
-          : create(writeForm.value));
+          ? updateDept(writeForm.value)
+          : createDept(writeForm.value));
         ElMessage.success('Saved successfully');
         props.gridApi.reload();
       } else {
