@@ -7,6 +7,7 @@ import { ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
 import { createUser, updateUser } from '#/api/sys/user/';
+import { getTree } from '#/api/sys/dept';
 
 const props = defineProps<{
   gridApi: any;
@@ -36,6 +37,23 @@ const [Form, formApi] = useVbenForm({
       component: 'VbenInputPassword',
       fieldName: 'password',
       label: 'Password',
+      rules: 'required',
+    },
+    {
+      component: 'ApiTreeSelect',
+      componentProps: {
+        allowClear: true,
+        showSearch: true,
+        treeNodeFilterProp: 'deptName',
+        api: getTree,
+        resultField: 'data',
+        labelField: 'deptName',
+        valueField: 'id',
+        childrenField: 'children',
+        checkStrictly: true,
+      },
+      fieldName: 'deptId',
+      label: 'Department',
       rules: 'required',
     },
     {
