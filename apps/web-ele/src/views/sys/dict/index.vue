@@ -8,11 +8,11 @@ import { confirm, Page } from '@vben/common-ui';
 import { ElButton, ElMessage } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { delDicttById, getDictPage } from '#/api/sys/dict';
+import { delDictById, getDictPage } from '#/api/sys/dict';
 
-import DeptForm from './form.vue';
+import DictForm from './form.vue';
 
-const deptFormRef = ref();
+const dictFormRef = ref();
 
 interface RowType {
   id: string;
@@ -24,7 +24,6 @@ interface RowType {
 const gridOptions: VxeGridProps<RowType> = {
   checkboxConfig: {
     highlight: true,
-    labelField: 'dictName',
   },
   columns: [
     { title: '序号', type: 'seq', width: 50 },
@@ -82,11 +81,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
 });
 
 const openForm = () => {
-  deptFormRef.value?.open();
+  dictFormRef.value?.open();
 };
 
 const editRow = (row: RowType) => {
-  deptFormRef.value?.open(row);
+  dictFormRef.value?.open(row);
 };
 
 const expandAll = () => {
@@ -102,7 +101,7 @@ const deleteById = (row: RowType) => {
     content: 'Confirm deletion?',
     icon: 'error',
   }).then(async () => {
-    await delDicttById({
+    await delDictById({
       id: row.id,
     })
       .then(async () => {
@@ -119,14 +118,6 @@ const deleteById = (row: RowType) => {
 <template>
   <Page>
     <Grid>
-      <template #toolbar-tools>
-        <ElButton class="mr-2" bg text type="primary" @click="expandAll">
-          Expand All
-        </ElButton>
-        <ElButton type="primary" bg text @click="collapseAll">
-          Collapse All
-        </ElButton>
-      </template>
       <template #toolbar-actions>
         <ElButton class="mr-2" bg text type="primary" @click="openForm">
           Add
@@ -139,6 +130,6 @@ const deleteById = (row: RowType) => {
         </ElButton>
       </template>
     </Grid>
-    <DeptForm ref="deptFormRef" :grid-api="gridApi" />
+    <DictForm ref="dictFormRef" :grid-api="gridApi" />
   </Page>
 </template>

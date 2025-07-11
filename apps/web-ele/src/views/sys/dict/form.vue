@@ -6,7 +6,7 @@ import { useVbenModal } from '@vben/common-ui';
 import { ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
-import { createDept, getTree, updateDept } from '#/api/sys/dept';
+import { createDict, updateDict } from '#/api/sys/dict';
 
 const props = defineProps<{
   gridApi: any;
@@ -27,27 +27,15 @@ const [Form, formApi] = useVbenForm({
   submitOnChange: true,
   schema: [
     {
-      component: 'ApiTreeSelect',
-      componentProps: {
-        allowClear: true,
-        placeholder: 'If left blank, this will be set as the root department.',
-        showSearch: true,
-        treeNodeFilterProp: 'deptName',
-        api: getTree,
-        resultField: 'data',
-        labelField: 'deptName',
-        valueField: 'id',
-        childrenField: 'children',
-        checkStrictly: true,
-      },
-      fieldName: 'parentId',
-      label: 'Parent Department',
-      help: 'Leave blank to make this a root department.',
+      component: 'Input',
+      fieldName: 'dictName',
+      label: 'Dictionary Name',
+      rules: 'required',
     },
     {
       component: 'Input',
-      fieldName: 'deptName',
-      label: 'Department Name',
+      fieldName: 'dictCode',
+      label: 'Dictionary Code',
       rules: 'required',
     },
     {
@@ -61,7 +49,7 @@ const [Form, formApi] = useVbenForm({
       componentProps: {
         class: 'w-auto',
       },
-      fieldName: 'deptStatus',
+      fieldName: 'dictStatus',
       label: 'Status',
       defaultValue: true,
     },
@@ -74,8 +62,8 @@ const [Modal, modalApi] = useVbenModal({
       if (e.valid) {
         Object.assign(writeForm.value, await formApi.getValues());
         await (writeForm.value.id
-          ? updateDept(writeForm.value)
-          : createDept(writeForm.value));
+          ? updateDict(writeForm.value)
+          : createDict(writeForm.value));
         ElMessage.success('Saved successfully');
         props.gridApi.reload();
       } else {
