@@ -14,6 +14,9 @@
     "title": "Department Management"
   },
   "dict": {
-    "title": "Dictionary Management"
+    "title": "Dictionary Management",
+    "item": {
+      "title": "Item Management"
+    }
   }
 }
