@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 
-import { useVbenModal } from '@vben/common-ui';
+import { useVbenDrawer } from '@vben/common-ui';
 
 import { ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
-import { createDict, updateDict } from '#/api/sys/dict';
+import { createItem, updateItem } from '#/api/sys/dict';
 
 const props = defineProps<{
   gridApi: any;
@@ -28,14 +28,14 @@ const [Form, formApi] = useVbenForm({
   schema: [
     {
       component: 'Input',
-      fieldName: 'dictName',
-      label: 'Dictionary Name',
+      fieldName: 'itemLabel',
+      label: 'Item Label',
       rules: 'required',
     },
     {
       component: 'Input',
-      fieldName: 'dictCode',
-      label: 'Dictionary Code',
+      fieldName: 'itemValue',
+      label: 'Item Value',
       rules: 'required',
     },
     {
@@ -49,27 +49,27 @@ const [Form, formApi] = useVbenForm({
       componentProps: {
         class: 'w-auto',
       },
-      fieldName: 'dictStatus',
+      fieldName: 'itemStatus',
       label: 'Status',
       defaultValue: true,
     },
   ],
 });
 
-const [Modal, modalApi] = useVbenModal({
+const [Drawer, drawerApi] = useVbenDrawer({
   onConfirm: () => {
     formApi.validate().then(async (e) => {
       if (e.valid) {
         Object.assign(writeForm.value, await formApi.getValues());
         await (writeForm.value.id
-          ? updateDict(writeForm.value)
-          : createDict(writeForm.value));
+          ? updateItem(writeForm.value)
+          : createItem(writeForm.value));
         ElMessage.success('Saved successfully');
         props.gridApi.reload();
       } else {
         ElMessage.error('Validation failed');
       }
-      await modalApi.setState({ loading: false }).close();
+      await drawerApi.setState({ loading: false }).close();
     });
   },
 });
@@ -77,20 +77,20 @@ const [Modal, modalApi] = useVbenModal({
 const open = (row: any) => {
   if (row?.id) {
     writeForm.value = row;
-    formApi.setValues(row);
+    drawerApi.setData(row);
   } else {
     writeForm.value = {};
-    formApi.setValues({});
+    drawerApi.setData({});
   }
-  modalApi.open();
+  drawerApi.open();
 };
-const close = () => modalApi.close();
+const close = () => drawerApi.close();
 
 defineExpose({ open, close });
 </script>
 
 <template>
-  <Modal class="w-[65%]" title="Data handling">
+  <Drawer class="w-[35%]" title="Dictionary Item Data handling">
     <Form style="width: auto" />
-  </Modal>
+  </Drawer>
 </template>

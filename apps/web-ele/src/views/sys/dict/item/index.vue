@@ -3,18 +3,18 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
 
-import { confirm, Page } from '@vben/common-ui';
+import { confirm, Page, useVbenModal } from '@vben/common-ui';
 
 import { ElButton, ElMessage } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { delDictById, getDictPage } from '#/api/sys/dict';
+import { delItemById, getItemPage } from '#/api/sys/dict';
 
-import DictForm from './form.vue';
-import ItemIndex from './item/index.vue';
+import ItemForm from './form.vue';
 
-const dictFormRef = ref();
-const itemIndexRef = ref();
+const itemFormRef = ref();
+
+const writeForm = ref<Record<string, any>>({});
 
 interface RowType {
   id: string;
@@ -31,24 +31,24 @@ const gridOptions: VxeGridProps<RowType> = {
     { title: '序号', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
     {
-      field: 'dictName',
-      title: 'Dictionary Name',
+      field: 'itemLabel',
+      title: 'Item Name',
       align: 'left',
       treeNode: true,
     },
     {
-      field: 'dictCode',
-      title: 'Dictionary Code',
+      field: 'itemValue',
+      title: 'Item Value',
       align: 'left',
       treeNode: true,
     },
-    { field: 'dictStatus', title: 'Status' },
+    { field: 'itemStatus', title: 'Status' },
     {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
       title: 'Operation',
-      width: 150,
+      width: 120,
     },
   ],
   exportConfig: {},
@@ -56,7 +56,7 @@ const gridOptions: VxeGridProps<RowType> = {
   proxyConfig: {
     ajax: {
       query: async ({ page }) => {
-        return await getDictPage({
+        return await getItemPage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
         });
@@ -83,15 +83,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
 });
 
 const openForm = () => {
-  dictFormRef.value?.open();
+  itemFormRef.value?.open();
 };
 
 const editRow = (row: RowType) => {
-  dictFormRef.value?.open(row);
-};
-
-const openItemRow = (row: RowType) => {
-  itemIndexRef.value?.open(row);
+  itemFormRef.value?.open(row);
 };
 
 const deleteById = (row: RowType) => {
@@ -99,7 +95,7 @@ const deleteById = (row: RowType) => {
     content: 'Confirm deletion?',
     icon: 'error',
   }).then(async () => {
-    await delDictById({
+    await delItemById({
       id: row.id,
     })
       .then(async () => {
@@ -111,27 +107,39 @@ const deleteById = (row: RowType) => {
       });
   });
 };
+
+const [Modal, modalApi] = useVbenModal({
+  onConfirm: () => {
+    modalApi.setState({ loading: false }).close();
+  },
+});
+
+const open = (row: any) => {
+  writeForm.value = row?.id ? row : {};
+  modalApi.open();
+};
+const close = () => modalApi.close();
+
+defineExpose({ open, close });
 </script>
 
 <template>
-  <Page>
-    <Grid>
-      <template #toolbar-actions>
-        <ElButton class="mr-2" bg text type="primary" @click="openForm">
-          Add
-        </ElButton>
-      </template>
-      <template #action="{ row }">
-        <ElButton type="success" link @click="openItemRow(row)">
-          Item
-        </ElButton>
-        <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
-        <ElButton type="danger" link @click="deleteById(row)">
-          Delete
-        </ElButton>
-      </template>
-    </Grid>
-    <DictForm ref="dictFormRef" :grid-api="gridApi" />
-    <ItemIndex ref="itemIndexRef" />
-  </Page>
+  <Modal class="w-[65%]" title="Dictionary Item">
+    <Page>
+      <Grid>
+        <template #toolbar-actions>
+          <ElButton class="mr-2" bg text type="primary" @click="openForm">
+            Add
+          </ElButton>
+        </template>
+        <template #action="{ row }">
+          <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
+          <ElButton type="danger" link @click="deleteById(row)">
+            Delete
+          </ElButton>
+        </template>
+      </Grid>
+      <ItemForm ref="itemFormRef" :grid-api="gridApi" />
+    </Page>
+  </Modal>
 </template>

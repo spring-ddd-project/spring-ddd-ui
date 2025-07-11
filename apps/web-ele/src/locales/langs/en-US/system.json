@@ -12,5 +12,11 @@
   },
   "dept": {
     "title": "Department Management"
+  },
+  "dict": {
+    "title": "Dictionary Management",
+    "item": {
+      "title": "Item Management"
+    }
   }
 }
