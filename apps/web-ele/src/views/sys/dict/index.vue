@@ -5,8 +5,9 @@ import { ref } from 'vue';
 
 import { confirm, Page } from '@vben/common-ui';
 
-import { ElButton, ElMessage } from 'element-plus';
+import { ElButton, ElMessage, ElTag } from 'element-plus';
 
+import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { delDictById, getDictPage } from '#/api/sys/dict';
 
@@ -40,7 +41,11 @@ const gridOptions: VxeGridProps<RowType> = {
       title: 'Dictionary Code',
       align: 'left',
     },
-    { field: 'dictStatus', title: 'Status' },
+    {
+      field: 'dictStatus',
+      title: 'Status',
+      slots: { default: 'status' },
+    },
     {
       field: 'action',
       fixed: 'right',
@@ -114,6 +119,9 @@ const deleteById = (row: RowType) => {
 <template>
   <Page>
     <Grid>
+      <template #status="{ row }">
+        <Dict dict-key="common_status" :value="row.dictStatus" />
+      </template>
       <template #toolbar-actions>
         <ElButton class="mr-2" bg text type="primary" @click="openForm">
           Add

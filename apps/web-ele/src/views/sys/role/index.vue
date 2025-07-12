@@ -7,6 +7,7 @@ import { confirm, Page } from '@vben/common-ui';
 
 import { ElButton, ElMessage } from 'element-plus';
 
+import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { delRoleById, getRolePage } from '#/api/sys/role';
 
@@ -32,8 +33,8 @@ const gridOptions: VxeGridProps<RowType> = {
     { field: 'roleCode', title: 'Role Code' },
     { field: 'roleDesc', title: 'Role Description' },
     { field: 'dataScope', title: 'Data Scope' },
-    { field: 'ownerStatus', title: 'Owner' },
-    { field: 'roleStatus', title: 'Role Status' },
+    { field: 'ownerStatus', title: 'Owner', slots: { default: 'owner' } },
+    { field: 'roleStatus', title: 'Role Status', slots: { default: 'status' } },
     {
       field: 'action',
       fixed: 'right',
@@ -110,6 +111,12 @@ const deleteById = (row: RowType) => {
 <template>
   <Page>
     <Grid>
+      <template #owner="{ row }">
+        <Dict dict-key="common_status" :value="row.ownerStatus" />
+      </template>
+      <template #status="{ row }">
+        <Dict dict-key="common_status" :value="row.roleStatus" />
+      </template>
       <template #toolbar-actions>
         <ElButton class="mr-2" bg text type="primary" @click="openForm">
           Add
