@@ -34,13 +34,11 @@ const gridOptions: VxeGridProps<RowType> = {
       field: 'dictName',
       title: 'Dictionary Name',
       align: 'left',
-      treeNode: true,
     },
     {
       field: 'dictCode',
       title: 'Dictionary Code',
       align: 'left',
-      treeNode: true,
     },
     { field: 'dictStatus', title: 'Status' },
     {

@@ -18,9 +18,10 @@ const writeForm = ref<Record<string, any>>({});
 
 interface RowType {
   id: string;
-  parentId: null | number;
-  deptName: string;
-  deptStatus: string;
+  dictId: string;
+  itemLabel: string;
+  itemValue: number;
+  itemStatus: string;
 }
 
 const gridOptions: VxeGridProps<RowType> = {
@@ -34,13 +35,11 @@ const gridOptions: VxeGridProps<RowType> = {
       field: 'itemLabel',
       title: 'Item Name',
       align: 'left',
-      treeNode: true,
     },
     {
       field: 'itemValue',
       title: 'Item Value',
       align: 'left',
-      treeNode: true,
     },
     { field: 'itemStatus', title: 'Status' },
     {
@@ -83,7 +82,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
 });
 
 const openForm = () => {
-  itemFormRef.value?.open();
+  const dictId = writeForm.value.id;
+  writeForm.value = {};
+  writeForm.value.dictId = dictId;
+  itemFormRef.value?.open(writeForm.value);
 };
 
 const editRow = (row: RowType) => {
@@ -116,6 +118,7 @@ const [Modal, modalApi] = useVbenModal({
 
 const open = (row: any) => {
   writeForm.value = row?.id ? row : {};
+  modalApi.setState({ title: `Dict Name: ${row.dictName}` });
   modalApi.open();
 };
 const close = () => modalApi.close();
@@ -124,7 +127,7 @@ defineExpose({ open, close });
 </script>
 
 <template>
-  <Modal class="w-[65%]" title="Dictionary Item">
+  <Modal class="w-[65%]">
     <Page>
       <Grid>
         <template #toolbar-actions>
