@@ -68,7 +68,9 @@ const [Drawer, drawerApi] = useVbenDrawer({
           ? updateItem(writeForm.value)
           : createItem(writeForm.value));
         ElMessage.success('Saved successfully');
-        props.gridApi.reload();
+        props.gridApi.reload({
+          dictId: writeForm.value.dictId,
+        });
       } else {
         ElMessage.error('Validation failed');
       }

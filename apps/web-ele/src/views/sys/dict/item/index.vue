@@ -11,6 +11,7 @@ import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { delItemById, getItemPage } from '#/api/sys/dict';
 
 import ItemForm from './form.vue';
+import Dict from "#/adapter/component/Dict.vue";
 
 const itemFormRef = ref();
 
@@ -41,7 +42,7 @@ const gridOptions: VxeGridProps<RowType> = {
       title: 'Item Value',
       align: 'left',
     },
-    { field: 'itemStatus', title: 'Status' },
+    { field: 'itemStatus', title: 'Status', slots: { default: 'status' } },
     {
       field: 'action',
       fixed: 'right',
@@ -56,6 +57,7 @@ const gridOptions: VxeGridProps<RowType> = {
     ajax: {
       query: async ({ page }) => {
         return await getItemPage({
+          dictId: writeForm.value.id ?? writeForm.value.dictId,
           pageNum: page.currentPage,
           pageSize: page.pageSize,
         });
@@ -117,6 +119,7 @@ const [Modal, modalApi] = useVbenModal({
 });
 
 const open = (row: any) => {
+  writeForm.value = {};
   writeForm.value = row?.id ? row : {};
   modalApi.setState({ title: `Dict Name: ${row.dictName}` });
   modalApi.open();
@@ -130,6 +133,9 @@ defineExpose({ open, close });
   <Modal class="w-[65%]">
     <Page>
       <Grid>
+        <template #status="{ row }">
+          <Dict dict-key="common_status" :value="row.itemStatus" />
+        </template>
         <template #toolbar-actions>
           <ElButton class="mr-2" bg text type="primary" @click="openForm">
             Add
