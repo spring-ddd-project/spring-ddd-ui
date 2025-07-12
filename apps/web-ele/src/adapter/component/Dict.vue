@@ -25,8 +25,29 @@ watchEffect(async () => {
     normalizedValue.value,
   );
 });
+
+const tagType = computed(() => {
+  if (props.type) return props.type;
+  switch (normalizedValue.value) {
+    case 0: {
+      return 'danger';
+    }
+    case 1: {
+      return 'success';
+    }
+    case 2: {
+      return 'warning';
+    }
+    case 3: {
+      return 'primary';
+    }
+    default: {
+      return 'info';
+    }
+  }
+});
 </script>
 
 <template>
-  <ElTag :type="type || 'success'">{{ label }}</ElTag>
+  <ElTag :type="tagType">{{ label }}</ElTag>
 </template>
