@@ -5,14 +5,15 @@ import { ref } from 'vue';
 
 import { confirm, Page } from '@vben/common-ui';
 
-import { ElButton, ElMessage } from 'element-plus';
+import { ElButton, ElMessage, ElTag } from 'element-plus';
 
+import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { delUserById, getUserPage } from '#/api/sys/user';
 
 import UserForm from './form.vue';
-import RecycleForm from './recycle.vue';
 import LinkForm from './link.vue';
+import RecycleForm from './recycle.vue';
 
 const userFormRef = ref();
 const recycleFormRef = ref();
@@ -40,8 +41,12 @@ const gridOptions: VxeGridProps<RowType> = {
     { field: 'phone', title: 'phone' },
     { field: 'avatar', title: 'avatar' },
     { field: 'email', title: 'email' },
-    { field: 'sex', title: 'sex' },
-    { field: 'lockStatus', title: 'Lock Status' },
+    { field: 'sex', title: 'sex', slots: { default: 'sex' } },
+    {
+      field: 'lockStatus',
+      title: 'Lock Status',
+      slots: { default: 'lockStatus' },
+    },
     {
       field: 'action',
       fixed: 'right',
@@ -122,6 +127,13 @@ const deleteById = (row: RowType) => {
 <template>
   <Page>
     <Grid>
+      <template #sex="{ row }">
+        <ElTag type="warning" v-if="row.sex"> Male </ElTag>
+        <ElTag type="primary" v-if="!row.sex"> Female </ElTag>
+      </template>
+      <template #lockStatus="{ row }">
+        <Dict dict-key="common_status" :value="row.lockStatus" />
+      </template>
       <template #toolbar-actions>
         <ElButton class="mr-2" bg text type="primary" @click="openForm">
           Add

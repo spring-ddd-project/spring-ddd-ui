@@ -7,6 +7,7 @@ import { confirm, Page } from '@vben/common-ui';
 
 import { ElButton, ElMessage } from 'element-plus';
 
+import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { delById, getMenusPage } from '#/api/sys/menu';
 
@@ -29,7 +30,7 @@ const gridOptions: VxeGridProps<RowType> = {
     { field: 'component', title: 'Component' },
     { field: 'permission', title: 'Permission' },
     { field: 'path', title: 'Path' },
-    { field: 'menuType', title: 'Menu Type' },
+    { field: 'menuType', title: 'Menu Type', slots: { default: 'menuType' } },
     {
       field: 'action',
       fixed: 'right',
@@ -113,6 +114,9 @@ const deleteById = (row: RowType) => {
 <template>
   <Page>
     <Grid>
+      <template #menuType="{ row }">
+        <Dict dict-key="menu_types" :value="row.menuType" />
+      </template>
       <template #toolbar-tools>
         <ElButton class="mr-2" bg text type="primary" @click="expandAll">
           Expand All

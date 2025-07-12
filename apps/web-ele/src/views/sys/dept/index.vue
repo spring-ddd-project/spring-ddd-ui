@@ -7,6 +7,7 @@ import { confirm, Page } from '@vben/common-ui';
 
 import { ElButton, ElMessage } from 'element-plus';
 
+import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { delDeptById, getDeptPage } from '#/api/sys/dept';
 
@@ -29,7 +30,7 @@ const gridOptions: VxeGridProps<RowType> = {
       align: 'left',
       treeNode: true,
     },
-    { field: 'deptStatus', title: 'Status' },
+    { field: 'deptStatus', title: 'Status', slots: { default: 'status' } },
     {
       field: 'action',
       fixed: 'right',
@@ -113,6 +114,9 @@ const deleteById = (row: RowType) => {
 <template>
   <Page>
     <Grid>
+      <template #status="{ row }">
+        <Dict dict-key="common_status" :value="row.deptStatus" />
+      </template>
       <template #toolbar-tools>
         <ElButton class="mr-2" bg text type="primary" @click="expandAll">
           Expand All

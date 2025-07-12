@@ -14,6 +14,8 @@ const props = defineProps<{
 
 const writeForm = ref<Record<string, any>>({});
 
+const dictId = ref('');
+
 const [Form, formApi] = useVbenForm({
   showDefaultActions: false,
   layout: 'horizontal',
@@ -61,11 +63,14 @@ const [Drawer, drawerApi] = useVbenDrawer({
     formApi.validate().then(async (e) => {
       if (e.valid) {
         Object.assign(writeForm.value, await formApi.getValues());
+        writeForm.value.dictId = dictId.value;
         await (writeForm.value.id
           ? updateItem(writeForm.value)
           : createItem(writeForm.value));
         ElMessage.success('Saved successfully');
-        props.gridApi.reload();
+        props.gridApi.reload({
+          dictId: writeForm.value.dictId,
+        });
       } else {
         ElMessage.error('Validation failed');
       }
@@ -77,10 +82,11 @@ const [Drawer, drawerApi] = useVbenDrawer({
 const open = (row: any) => {
   if (row?.id) {
     writeForm.value = row;
-    drawerApi.setData(row);
+    formApi.setValues(row);
   } else {
     writeForm.value = {};
-    drawerApi.setData({});
+    dictId.value = row.dictId;
+    formApi.setValues({});
   }
   drawerApi.open();
 };
