@@ -4,6 +4,18 @@ export async function getDictPage(data: any) {
   return requestClient.post('/sys/dict/index', data);
 }
 
+export async function getItemLabelByDictCodeAndValue(
+  code: string,
+  value: number,
+) {
+  return requestClient.post('/sys/dict/getItemLabel', null, {
+    params: {
+      dictCode: code,
+      itemValue: value,
+    },
+  });
+}
+
 export async function createDict(data: any) {
   return requestClient.post('/sys/dict/create', data);
 }
