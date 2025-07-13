@@ -6,7 +6,7 @@ import { confirm, useVbenModal } from '@vben/common-ui';
 import { ElButton, ElMessage } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getRecyclePage, wipeUserById } from '#/api/sys/user';
+import { getRecyclePage, restoreUser, wipeUserById } from '#/api/sys/user';
 
 const props = defineProps<{
   gridApi: any;
@@ -77,12 +77,21 @@ const [Grid, localGridApi] = useVbenVxeGrid({
   gridOptions,
 });
 
-const wipeById = (row: RowType) => {
+const wipeUsers = (row?: RowType) => {
+  const ids: string[] = row
+    ? [row.id]
+    : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
+
+  if (ids.length === 0) {
+    ElMessage.warning('Please select at least one record to delete');
+    return;
+  }
+
   confirm({
     content: 'Confirm deletion?',
     icon: 'error',
   }).then(async () => {
-    await wipeUserById([row.id])
+    await wipeUserById(ids)
       .then(async () => {
         await localGridApi.reload();
         ElMessage.success('Deletion successful');
@@ -91,6 +100,31 @@ const wipeById = (row: RowType) => {
       .catch(() => {
         ElMessage.error('Deletion failed');
       });
+  });
+};
+
+const restoreUsers = (row?: RowType) => {
+  const ids: string[] = row
+    ? [row.id]
+    : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
+
+  if (ids.length === 0) {
+    ElMessage.warning('Please select at least one record to restore');
+    return;
+  }
+
+  confirm({
+    content: `Are you sure you want to restore ${ids.length} ${ids.length === 1 ? 'record' : 'records'}?`,
+    icon: 'error',
+  }).then(async () => {
+    try {
+      await restoreUser(ids);
+      await localGridApi.reload();
+      await props.gridApi.reload();
+      ElMessage.success('restored successfully');
+    } catch {
+      ElMessage.error('Failed to restore');
+    }
   });
 };
 
@@ -114,11 +148,18 @@ defineExpose({ open, close });
   <Modal class="w-[70%]" title="Data Recycle">
     <Grid>
       <template #toolbar-actions>
-        <ElButton class="mr-2" bg text type="danger"> Wipe </ElButton>
+        <ElButton class="mr-2" bg text type="success" @click="restoreUsers()">
+          Restore
+        </ElButton>
+        <ElButton class="mr-2" bg text type="danger" @click="wipeUsers()">
+          Wipe
+        </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="success" link> restore </ElButton>
-        <ElButton type="danger" link @click="wipeById(row)"> wipe </ElButton>
+        <ElButton type="success" link @click="restoreUsers(row)">
+          restore
+        </ElButton>
+        <ElButton type="danger" link @click="wipeUsers(row)"> wipe </ElButton>
       </template>
     </Grid>
   </Modal>

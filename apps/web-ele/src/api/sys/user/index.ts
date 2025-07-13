@@ -24,6 +24,14 @@ export async function delUserById(ids: string[]) {
   });
 }
 
+export async function restoreUser(ids: string[]) {
+  return requestClient.post('/sys/user/restore', null, {
+    params: {
+      ids,
+    },
+  });
+}
+
 export async function wipeUserById(data: any) {
   return requestClient.delete('/sys/user/wipe', {
     params: {
