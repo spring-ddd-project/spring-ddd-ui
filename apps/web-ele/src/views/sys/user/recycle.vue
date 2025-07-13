@@ -28,7 +28,7 @@ const gridOptions: VxeGridProps<RowType> = {
     highlight: true,
   },
   columns: [
-    { title: '序号', type: 'seq', width: 50 },
+    { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
     { field: 'username', title: 'User Name', align: 'left' },
     { field: 'phone', title: 'phone' },

@@ -13,9 +13,11 @@ import { delDictById, getDictPage } from '#/api/sys/dict';
 
 import DictForm from './form.vue';
 import ItemIndex from './item/index.vue';
+import RecycleForm from './recycle.vue';
 
 const dictFormRef = ref();
 const itemIndexRef = ref();
+const recycleFormRef = ref();
 
 interface RowType {
   id: string;
@@ -29,7 +31,7 @@ const gridOptions: VxeGridProps<RowType> = {
     highlight: true,
   },
   columns: [
-    { title: '序号', type: 'seq', width: 50 },
+    { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
     {
       field: 'dictName',
@@ -85,6 +87,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions,
 });
 
+const openRecycleForm = () => {
+  recycleFormRef.value?.open();
+};
+
 const openForm = () => {
   dictFormRef.value?.open();
 };
@@ -135,6 +141,9 @@ const deleteByIds = (row?: RowType) => {
         <ElButton class="mr-2" bg text type="danger" @click="deleteByIds()">
           Delete
         </ElButton>
+        <ElButton class="mr-2" bg text type="info" @click="openRecycleForm()">
+          Recycle
+        </ElButton>
       </template>
       <template #action="{ row }">
         <ElButton type="success" link @click="openItemRow(row)">
@@ -148,5 +157,6 @@ const deleteByIds = (row?: RowType) => {
     </Grid>
     <DictForm ref="dictFormRef" :grid-api="gridApi" />
     <ItemIndex ref="itemIndexRef" />
+    <RecycleForm ref="recycleFormRef" :grid-api="gridApi" />
   </Page>
 </template>

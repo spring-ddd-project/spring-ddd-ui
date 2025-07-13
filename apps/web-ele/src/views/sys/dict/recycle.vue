@@ -9,7 +9,11 @@ import { ElButton, ElMessage } from 'element-plus';
 
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getDictPage, restoreDictById, wipeDictById } from '#/api/sys/dict';
+import {
+  getDictRecyclePage,
+  restoreDictById,
+  wipeDictById,
+} from '#/api/sys/dict';
 
 import DictForm from './form.vue';
 import ItemIndex from './item/index.vue';
@@ -32,7 +36,7 @@ const gridOptions: VxeGridProps<RowType> = {
     highlight: true,
   },
   columns: [
-    { title: '序号', type: 'seq', width: 50 },
+    { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
     {
       field: 'dictName',
@@ -62,7 +66,7 @@ const gridOptions: VxeGridProps<RowType> = {
   proxyConfig: {
     ajax: {
       query: async ({ page }) => {
-        return await getDictPage({
+        return await getDictRecyclePage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
         });
@@ -174,7 +178,7 @@ defineExpose({ open, close });
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="primary" link @click="restoreDictByIds(row)">
+        <ElButton type="success" link @click="restoreDictByIds(row)">
           restore
         </ElButton>
         <ElButton type="danger" link @click="deleteByIds(row)">
