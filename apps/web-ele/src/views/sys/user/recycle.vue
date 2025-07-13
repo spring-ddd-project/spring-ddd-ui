@@ -5,6 +5,7 @@ import { confirm, useVbenModal } from '@vben/common-ui';
 
 import { ElButton, ElMessage } from 'element-plus';
 
+import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getRecyclePage, restoreUser, wipeUserById } from '#/api/sys/user';
 
@@ -33,7 +34,7 @@ const gridOptions: VxeGridProps<RowType> = {
     { field: 'phone', title: 'phone' },
     { field: 'avatar', title: 'avatar' },
     { field: 'email', title: 'email' },
-    { field: 'sex', title: 'sex' },
+    { field: 'sex', title: 'sex', slots: { default: 'sex' } },
     { field: 'lockStatus', title: 'Lock Status' },
     {
       field: 'action',
@@ -147,6 +148,9 @@ defineExpose({ open, close });
 <template>
   <Modal class="w-[70%]" title="Data Recycle">
     <Grid>
+      <template #sex="{ row }">
+        <Dict dict-key="sex_type" :value="row.sex" />
+      </template>
       <template #toolbar-actions>
         <ElButton class="mr-2" bg text type="success" @click="restoreUsers()">
           Restore

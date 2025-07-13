@@ -128,8 +128,7 @@ const deleteByIds = (row?: RowType) => {
   <Page>
     <Grid>
       <template #sex="{ row }">
-        <ElTag type="warning" v-if="row.sex"> Male </ElTag>
-        <ElTag type="primary" v-if="!row.sex"> Female </ElTag>
+        <Dict dict-key="sex_type" :value="row.sex" />
       </template>
       <template #lockStatus="{ row }">
         <Dict dict-key="common_status" :value="row.lockStatus" />
