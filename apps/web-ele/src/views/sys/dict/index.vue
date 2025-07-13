@@ -5,7 +5,7 @@ import { ref } from 'vue';
 
 import { confirm, Page } from '@vben/common-ui';
 
-import { ElButton, ElMessage, ElTag } from 'element-plus';
+import { ElButton, ElMessage } from 'element-plus';
 
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -97,21 +97,27 @@ const openItemRow = (row: RowType) => {
   itemIndexRef.value?.open(row);
 };
 
-const deleteById = (row: RowType) => {
+const deleteByIds = (row?: RowType) => {
+  const ids: string[] = row
+    ? [row.id]
+    : gridApi.grid.getCheckboxRecords().map((item) => item.id);
+
+  if (ids.length === 0) {
+    ElMessage.warning('Please select at least one item to delete');
+    return;
+  }
+
   confirm({
-    content: 'Confirm deletion?',
+    content: `Confirm deletion of ${ids.length} record(s)?`,
     icon: 'error',
   }).then(async () => {
-    await delDictById({
-      id: row.id,
-    })
-      .then(async () => {
-        await gridApi.reload();
-        ElMessage.success('Deletion successful');
-      })
-      .catch(() => {
-        ElMessage.error('Deletion failed');
-      });
+    try {
+      await delDictById(ids);
+      await gridApi.reload();
+      ElMessage.success('Deletion successful');
+    } catch {
+      ElMessage.error('Deletion failed');
+    }
   });
 };
 </script>
@@ -126,13 +132,16 @@ const deleteById = (row: RowType) => {
         <ElButton class="mr-2" bg text type="primary" @click="openForm">
           Add
         </ElButton>
+        <ElButton class="mr-2" bg text type="danger" @click="deleteByIds()">
+          Delete
+        </ElButton>
       </template>
       <template #action="{ row }">
         <ElButton type="success" link @click="openItemRow(row)">
           Item
         </ElButton>
         <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
-        <ElButton type="danger" link @click="deleteById(row)">
+        <ElButton type="danger" link @click="deleteByIds(row)">
           Delete
         </ElButton>
       </template>

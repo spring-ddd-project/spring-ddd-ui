@@ -25,7 +25,11 @@ export async function updateDict(data: any) {
 }
 
 export async function delDictById(data: any) {
-  return requestClient.post('/sys/dict/delete', data);
+  return requestClient.post('/sys/dict/delete', null, {
+    params: {
+      ids: data,
+    },
+  });
 }
 
 export async function getItemPage(data: any) {
