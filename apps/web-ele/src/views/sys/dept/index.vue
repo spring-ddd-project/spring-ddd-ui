@@ -31,6 +31,7 @@ const gridOptions: VxeGridProps<RowType> = {
       treeNode: true,
     },
     { field: 'deptStatus', title: 'Status', slots: { default: 'status' } },
+    { field: 'sortOrder', title: 'Order', sortable: true },
     {
       field: 'action',
       fixed: 'right',
@@ -50,6 +51,11 @@ const gridOptions: VxeGridProps<RowType> = {
         });
       },
     },
+  },
+  sortConfig: {
+    remote: false,
+    trigger: 'cell',
+    defaultSort: [{ field: 'sortOrder', order: 'asc' }],
   },
   pagerConfig: {
     enabled: false,

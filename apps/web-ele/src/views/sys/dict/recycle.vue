@@ -3,21 +3,26 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
 
-import { confirm, Page } from '@vben/common-ui';
+import { confirm, useVbenModal } from '@vben/common-ui';
 
 import { ElButton, ElMessage } from 'element-plus';
 
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { delDictById, getDictPage } from '#/api/sys/dict';
+import {
+  getDictRecyclePage,
+  restoreDictById,
+  wipeDictById,
+} from '#/api/sys/dict';
 
 import DictForm from './form.vue';
 import ItemIndex from './item/index.vue';
-import RecycleForm from './recycle.vue';
 
+const props = defineProps<{
+  gridApi: any;
+}>();
 const dictFormRef = ref();
 const itemIndexRef = ref();
-const recycleFormRef = ref();
 
 interface RowType {
   id: string;
@@ -61,7 +66,7 @@ const gridOptions: VxeGridProps<RowType> = {
   proxyConfig: {
     ajax: {
       query: async ({ page }) => {
-        return await getDictPage({
+        return await getDictRecyclePage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
         });
@@ -83,30 +88,14 @@ const gridOptions: VxeGridProps<RowType> = {
   },
 };
 
-const [Grid, gridApi] = useVbenVxeGrid({
+const [Grid, localGridApi] = useVbenVxeGrid({
   gridOptions,
 });
-
-const openRecycleForm = () => {
-  recycleFormRef.value?.open();
-};
-
-const openForm = () => {
-  dictFormRef.value?.open();
-};
-
-const editRow = (row: RowType) => {
-  dictFormRef.value?.open(row);
-};
-
-const openItemRow = (row: RowType) => {
-  itemIndexRef.value?.open(row);
-};
 
 const deleteByIds = (row?: RowType) => {
   const ids: string[] = row
     ? [row.id]
-    : gridApi.grid.getCheckboxRecords().map((item) => item.id);
+    : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
 
   if (ids.length === 0) {
     ElMessage.warning('Please select at least one item to delete');
@@ -118,38 +107,80 @@ const deleteByIds = (row?: RowType) => {
     icon: 'error',
   }).then(async () => {
     try {
-      await delDictById(ids);
-      await gridApi.reload();
+      await wipeDictById(ids);
+      await localGridApi.reload();
       ElMessage.success('Deletion successful');
     } catch {
       ElMessage.error('Deletion failed');
     }
   });
 };
+
+const restoreDictByIds = (row?: RowType) => {
+  const ids: string[] = row
+    ? [row.id]
+    : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
+
+  if (ids.length === 0) {
+    ElMessage.warning('Please select at least one record to restore');
+    return;
+  }
+
+  confirm({
+    content: `Are you sure you want to restore ${ids.length} ${ids.length === 1 ? 'record' : 'records'}?`,
+    icon: 'error',
+  }).then(async () => {
+    try {
+      await restoreDictById(ids);
+      await localGridApi.reload();
+      await props.gridApi.reload();
+      ElMessage.success('restored successfully');
+    } catch {
+      ElMessage.error('Failed to restore');
+    }
+  });
+};
+
+const [Modal, modalApi] = useVbenModal({
+  onClosed: () => {
+    modalApi.setData({ loading: false }).close();
+  },
+  showConfirmButton: false,
+  showCancelButton: false,
+});
+
+const open = () => {
+  modalApi.open();
+};
+const close = () => modalApi.close();
+
+defineExpose({ open, close });
 </script>
 
 <template>
-  <Page>
+  <Modal class="w-[70%]" title="Data Recycle">
     <Grid>
       <template #status="{ row }">
         <Dict dict-key="common_status" :value="row.dictStatus" />
       </template>
       <template #toolbar-actions>
-        <ElButton class="mr-2" bg text type="primary" @click="openForm">
-          Add
+        <ElButton
+          class="mr-2"
+          bg
+          text
+          type="success"
+          @click="restoreDictByIds()"
+        >
+          Restore
         </ElButton>
         <ElButton class="mr-2" bg text type="danger" @click="deleteByIds()">
-          Delete
-        </ElButton>
-        <ElButton class="mr-2" bg text type="info" @click="openRecycleForm()">
-          Recycle
+          Wipe
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="success" link @click="openItemRow(row)">
-          item
+        <ElButton type="success" link @click="restoreDictByIds(row)">
+          restore
         </ElButton>
-        <ElButton type="primary" link @click="editRow(row)"> edit </ElButton>
         <ElButton type="danger" link @click="deleteByIds(row)">
           delete
         </ElButton>
@@ -157,6 +188,5 @@ const deleteByIds = (row?: RowType) => {
     </Grid>
     <DictForm ref="dictFormRef" :grid-api="gridApi" />
     <ItemIndex ref="itemIndexRef" />
-    <RecycleForm ref="recycleFormRef" :grid-api="gridApi" />
-  </Page>
+  </Modal>
 </template>

@@ -31,6 +31,7 @@ const gridOptions: VxeGridProps<RowType> = {
     { field: 'permission', title: 'Permission' },
     { field: 'path', title: 'Path' },
     { field: 'menuType', title: 'Menu Type', slots: { default: 'menuType' } },
+    { field: 'meta.order', title: 'Order', sortable: true },
     {
       field: 'action',
       fixed: 'right',
@@ -50,6 +51,11 @@ const gridOptions: VxeGridProps<RowType> = {
         });
       },
     },
+  },
+  sortConfig: {
+    remote: false,
+    trigger: 'cell',
+    defaultSort: [{ field: 'meta.order', order: 'asc' }],
   },
   pagerConfig: {
     enabled: false,

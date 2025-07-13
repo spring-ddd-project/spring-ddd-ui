@@ -32,12 +32,11 @@ interface RowType {
 const gridOptions: VxeGridProps<RowType> = {
   checkboxConfig: {
     highlight: true,
-    labelField: 'name',
   },
   columns: [
-    { title: '序号', type: 'seq', width: 50 },
+    { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
-    { field: 'username', title: 'User Name', align: 'left', treeNode: true },
+    { field: 'username', title: 'User Name', align: 'left' },
     { field: 'phone', title: 'phone' },
     { field: 'avatar', title: 'avatar' },
     { field: 'email', title: 'email' },
@@ -71,11 +70,6 @@ const gridOptions: VxeGridProps<RowType> = {
     mode: 'row',
     trigger: 'click',
   },
-  treeConfig: {
-    parentField: 'parentId',
-    rowField: 'id',
-    transform: true,
-  },
   toolbarConfig: {
     custom: true,
     export: true,
@@ -105,21 +99,27 @@ const linkRow = (row: RowType) => {
   linkFormRef.value?.open(row);
 };
 
-const deleteById = (row: RowType) => {
+const deleteByIds = (row?: RowType) => {
+  const ids: string[] = row
+    ? [row.id]
+    : gridApi.grid.getCheckboxRecords().map((item) => item.id);
+
+  if (ids.length === 0) {
+    ElMessage.warning('Please select at least one item to delete');
+    return;
+  }
+
   confirm({
-    content: 'Confirm deletion?',
+    content: `Confirm deletion of ${ids.length} record(s)?`,
     icon: 'error',
   }).then(async () => {
-    await delUserById({
-      id: row.id,
-    })
-      .then(async () => {
-        await gridApi.reload();
-        ElMessage.success('Deletion successful');
-      })
-      .catch(() => {
-        ElMessage.error('Deletion failed');
-      });
+    try {
+      await delUserById(ids);
+      await gridApi.reload();
+      ElMessage.success('Deletion successful');
+    } catch {
+      ElMessage.error('Deletion failed');
+    }
   });
 };
 </script>
@@ -128,8 +128,7 @@ const deleteById = (row: RowType) => {
   <Page>
     <Grid>
       <template #sex="{ row }">
-        <ElTag type="warning" v-if="row.sex"> Male </ElTag>
-        <ElTag type="primary" v-if="!row.sex"> Female </ElTag>
+        <Dict dict-key="sex_type" :value="row.sex" />
       </template>
       <template #lockStatus="{ row }">
         <Dict dict-key="common_status" :value="row.lockStatus" />
@@ -138,14 +137,17 @@ const deleteById = (row: RowType) => {
         <ElButton class="mr-2" bg text type="primary" @click="openForm">
           Add
         </ElButton>
-        <ElButton class="mr-2" bg text type="danger" @click="openRecycleForm">
+        <ElButton class="mr-2" bg text type="danger" @click="deleteByIds()">
+          Delete
+        </ElButton>
+        <ElButton class="mr-2" bg text type="info" @click="openRecycleForm">
           Recycle
         </ElButton>
       </template>
       <template #action="{ row }">
         <ElButton type="success" link @click="linkRow(row)"> Roles </ElButton>
         <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
-        <ElButton type="danger" link @click="deleteById(row)">
+        <ElButton type="danger" link @click="deleteByIds(row)">
           Delete
         </ElButton>
       </template>
