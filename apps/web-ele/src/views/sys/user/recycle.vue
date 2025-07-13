@@ -25,12 +25,11 @@ interface RowType {
 const gridOptions: VxeGridProps<RowType> = {
   checkboxConfig: {
     highlight: true,
-    labelField: 'name',
   },
   columns: [
     { title: '序号', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
-    { field: 'username', title: 'User Name', align: 'left', treeNode: true },
+    { field: 'username', title: 'User Name', align: 'left' },
     { field: 'phone', title: 'phone' },
     { field: 'avatar', title: 'avatar' },
     { field: 'email', title: 'email' },

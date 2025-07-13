@@ -16,8 +16,12 @@ export async function updateUser(data: any) {
   return requestClient.put('/sys/user/update', data);
 }
 
-export async function delUserById(data: any) {
-  return requestClient.post('/sys/user/delete', data);
+export async function delUserById(ids: string[]) {
+  return requestClient.post('/sys/user/delete', null, {
+    params: {
+      ids,
+    },
+  });
 }
 
 export async function wipeUserById(data: any) {
