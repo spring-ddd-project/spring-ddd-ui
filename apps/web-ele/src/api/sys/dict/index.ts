@@ -4,6 +4,10 @@ export async function getDictPage(data: any) {
   return requestClient.post('/sys/dict/index', data);
 }
 
+export async function getDictRecyclePage(data: any) {
+  return requestClient.post('/sys/dict/recycle', data);
+}
+
 export async function getItemLabelByDictCodeAndValue(
   code: string,
   value: number,
@@ -26,6 +30,22 @@ export async function updateDict(data: any) {
 
 export async function delDictById(data: any) {
   return requestClient.post('/sys/dict/delete', null, {
+    params: {
+      ids: data,
+    },
+  });
+}
+
+export async function restoreDictById(data: any) {
+  return requestClient.post('/sys/dict/restore', null, {
+    params: {
+      ids: data,
+    },
+  });
+}
+
+export async function wipeDictById(data: any) {
+  return requestClient.delete('/sys/dict/wipe', {
     params: {
       ids: data,
     },
