@@ -26,6 +26,8 @@ interface RowType {
 
 const gridOptions: VxeGridProps<RowType> = {
   columns: [
+    { title: 'No.', type: 'seq', width: 50 },
+    { align: 'left', title: '#', type: 'checkbox', width: 50 },
     { field: 'name', title: 'Menu Name', align: 'left', treeNode: true },
     { field: 'component', title: 'Component' },
     { field: 'permission', title: 'Permission' },
@@ -98,21 +100,27 @@ const collapseAll = () => {
   gridApi.grid?.setAllTreeExpand(false);
 };
 
-const deleteById = (row: RowType) => {
+const deleteById = (row?: RowType) => {
+  const ids: string[] = row
+    ? [row.id]
+    : gridApi.grid.getCheckboxRecords().map((item) => item.id);
+
+  if (ids.length === 0) {
+    ElMessage.warning('Please select at least one item to delete');
+    return;
+  }
+
   confirm({
-    content: 'Confirm deletion?',
+    content: `Confirm deletion of ${ids.length} record(s)?`,
     icon: 'error',
   }).then(async () => {
-    await delById({
-      id: row.id,
-    })
-      .then(async () => {
-        await gridApi.reload();
-        ElMessage.success('Deletion successful');
-      })
-      .catch(() => {
-        ElMessage.error('Deletion failed');
-      });
+    try {
+      await delById(ids);
+      await gridApi.reload();
+      ElMessage.success('Deletion successful');
+    } catch {
+      ElMessage.error('Deletion failed');
+    }
   });
 };
 </script>
@@ -134,6 +142,9 @@ const deleteById = (row: RowType) => {
       <template #toolbar-actions>
         <ElButton class="mr-2" bg text type="primary" @click="openForm">
           Add
+        </ElButton>
+        <ElButton class="mr-2" bg text type="danger" @click="deleteById()">
+          Delete
         </ElButton>
       </template>
       <template #action="{ row }">

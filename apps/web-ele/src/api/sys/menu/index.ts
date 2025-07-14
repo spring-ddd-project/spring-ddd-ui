@@ -21,5 +21,9 @@ export async function getMenuTreeWithPermission() {
 }
 
 export async function delById(data: any) {
-  return requestClient.post('/sys/menu/delete', data);
+  return requestClient.post('/sys/menu/delete', null, {
+    params: {
+      ids: data,
+    },
+  });
 }
