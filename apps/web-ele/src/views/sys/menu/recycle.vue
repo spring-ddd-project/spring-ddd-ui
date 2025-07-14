@@ -3,19 +3,21 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
 
-import { confirm, Page } from '@vben/common-ui';
+import { confirm, useVbenModal } from '@vben/common-ui';
 
 import { ElButton, ElMessage } from 'element-plus';
 
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { delById, getMenusPage } from '#/api/sys/menu';
+import { getMenusRecyclePage, restoreById, wipeById } from '#/api/sys/menu';
 
 import MenuForm from './form.vue';
-import RecycleForm from './recycle.vue';
+
+const props = defineProps<{
+  gridApi: any;
+}>();
 
 const menuFormRef = ref();
-const recycleFormRef = ref();
 
 interface RowType {
   id: string;
@@ -49,7 +51,7 @@ const gridOptions: VxeGridProps<RowType> = {
   proxyConfig: {
     ajax: {
       query: async ({ page }) => {
-        return await getMenusPage({
+        return await getMenusRecyclePage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
         });
@@ -82,34 +84,14 @@ const gridOptions: VxeGridProps<RowType> = {
   },
 };
 
-const [Grid, gridApi] = useVbenVxeGrid({
+const [Grid, localGridApi] = useVbenVxeGrid({
   gridOptions,
 });
 
-const openForm = () => {
-  menuFormRef.value?.open();
-};
-
-const openRecycleForm = () => {
-  recycleFormRef.value?.open();
-};
-
-const editRow = (row: RowType) => {
-  menuFormRef.value?.open(row);
-};
-
-const expandAll = () => {
-  gridApi.grid?.setAllTreeExpand(true);
-};
-
-const collapseAll = () => {
-  gridApi.grid?.setAllTreeExpand(false);
-};
-
-const deleteById = (row?: RowType) => {
+const wipeByIds = (row?: RowType) => {
   const ids: string[] = row
     ? [row.id]
-    : gridApi.grid.getCheckboxRecords().map((item) => item.id);
+    : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
 
   if (ids.length === 0) {
     ElMessage.warning('Please select at least one item to delete');
@@ -121,49 +103,77 @@ const deleteById = (row?: RowType) => {
     icon: 'error',
   }).then(async () => {
     try {
-      await delById(ids);
-      await gridApi.reload();
+      await wipeById(ids);
+      await localGridApi.reload();
       ElMessage.success('Deletion successful');
     } catch {
       ElMessage.error('Deletion failed');
     }
   });
 };
+
+const restoreByIds = (row?: RowType) => {
+  const ids: string[] = row
+    ? [row.id]
+    : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
+
+  if (ids.length === 0) {
+    ElMessage.warning('Please select at least one record to restore');
+    return;
+  }
+
+  confirm({
+    content: `Are you sure you want to restore ${ids.length} ${ids.length === 1 ? 'record' : 'records'}?`,
+    icon: 'error',
+  }).then(async () => {
+    try {
+      await restoreById(ids);
+      await localGridApi.reload();
+      await props.gridApi.reload();
+      ElMessage.success('restored successfully');
+    } catch {
+      ElMessage.error('Failed to restore');
+    }
+  });
+};
+
+const [Modal, modalApi] = useVbenModal({
+  onClosed: () => {
+    modalApi.setData({ loading: false }).close();
+  },
+  showConfirmButton: false,
+  showCancelButton: false,
+});
+
+const open = () => {
+  modalApi.open();
+};
+const close = () => modalApi.close();
+
+defineExpose({ open, close });
 </script>
 
 <template>
-  <Page>
+  <Modal class="w-[65%]" title="Data handling">
     <Grid>
       <template #menuType="{ row }">
         <Dict dict-key="menu_types" :value="row.menuType" />
       </template>
-      <template #toolbar-tools>
-        <ElButton class="mr-2" bg text type="primary" @click="expandAll">
-          Expand All
-        </ElButton>
-        <ElButton type="primary" bg text @click="collapseAll">
-          Collapse All
-        </ElButton>
-      </template>
       <template #toolbar-actions>
-        <ElButton class="mr-2" bg text type="primary" @click="openForm">
-          Add
+        <ElButton class="mr-2" bg text type="success" @click="restoreByIds()">
+          Restore
         </ElButton>
-        <ElButton class="mr-2" bg text type="danger" @click="deleteById()">
-          Delete
-        </ElButton>
-        <ElButton class="mr-2" bg text type="info" @click="openRecycleForm">
-          Recycle
+        <ElButton class="mr-2" bg text type="danger" @click="wipeByIds()">
+          Wipe
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="primary" link @click="editRow(row)"> edit </ElButton>
-        <ElButton type="danger" link @click="deleteById(row)">
-          delete
+        <ElButton type="success" link @click="restoreByIds(row)">
+          restore
         </ElButton>
+        <ElButton type="danger" link @click="wipeByIds(row)"> wipe </ElButton>
       </template>
     </Grid>
     <MenuForm ref="menuFormRef" :grid-api="gridApi" />
-    <RecycleForm ref="recycleFormRef" :grid-api="gridApi" />
-  </Page>
+  </Modal>
 </template>
