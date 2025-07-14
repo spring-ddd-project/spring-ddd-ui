@@ -56,6 +56,10 @@ export async function getItemPage(data: any) {
   return requestClient.post('/sys/dict/item/index', data);
 }
 
+export async function getItemRecyclePage(data: any) {
+  return requestClient.post('/sys/dict/item/recycle', data);
+}
+
 export async function createItem(data: any) {
   return requestClient.post('/sys/dict/item/create', data);
 }
@@ -65,5 +69,24 @@ export async function updateItem(data: any) {
 }
 
 export async function delItemById(data: any) {
-  return requestClient.post('/sys/dict/item/delete', data);
+  return requestClient.post('/sys/dict/item/delete', null, {
+    params: {
+      ids: data,
+    },
+  });
+}
+
+export async function restoreItemById(data: any) {
+  return requestClient.post('/sys/dict/item/restore', null, {
+    params: {
+      ids: data,
+    },
+  });
+}
+export async function wipeItemById(data: any) {
+  return requestClient.delete('/sys/dict/item/wipe', {
+    params: {
+      ids: data,
+    },
+  });
 }

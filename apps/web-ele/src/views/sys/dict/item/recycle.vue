@@ -1,8 +1,6 @@
 <script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
-import { ref } from 'vue';
-
 import { confirm, useVbenModal } from '@vben/common-ui';
 
 import { ElButton, ElMessage } from 'element-plus';
@@ -10,19 +8,14 @@ import { ElButton, ElMessage } from 'element-plus';
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  getDictRecyclePage,
-  restoreDictById,
-  wipeDictById,
+  getItemRecyclePage,
+  restoreItemById,
+  wipeItemById,
 } from '#/api/sys/dict';
-
-import DictForm from './form.vue';
-import ItemIndex from './item/index.vue';
 
 const props = defineProps<{
   gridApi: any;
 }>();
-const dictFormRef = ref();
-const itemIndexRef = ref();
 
 interface RowType {
   id: string;
@@ -39,26 +32,22 @@ const gridOptions: VxeGridProps<RowType> = {
     { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
     {
-      field: 'dictName',
-      title: 'Dictionary Name',
+      field: 'itemLabel',
+      title: 'Item Name',
       align: 'left',
     },
     {
-      field: 'dictCode',
-      title: 'Dictionary Code',
+      field: 'itemValue',
+      title: 'Item Value',
       align: 'left',
     },
-    {
-      field: 'dictStatus',
-      title: 'Status',
-      slots: { default: 'status' },
-    },
+    { field: 'itemStatus', title: 'Status', slots: { default: 'status' } },
     {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
       title: 'Operation',
-      width: 150,
+      width: 120,
     },
   ],
   exportConfig: {},
@@ -66,7 +55,7 @@ const gridOptions: VxeGridProps<RowType> = {
   proxyConfig: {
     ajax: {
       query: async ({ page }) => {
-        return await getDictRecyclePage({
+        return await getItemRecyclePage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
         });
@@ -107,7 +96,7 @@ const deleteByIds = (row?: RowType) => {
     icon: 'error',
   }).then(async () => {
     try {
-      await wipeDictById(ids);
+      await wipeItemById(ids);
       await localGridApi.reload();
       ElMessage.success('Deletion successful');
     } catch {
@@ -116,7 +105,7 @@ const deleteByIds = (row?: RowType) => {
   });
 };
 
-const restoreDictByIds = (row?: RowType) => {
+const restoreItemByIds = (row?: RowType) => {
   const ids: string[] = row
     ? [row.id]
     : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
@@ -131,7 +120,7 @@ const restoreDictByIds = (row?: RowType) => {
     icon: 'error',
   }).then(async () => {
     try {
-      await restoreDictById(ids);
+      await restoreItemById(ids);
       await localGridApi.reload();
       await props.gridApi.reload();
       ElMessage.success('restored successfully');
@@ -161,7 +150,7 @@ defineExpose({ open, close });
   <Modal class="w-[70%]" title="Data Recycle">
     <Grid>
       <template #status="{ row }">
-        <Dict dict-key="common_status" :value="row.dictStatus" />
+        <Dict dict-key="common_status" :value="row.itemStatus" />
       </template>
       <template #toolbar-actions>
         <ElButton
@@ -169,7 +158,7 @@ defineExpose({ open, close });
           bg
           text
           type="success"
-          @click="restoreDictByIds()"
+          @click="restoreItemByIds()"
         >
           Restore
         </ElButton>
@@ -178,13 +167,11 @@ defineExpose({ open, close });
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="success" link @click="restoreDictByIds(row)">
+        <ElButton type="success" link @click="restoreItemByIds(row)">
           restore
         </ElButton>
         <ElButton type="danger" link @click="deleteByIds(row)"> wipe </ElButton>
       </template>
     </Grid>
-    <DictForm ref="dictFormRef" :grid-api="gridApi" />
-    <ItemIndex ref="itemIndexRef" />
   </Modal>
 </template>

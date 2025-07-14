@@ -7,13 +7,15 @@ import { confirm, Page, useVbenModal } from '@vben/common-ui';
 
 import { ElButton, ElMessage } from 'element-plus';
 
+import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { delItemById, getItemPage } from '#/api/sys/dict';
 
 import ItemForm from './form.vue';
-import Dict from "#/adapter/component/Dict.vue";
+import ItemRecycleForm from './recycle.vue';
 
 const itemFormRef = ref();
+const itemRecycleFormRef = ref();
 
 const writeForm = ref<Record<string, any>>({});
 
@@ -30,7 +32,7 @@ const gridOptions: VxeGridProps<RowType> = {
     highlight: true,
   },
   columns: [
-    { title: '序号', type: 'seq', width: 50 },
+    { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
     {
       field: 'itemLabel',
@@ -90,25 +92,35 @@ const openForm = () => {
   itemFormRef.value?.open(writeForm.value);
 };
 
+const openRecycleForm = () => {
+  itemRecycleFormRef.value?.open();
+};
+
 const editRow = (row: RowType) => {
   itemFormRef.value?.open(row);
 };
 
-const deleteById = (row: RowType) => {
+const deleteByIds = (row?: RowType) => {
+  const ids: string[] = row
+    ? [row.id]
+    : gridApi.grid.getCheckboxRecords().map((item) => item.id);
+
+  if (ids.length === 0) {
+    ElMessage.warning('Please select at least one item to delete');
+    return;
+  }
+
   confirm({
-    content: 'Confirm deletion?',
+    content: `Confirm deletion of ${ids.length} record(s)?`,
     icon: 'error',
   }).then(async () => {
-    await delItemById({
-      id: row.id,
-    })
-      .then(async () => {
-        await gridApi.reload();
-        ElMessage.success('Deletion successful');
-      })
-      .catch(() => {
-        ElMessage.error('Deletion failed');
-      });
+    try {
+      await delItemById(ids);
+      await gridApi.reload();
+      ElMessage.success('Deletion successful');
+    } catch {
+      ElMessage.error('Deletion failed');
+    }
   });
 };
 
@@ -140,15 +152,22 @@ defineExpose({ open, close });
           <ElButton class="mr-2" bg text type="primary" @click="openForm">
             Add
           </ElButton>
+          <ElButton class="mr-2" bg text type="danger" @click="deleteByIds()">
+            Delete
+          </ElButton>
+          <ElButton class="mr-2" bg text type="info" @click="openRecycleForm()">
+            Recycle
+          </ElButton>
         </template>
         <template #action="{ row }">
-          <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
-          <ElButton type="danger" link @click="deleteById(row)">
-            Delete
+          <ElButton type="primary" link @click="editRow(row)"> edit </ElButton>
+          <ElButton type="danger" link @click="deleteByIds(row)">
+            delete
           </ElButton>
         </template>
       </Grid>
       <ItemForm ref="itemFormRef" :grid-api="gridApi" />
+      <ItemRecycleForm ref="itemRecycleFormRef" :grid-api="gridApi" />
     </Page>
   </Modal>
 </template>
