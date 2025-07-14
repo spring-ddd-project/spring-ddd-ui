@@ -5,7 +5,7 @@ import { ref } from 'vue';
 
 import { confirm, Page } from '@vben/common-ui';
 
-import { ElButton, ElMessage, ElTag } from 'element-plus';
+import { ElButton, ElMessage } from 'element-plus';
 
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -145,10 +145,10 @@ const deleteByIds = (row?: RowType) => {
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="success" link @click="linkRow(row)"> Roles </ElButton>
-        <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
+        <ElButton type="success" link @click="linkRow(row)"> roles </ElButton>
+        <ElButton type="primary" link @click="editRow(row)"> edit </ElButton>
         <ElButton type="danger" link @click="deleteByIds(row)">
-          Delete
+          delete
         </ElButton>
       </template>
     </Grid>

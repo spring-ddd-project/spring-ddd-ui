@@ -137,9 +137,9 @@ const deleteById = (row: RowType) => {
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
+        <ElButton type="primary" link @click="editRow(row)"> edit </ElButton>
         <ElButton type="danger" link @click="deleteById(row)">
-          Delete
+          delete
         </ElButton>
       </template>
     </Grid>

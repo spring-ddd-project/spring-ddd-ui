@@ -181,9 +181,7 @@ defineExpose({ open, close });
         <ElButton type="success" link @click="restoreDictByIds(row)">
           restore
         </ElButton>
-        <ElButton type="danger" link @click="deleteByIds(row)">
-          delete
-        </ElButton>
+        <ElButton type="danger" link @click="deleteByIds(row)"> wipe </ElButton>
       </template>
     </Grid>
     <DictForm ref="dictFormRef" :grid-api="gridApi" />
