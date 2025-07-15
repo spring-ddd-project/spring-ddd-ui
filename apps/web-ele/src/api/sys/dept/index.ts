@@ -17,5 +17,9 @@ export async function updateDept(data: any) {
 }
 
 export async function delDeptById(data: any) {
-  return requestClient.post('/sys/dept/delete', data);
+  return requestClient.post('/sys/dept/delete', null, {
+    params: {
+      ids: data,
+    },
+  });
 }

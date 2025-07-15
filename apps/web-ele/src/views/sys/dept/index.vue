@@ -98,21 +98,27 @@ const collapseAll = () => {
   gridApi.grid?.setAllTreeExpand(false);
 };
 
-const deleteById = (row: RowType) => {
+const deleteById = (row?: RowType) => {
+  const ids: string[] = row
+    ? [row.id]
+    : gridApi.grid.getCheckboxRecords().map((item) => item.id);
+
+  if (ids.length === 0) {
+    ElMessage.warning('Please select at least one item to delete');
+    return;
+  }
+
   confirm({
-    content: 'Confirm deletion?',
+    content: `Confirm deletion of ${ids.length} record(s)?`,
     icon: 'error',
   }).then(async () => {
-    await delDeptById({
-      id: row.id,
-    })
-      .then(async () => {
-        await gridApi.reload();
-        ElMessage.success('Deletion successful');
-      })
-      .catch(() => {
-        ElMessage.error('Deletion failed');
-      });
+    try {
+      await delDeptById(ids);
+      await gridApi.reload();
+      ElMessage.success('Deletion successful');
+    } catch {
+      ElMessage.error('Deletion failed');
+    }
   });
 };
 </script>
@@ -137,9 +143,9 @@ const deleteById = (row: RowType) => {
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
+        <ElButton type="primary" link @click="editRow(row)"> edit </ElButton>
         <ElButton type="danger" link @click="deleteById(row)">
-          Delete
+          delete
         </ElButton>
       </template>
     </Grid>
