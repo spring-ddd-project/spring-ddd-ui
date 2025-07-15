@@ -1,21 +1,21 @@
 <script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
-import { ref } from 'vue';
-
-import { confirm, Page } from '@vben/common-ui';
+import { confirm, useVbenModal } from '@vben/common-ui';
 
 import { ElButton, ElMessage } from 'element-plus';
 
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { delDeptById, getDeptPage } from '#/api/sys/dept';
+import {
+  getDeptRecyclePage,
+  restoreDeptById,
+  wipeDeptById,
+} from '#/api/sys/dept';
 
-import DeptForm from './form.vue';
-import DeptRecycleForm from './recycle.vue';
-
-const deptFormRef = ref();
-const deptRecycleFormRef = ref();
+const props = defineProps<{
+  gridApi: any;
+}>();
 
 interface RowType {
   id: string;
@@ -49,7 +49,7 @@ const gridOptions: VxeGridProps<RowType> = {
   proxyConfig: {
     ajax: {
       query: async ({ page }) => {
-        return await getDeptPage({
+        return await getDeptRecyclePage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
         });
@@ -82,34 +82,14 @@ const gridOptions: VxeGridProps<RowType> = {
   },
 };
 
-const [Grid, gridApi] = useVbenVxeGrid({
+const [Grid, localGridApi] = useVbenVxeGrid({
   gridOptions,
 });
-
-const openForm = () => {
-  deptFormRef.value?.open();
-};
-
-const openRecycleForm = () => {
-  deptRecycleFormRef.value?.open();
-};
-
-const editRow = (row: RowType) => {
-  deptFormRef.value?.open(row);
-};
-
-const expandAll = () => {
-  gridApi.grid?.setAllTreeExpand(true);
-};
-
-const collapseAll = () => {
-  gridApi.grid?.setAllTreeExpand(false);
-};
 
 const deleteById = (row?: RowType) => {
   const ids: string[] = row
     ? [row.id]
-    : gridApi.grid.getCheckboxRecords().map((item) => item.id);
+    : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
 
   if (ids.length === 0) {
     ElMessage.warning('Please select at least one item to delete');
@@ -121,49 +101,82 @@ const deleteById = (row?: RowType) => {
     icon: 'error',
   }).then(async () => {
     try {
-      await delDeptById(ids);
-      await gridApi.reload();
+      await wipeDeptById(ids);
+      await localGridApi.reload();
       ElMessage.success('Deletion successful');
     } catch {
       ElMessage.error('Deletion failed');
     }
   });
 };
+
+const restoreDeptByIds = (row?: RowType) => {
+  const ids: string[] = row
+    ? [row.id]
+    : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
+
+  if (ids.length === 0) {
+    ElMessage.warning('Please select at least one record to restore');
+    return;
+  }
+
+  confirm({
+    content: `Are you sure you want to restore ${ids.length} ${ids.length === 1 ? 'record' : 'records'}?`,
+    icon: 'error',
+  }).then(async () => {
+    try {
+      await restoreDeptById(ids);
+      await localGridApi.reload();
+      await props.gridApi.reload();
+      ElMessage.success('restored successfully');
+    } catch {
+      ElMessage.error('Failed to restore');
+    }
+  });
+};
+
+const [Modal, modalApi] = useVbenModal({
+  onClosed: () => {
+    modalApi.setData({ loading: false }).close();
+  },
+  showConfirmButton: false,
+  showCancelButton: false,
+});
+
+const open = () => {
+  modalApi.open();
+};
+const close = () => modalApi.close();
+
+defineExpose({ open, close });
 </script>
 
 <template>
-  <Page>
+  <Modal class="w-[70%]" title="Data Recycle">
     <Grid>
       <template #status="{ row }">
         <Dict dict-key="common_status" :value="row.deptStatus" />
       </template>
-      <template #toolbar-tools>
-        <ElButton class="mr-2" bg text type="primary" @click="expandAll">
-          Expand All
-        </ElButton>
-        <ElButton type="primary" bg text @click="collapseAll">
-          Collapse All
-        </ElButton>
-      </template>
       <template #toolbar-actions>
-        <ElButton class="mr-2" bg text type="primary" @click="openForm">
-          Add
+        <ElButton
+          class="mr-2"
+          bg
+          text
+          type="success"
+          @click="restoreDeptByIds()"
+        >
+          Restore
         </ElButton>
         <ElButton class="mr-2" bg text type="danger" @click="deleteById()">
-          Delete
-        </ElButton>
-        <ElButton class="mr-2" bg text type="info" @click="openRecycleForm">
-          Recycle
+          Wipe
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="primary" link @click="editRow(row)"> edit </ElButton>
-        <ElButton type="danger" link @click="deleteById(row)">
-          delete
+        <ElButton type="primary" link @click="restoreDeptByIds(row)">
+          restore
         </ElButton>
+        <ElButton type="danger" link @click="deleteById(row)"> wipe </ElButton>
       </template>
     </Grid>
-    <DeptForm ref="deptFormRef" :grid-api="gridApi" />
-    <DeptRecycleForm ref="deptRecycleFormRef" :grid-api="gridApi" />
-  </Page>
+  </Modal>
 </template>
