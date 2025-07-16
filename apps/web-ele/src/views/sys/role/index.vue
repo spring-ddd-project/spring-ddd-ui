@@ -134,22 +134,24 @@ const deleteByIds = (row?: RowType) => {
       </template>
       <template #toolbar-actions>
         <ElButton class="mr-2" bg text type="primary" @click="openForm">
-          Add
+          {{ $t('system.common.button.add') }}
         </ElButton>
         <ElButton class="mr-2" bg text type="danger" @click="deleteByIds()">
-          Delete
+          {{ $t('system.common.button.delete') }}
         </ElButton>
         <ElButton class="mr-2" bg text type="info" @click="openRecycleForm">
-          Recycle
+          {{ $t('system.common.button.recycle') }}
         </ElButton>
       </template>
       <template #action="{ row }">
         <ElButton type="success" link @click="linkForm(row)">
-          permissions
+          {{ $t('system.common.button.permissions') }}
         </ElButton>
-        <ElButton type="primary" link @click="editRow(row)"> edit </ElButton>
+        <ElButton type="primary" link @click="editRow(row)">
+          {{ $t('system.common.button.edit') }}
+        </ElButton>
         <ElButton type="danger" link @click="deleteByIds(row)">
-          delete
+          {{ $t('system.common.button.delete') }}
         </ElButton>
       </template>
     </Grid>

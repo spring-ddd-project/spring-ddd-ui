@@ -105,6 +105,8 @@ const [Modal, modalApi] = useVbenModal({
       await modalApi.setState({ loading: false }).close();
     });
   },
+  confirmText: $t('system.common.button.confirm'),
+  cancelText: $t('system.common.button.cancel'),
 });
 
 const open = (row: any) => {
@@ -122,7 +124,7 @@ defineExpose({ open, close });
 </script>
 
 <template>
-  <Modal class="w-[40%]" title="Data handling">
+  <Modal class="w-[40%]" :title="$t('system.common.alert.form')">
     <Form style="width: auto" />
   </Modal>
 </template>

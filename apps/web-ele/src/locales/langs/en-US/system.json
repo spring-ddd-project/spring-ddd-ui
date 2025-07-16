@@ -38,7 +38,24 @@
     },
     "validation": {
       "error": "Validation failed"
+    },
+    "button": {
+      "add": "Add",
+      "edit": "Edit",
+      "delete": "Delete",
+      "restore": "Restore",
+      "wipe": "Wipe",
+      "recycle": "Recycle",
+      "permissions": "Permissions",
+      "roles": "Roles",
+      "confirm": "Confirm",
+      "cancel": "Cancel"
+    },
+    "alert": {
+      "form": "Data handling",
+      "permissions": "Granting Permission"
     }
+
   }
 
 }

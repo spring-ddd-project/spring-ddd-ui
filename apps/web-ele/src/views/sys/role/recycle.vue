@@ -162,17 +162,19 @@ defineExpose({ open, close });
           type="success"
           @click="restoreRoleByIds()"
         >
-          Restore
+          {{ $t('system.common.button.restore') }}
         </ElButton>
         <ElButton class="mr-2" bg text type="danger" @click="deleteByIds()">
-          Wipe
+          {{ $t('system.common.button.wipe') }}
         </ElButton>
       </template>
       <template #action="{ row }">
         <ElButton type="success" link @click="restoreRoleByIds(row)">
-          restore
+          {{ $t('system.common.button.restore') }}
         </ElButton>
-        <ElButton type="danger" link @click="deleteByIds(row)"> wipe </ElButton>
+        <ElButton type="danger" link @click="deleteByIds(row)">
+          {{ $t('system.common.button.wipe') }}
+        </ElButton>
       </template>
     </Grid>
   </Modal>
