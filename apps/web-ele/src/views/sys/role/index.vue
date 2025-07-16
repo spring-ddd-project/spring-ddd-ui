@@ -89,21 +89,27 @@ const editRow = (row: RowType) => {
   roleFormRef.value?.open(row);
 };
 
-const deleteById = (row: RowType) => {
+const deleteByIds = (row?: RowType) => {
+  const ids: string[] = row
+    ? [row.id]
+    : gridApi.grid.getCheckboxRecords().map((item) => item.id);
+
+  if (ids.length === 0) {
+    ElMessage.warning('Please select at least one item to delete');
+    return;
+  }
+
   confirm({
     content: 'Confirm deletion?',
     icon: 'error',
   }).then(async () => {
-    await delRoleById({
-      id: row.id,
-    })
-      .then(async () => {
-        await gridApi.reload();
-        ElMessage.success('Deletion successful');
-      })
-      .catch(() => {
-        ElMessage.error('Deletion failed');
-      });
+    try {
+      await delRoleById(ids);
+      await gridApi.reload();
+      ElMessage.success('Deletion successful');
+    } catch {
+      ElMessage.error('Deletion failed');
+    }
   });
 };
 </script>
@@ -121,14 +127,17 @@ const deleteById = (row: RowType) => {
         <ElButton class="mr-2" bg text type="primary" @click="openForm">
           Add
         </ElButton>
+        <ElButton class="mr-2" bg text type="danger" @click="deleteByIds()">
+          Delete
+        </ElButton>
       </template>
       <template #action="{ row }">
         <ElButton type="success" link @click="linkForm(row)">
-          Permissions
+          permissions
         </ElButton>
-        <ElButton type="primary" link @click="editRow(row)"> Edit </ElButton>
-        <ElButton type="danger" link @click="deleteById(row)">
-          Delete
+        <ElButton type="primary" link @click="editRow(row)"> edit </ElButton>
+        <ElButton type="danger" link @click="deleteByIds(row)">
+          delete
         </ElButton>
       </template>
     </Grid>
