@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
+import { $t } from '@vben/locales';
 
 import { ElMessage } from 'element-plus';
 
@@ -59,7 +60,6 @@ const [Form, formApi] = useVbenForm({
             value: 2,
           },
         ],
-        placeholder: 'Please select the data access scope',
         showSearch: true,
       },
       fieldName: 'dataScope',
@@ -97,10 +97,10 @@ const [Modal, modalApi] = useVbenModal({
         await (writeForm.value.id
           ? updateRole(writeForm.value)
           : createRole(writeForm.value));
-        ElMessage.success('Saved successfully');
+        ElMessage.success($t('system.common.save.success'));
         props.gridApi.reload();
       } else {
-        ElMessage.error('Validation failed');
+        ElMessage.error($t('system.common.validation.error'));
       }
       await modalApi.setState({ loading: false }).close();
     });

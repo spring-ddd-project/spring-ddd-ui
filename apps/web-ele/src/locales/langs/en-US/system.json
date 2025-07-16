@@ -18,5 +18,27 @@
     "item": {
       "title": "Item Management"
     }
+  },
+  "common": {
+    "delete": {
+      "warning": "Please select at least one item to delete",
+      "confirm": "Are you sure you want to delete?",
+      "success": "Deleted successfully",
+      "error": "Failed to delete"
+    },
+    "restore": {
+      "warning": "Please select at least one item to restore",
+      "confirm": "Are you sure you want to restore?",
+      "success": "Restored successfully",
+      "error": "Failed to restore"
+    },
+    "save": {
+      "success": "Saved successfully",
+      "error": "Failed to save"
+    },
+    "validation": {
+      "error": "Validation failed"
+    }
   }
+
 }

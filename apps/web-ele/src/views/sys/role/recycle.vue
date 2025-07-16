@@ -1,9 +1,8 @@
 <script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
-import { ref } from 'vue';
-
 import { confirm, useVbenModal } from '@vben/common-ui';
+import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage } from 'element-plus';
 
@@ -87,20 +86,20 @@ const deleteByIds = (row?: RowType) => {
     : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
 
   if (ids.length === 0) {
-    ElMessage.warning('Please select at least one item to delete');
+    ElMessage.warning($t('system.common.delete.warning'));
     return;
   }
 
   confirm({
-    content: 'Confirm deletion?',
+    content: $t('system.common.delete.confirm'),
     icon: 'error',
   }).then(async () => {
     try {
       await wipeRoleById(ids);
       await localGridApi.reload();
-      ElMessage.success('Deletion successful');
+      ElMessage.success($t('system.common.delete.success'));
     } catch {
-      ElMessage.error('Deletion failed');
+      ElMessage.error($t('system.common.delete.error'));
     }
   });
 };
@@ -111,21 +110,21 @@ const restoreRoleByIds = (row?: RowType) => {
     : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
 
   if (ids.length === 0) {
-    ElMessage.warning('Please select at least one record to restore');
+    ElMessage.warning($t('system.common.restore.warning'));
     return;
   }
 
   confirm({
-    content: `Are you sure you want to restore ${ids.length} ${ids.length === 1 ? 'record' : 'records'}?`,
+    content: $t('system.common.restore.confirm'),
     icon: 'error',
   }).then(async () => {
     try {
       await restoreRoleById(ids);
       await localGridApi.reload();
       await props.gridApi.reload();
-      ElMessage.success('restored successfully');
+      ElMessage.success($t('system.common.restore.success'));
     } catch {
-      ElMessage.error('Failed to restore');
+      ElMessage.error($t('system.common.restore.error'));
     }
   });
 };

@@ -4,6 +4,7 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 import { ref } from 'vue';
 
 import { confirm, Page } from '@vben/common-ui';
+import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage } from 'element-plus';
 
@@ -103,20 +104,20 @@ const deleteByIds = (row?: RowType) => {
     : gridApi.grid.getCheckboxRecords().map((item) => item.id);
 
   if (ids.length === 0) {
-    ElMessage.warning('Please select at least one item to delete');
+    ElMessage.warning($t('system.common.delete.warning'));
     return;
   }
 
   confirm({
-    content: 'Confirm deletion?',
+    content: $t('system.common.delete.confirm'),
     icon: 'error',
   }).then(async () => {
     try {
       await delRoleById(ids);
       await gridApi.reload();
-      ElMessage.success('Deletion successful');
+      ElMessage.success($t('system.common.delete.success'));
     } catch {
-      ElMessage.error('Deletion failed');
+      ElMessage.error($t('system.common.delete.error'));
     }
   });
 };
