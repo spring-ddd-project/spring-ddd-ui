@@ -62,9 +62,9 @@ const [Form, formApi] = useVbenForm({
         placeholder: 'Please select the data access scope',
         showSearch: true,
       },
-      fieldName: 'roleScope',
+      fieldName: 'dataScope',
       defaultValue: 1,
-      label: 'Role Scope',
+      label: 'Data Scope',
       rules: 'required',
     },
     {

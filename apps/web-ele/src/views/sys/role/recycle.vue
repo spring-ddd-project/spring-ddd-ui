@@ -3,21 +3,21 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
 
-import { confirm, Page } from '@vben/common-ui';
+import { confirm, useVbenModal } from '@vben/common-ui';
 
 import { ElButton, ElMessage } from 'element-plus';
 
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { delRoleById, getRolePage } from '#/api/sys/role';
+import {
+  getRoleRecyclePage,
+  restoreRoleById,
+  wipeRoleById,
+} from '#/api/sys/role';
 
-import RoleForm from './form.vue';
-import GrantingPermissionsForm from './link.vue';
-import RoleRecycleForm from './recycle.vue';
-
-const roleFormRef = ref();
-const grantingPermissionsRef = ref();
-const roleRecycleRef = ref();
+const props = defineProps<{
+  gridApi: any;
+}>();
 
 interface RowType {
   id: string;
@@ -44,7 +44,7 @@ const gridOptions: VxeGridProps<RowType> = {
       fixed: 'right',
       slots: { default: 'action' },
       title: 'Operation',
-      width: 200,
+      width: 120,
     },
   ],
   exportConfig: {},
@@ -52,7 +52,7 @@ const gridOptions: VxeGridProps<RowType> = {
   proxyConfig: {
     ajax: {
       query: async ({ page }) => {
-        return await getRolePage({
+        return await getRoleRecyclePage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
         });
@@ -77,30 +77,14 @@ const gridOptions: VxeGridProps<RowType> = {
   },
 };
 
-const [Grid, gridApi] = useVbenVxeGrid({
+const [Grid, localGridApi] = useVbenVxeGrid({
   gridOptions,
 });
-
-const linkForm = (row: RowType) => {
-  grantingPermissionsRef.value?.open(row);
-};
-
-const openForm = () => {
-  roleFormRef.value?.open();
-};
-
-const openRecycleForm = () => {
-  roleRecycleRef.value?.open();
-};
-
-const editRow = (row: RowType) => {
-  roleFormRef.value?.open(row);
-};
 
 const deleteByIds = (row?: RowType) => {
   const ids: string[] = row
     ? [row.id]
-    : gridApi.grid.getCheckboxRecords().map((item) => item.id);
+    : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
 
   if (ids.length === 0) {
     ElMessage.warning('Please select at least one item to delete');
@@ -112,18 +96,58 @@ const deleteByIds = (row?: RowType) => {
     icon: 'error',
   }).then(async () => {
     try {
-      await delRoleById(ids);
-      await gridApi.reload();
+      await wipeRoleById(ids);
+      await localGridApi.reload();
       ElMessage.success('Deletion successful');
     } catch {
       ElMessage.error('Deletion failed');
     }
   });
 };
+
+const restoreRoleByIds = (row?: RowType) => {
+  const ids: string[] = row
+    ? [row.id]
+    : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
+
+  if (ids.length === 0) {
+    ElMessage.warning('Please select at least one record to restore');
+    return;
+  }
+
+  confirm({
+    content: `Are you sure you want to restore ${ids.length} ${ids.length === 1 ? 'record' : 'records'}?`,
+    icon: 'error',
+  }).then(async () => {
+    try {
+      await restoreRoleById(ids);
+      await localGridApi.reload();
+      await props.gridApi.reload();
+      ElMessage.success('restored successfully');
+    } catch {
+      ElMessage.error('Failed to restore');
+    }
+  });
+};
+
+const [Modal, modalApi] = useVbenModal({
+  onClosed: () => {
+    modalApi.setData({ loading: false }).close();
+  },
+  showConfirmButton: false,
+  showCancelButton: false,
+});
+
+const open = () => {
+  modalApi.open();
+};
+const close = () => modalApi.close();
+
+defineExpose({ open, close });
 </script>
 
 <template>
-  <Page>
+  <Modal class="w-[70%]" title="Data Recycle">
     <Grid>
       <template #owner="{ row }">
         <Dict dict-key="common_status" :value="row.ownerStatus" />
@@ -132,28 +156,25 @@ const deleteByIds = (row?: RowType) => {
         <Dict dict-key="common_status" :value="row.roleStatus" />
       </template>
       <template #toolbar-actions>
-        <ElButton class="mr-2" bg text type="primary" @click="openForm">
-          Add
+        <ElButton
+          class="mr-2"
+          bg
+          text
+          type="success"
+          @click="restoreRoleByIds()"
+        >
+          Restore
         </ElButton>
         <ElButton class="mr-2" bg text type="danger" @click="deleteByIds()">
-          Delete
-        </ElButton>
-        <ElButton class="mr-2" bg text type="info" @click="openRecycleForm">
-          Recycle
+          Wipe
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="success" link @click="linkForm(row)">
-          permissions
+        <ElButton type="success" link @click="restoreRoleByIds(row)">
+          restore
         </ElButton>
-        <ElButton type="primary" link @click="editRow(row)"> edit </ElButton>
-        <ElButton type="danger" link @click="deleteByIds(row)">
-          delete
-        </ElButton>
+        <ElButton type="danger" link @click="deleteByIds(row)"> wipe </ElButton>
       </template>
     </Grid>
-    <RoleForm ref="roleFormRef" :grid-api="gridApi" />
-    <RoleRecycleForm ref="roleRecycleRef" :grid-api="gridApi" />
-    <GrantingPermissionsForm ref="grantingPermissionsRef" />
-  </Page>
+  </Modal>
 </template>
