@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
+import { $t } from '@vben/locales';
 
 import { ElMessage } from 'element-plus';
 
@@ -59,12 +60,11 @@ const [Form, formApi] = useVbenForm({
             value: 2,
           },
         ],
-        placeholder: 'Please select the data access scope',
         showSearch: true,
       },
-      fieldName: 'roleScope',
+      fieldName: 'dataScope',
       defaultValue: 1,
-      label: 'Role Scope',
+      label: 'Data Scope',
       rules: 'required',
     },
     {
@@ -97,14 +97,16 @@ const [Modal, modalApi] = useVbenModal({
         await (writeForm.value.id
           ? updateRole(writeForm.value)
           : createRole(writeForm.value));
-        ElMessage.success('Saved successfully');
+        ElMessage.success($t('system.common.save.success'));
         props.gridApi.reload();
       } else {
-        ElMessage.error('Validation failed');
+        ElMessage.error($t('system.common.validation.error'));
       }
       await modalApi.setState({ loading: false }).close();
     });
   },
+  confirmText: $t('system.common.button.confirm'),
+  cancelText: $t('system.common.button.cancel'),
 });
 
 const open = (row: any) => {
@@ -122,7 +124,7 @@ defineExpose({ open, close });
 </script>
 
 <template>
-  <Modal class="w-[40%]" title="Data handling">
+  <Modal class="w-[40%]" :title="$t('system.common.alert.form')">
     <Form style="width: auto" />
   </Modal>
 </template>

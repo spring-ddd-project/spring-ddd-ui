@@ -5,6 +5,7 @@ import { ref } from 'vue';
 
 import { useVbenDrawer, useVbenForm, VbenTree } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
+import { $t } from '@vben/locales';
 
 import { ElMessage } from 'element-plus';
 
@@ -56,10 +57,10 @@ const [Drawer, drawerApi] = useVbenDrawer({
       menuIds: values.permissions,
     })
       .then(() => {
-        ElMessage.success('Saved successfully');
+        ElMessage.success($t('system.common.save.success'));
       })
       .catch((error: any) => {
-        ElMessage.error(error.message);
+        ElMessage.error(`${$t('system.common.save.error')}: ${error}`);
       })
       .finally(() => {
         drawerApi.setState({ loading: false }).close();
@@ -71,6 +72,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
     writeForm.value = {};
     drawerApi.setState({ loading: false }).close();
   },
+  confirmText: $t('system.common.button.confirm'),
+  cancelText: $t('system.common.button.cancel'),
 });
 
 const open = (row: any) => {
@@ -96,7 +99,7 @@ function getNodeClass(node: Recordable<any>) {
 </script>
 
 <template>
-  <Drawer class="w-[35%]" title="Granting Permission">
+  <Drawer class="w-[35%]" :title="$t('system.common.alert.permissions')">
     <Form>
       <template #permissions="slotProps">
         <VbenTree
