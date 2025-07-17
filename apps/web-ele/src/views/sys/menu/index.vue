@@ -48,10 +48,9 @@ const gridOptions: VxeGridProps<RowType> = {
   keepSource: true,
   proxyConfig: {
     ajax: {
-      query: async ({ page }) => {
+      query: async () => {
         return await getMenusPage({
-          pageNum: page.currentPage,
-          pageSize: page.pageSize,
+          page: false,
         });
       },
     },

@@ -172,7 +172,7 @@ defineExpose({ open, close });
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="primary" link @click="restoreDeptByIds(row)">
+        <ElButton type="success" link @click="restoreDeptByIds(row)">
           restore
         </ElButton>
         <ElButton type="danger" link @click="deleteById(row)"> wipe </ElButton>
