@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
+import { $t } from '@vben/locales';
 
 import { ElMessage } from 'element-plus';
 
@@ -237,14 +238,16 @@ const [Modal, modalApi] = useVbenModal({
         await (writeForm.value.id
           ? update(writeForm.value)
           : create(writeForm.value));
-        ElMessage.success('Saved successfully');
+        ElMessage.success($t('system.common.save.success'));
         props.gridApi.reload();
       } else {
-        ElMessage.error('Validation failed');
+        ElMessage.error($t('system.common.validation.error'));
       }
       await modalApi.setState({ loading: false }).close();
     });
   },
+  confirmText: $t('system.common.button.confirm'),
+  cancelText: $t('system.common.button.cancel'),
 });
 
 const open = (row: any) => {
@@ -263,7 +266,7 @@ defineExpose({ open, close });
 </script>
 
 <template>
-  <Modal class="w-[65%]" title="Data handling">
+  <Modal class="w-[65%]" :title="$t('system.common.alert.form')">
     <Form style="width: auto" />
   </Modal>
 </template>

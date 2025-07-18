@@ -146,7 +146,7 @@ defineExpose({ open, close });
 </script>
 
 <template>
-  <Modal class="w-[70%]" title="Data Recycle">
+  <Modal class="w-[70%]" :title="$t('system.common.alert.recycle')">
     <Grid>
       <template #owner="{ row }">
         <Dict dict-key="common_status" :value="row.ownerStatus" />

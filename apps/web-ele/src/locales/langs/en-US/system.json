@@ -49,11 +49,14 @@
       "permissions": "Permissions",
       "roles": "Roles",
       "confirm": "Confirm",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "expand": "Expand All",
+      "collapse": "Collapse All"
     },
     "alert": {
       "form": "Data handling",
-      "permissions": "Granting Permission"
+      "permissions": "Granting Permission",
+      "recycle": "Data Recycle"
     }
 
   }
