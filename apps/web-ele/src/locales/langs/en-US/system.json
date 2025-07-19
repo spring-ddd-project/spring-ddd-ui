@@ -51,7 +51,8 @@
       "confirm": "Confirm",
       "cancel": "Cancel",
       "expand": "Expand All",
-      "collapse": "Collapse All"
+      "collapse": "Collapse All",
+      "item": "Item"
     },
     "alert": {
       "form": "Data handling",
