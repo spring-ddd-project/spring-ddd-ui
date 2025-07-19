@@ -16,7 +16,8 @@
   "dict": {
     "title": "Dictionary Management",
     "item": {
-      "title": "Item Management"
+      "title": "Item Management",
+      "form": "Dictionary Item Data handling"
     }
   },
   "common": {
@@ -51,7 +52,8 @@
       "confirm": "Confirm",
       "cancel": "Cancel",
       "expand": "Expand All",
-      "collapse": "Collapse All"
+      "collapse": "Collapse All",
+      "item": "Item"
     },
     "alert": {
       "form": "Data handling",

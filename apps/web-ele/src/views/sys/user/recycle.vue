@@ -2,6 +2,7 @@
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
 import { confirm, useVbenModal } from '@vben/common-ui';
+import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage } from 'element-plus';
 
@@ -35,7 +36,11 @@ const gridOptions: VxeGridProps<RowType> = {
     { field: 'avatar', title: 'avatar' },
     { field: 'email', title: 'email' },
     { field: 'sex', title: 'sex', slots: { default: 'sex' } },
-    { field: 'lockStatus', title: 'Lock Status' },
+    {
+      field: 'lockStatus',
+      title: 'Lock Status',
+      slots: { default: 'lockStatus' },
+    },
     {
       field: 'action',
       fixed: 'right',
@@ -84,22 +89,22 @@ const wipeUsers = (row?: RowType) => {
     : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
 
   if (ids.length === 0) {
-    ElMessage.warning('Please select at least one record to delete');
+    ElMessage.warning($t('system.common.delete.warning'));
     return;
   }
 
   confirm({
-    content: 'Confirm deletion?',
+    content: $t('system.common.delete.confirm'),
     icon: 'error',
   }).then(async () => {
     await wipeUserById(ids)
       .then(async () => {
         await localGridApi.reload();
-        ElMessage.success('Deletion successful');
+        ElMessage.success($t('system.common.delete.success'));
         await props.gridApi.reload();
       })
       .catch(() => {
-        ElMessage.error('Deletion failed');
+        ElMessage.error($t('system.common.delete.error'));
       });
   });
 };
@@ -110,21 +115,21 @@ const restoreUsers = (row?: RowType) => {
     : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
 
   if (ids.length === 0) {
-    ElMessage.warning('Please select at least one record to restore');
+    ElMessage.warning($t('system.common.restore.warning'));
     return;
   }
 
   confirm({
-    content: `Are you sure you want to restore ${ids.length} ${ids.length === 1 ? 'record' : 'records'}?`,
+    content: $t('system.common.restore.confirm'),
     icon: 'error',
   }).then(async () => {
     try {
       await restoreUser(ids);
       await localGridApi.reload();
       await props.gridApi.reload();
-      ElMessage.success('restored successfully');
+      ElMessage.success($t('system.common.restore.success'));
     } catch {
-      ElMessage.error('Failed to restore');
+      ElMessage.error($t('system.common.restore.error'));
     }
   });
 };
@@ -146,24 +151,29 @@ defineExpose({ open, close });
 </script>
 
 <template>
-  <Modal class="w-[70%]" title="Data Recycle">
+  <Modal class="w-[70%]" :title="$t('system.common.alert.recycle')">
     <Grid>
       <template #sex="{ row }">
         <Dict dict-key="sex_type" :value="row.sex" />
       </template>
+      <template #lockStatus="{ row }">
+        <Dict dict-key="common_status" :value="row.lockStatus" />
+      </template>
       <template #toolbar-actions>
         <ElButton class="mr-2" bg text type="success" @click="restoreUsers()">
-          Restore
+          {{ $t('system.common.button.restore') }}
         </ElButton>
         <ElButton class="mr-2" bg text type="danger" @click="wipeUsers()">
-          Wipe
+          {{ $t('system.common.button.wipe') }}
         </ElButton>
       </template>
       <template #action="{ row }">
         <ElButton type="success" link @click="restoreUsers(row)">
-          restore
+          {{ $t('system.common.button.restore') }}
         </ElButton>
-        <ElButton type="danger" link @click="wipeUsers(row)"> wipe </ElButton>
+        <ElButton type="danger" link @click="wipeUsers(row)">
+          {{ $t('system.common.button.wipe') }}
+        </ElButton>
       </template>
     </Grid>
   </Modal>

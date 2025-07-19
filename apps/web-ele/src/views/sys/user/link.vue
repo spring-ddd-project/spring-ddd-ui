@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
+import { $t } from '@vben/locales';
 
 import { ElMessage } from 'element-plus';
 
@@ -60,13 +61,15 @@ const [Modal, modalApi] = useVbenModal({
           userId: writeForm.value.id,
           roleIds: writeForm.value.roleIds,
         });
-        ElMessage.success('Saved successfully');
+        ElMessage.success($t('system.common.save.success'));
       } else {
-        ElMessage.error('Validation failed');
+        ElMessage.error($t('system.common.validation.error'));
       }
       await modalApi.setState({ loading: false }).close();
     });
   },
+  confirmText: $t('system.common.button.confirm'),
+  cancelText: $t('system.common.button.cancel'),
 });
 
 const open = (row: any) => {

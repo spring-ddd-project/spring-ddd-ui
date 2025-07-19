@@ -4,6 +4,7 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 import { ref } from 'vue';
 
 import { confirm, Page } from '@vben/common-ui';
+import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage } from 'element-plus';
 
@@ -112,20 +113,20 @@ const deleteById = (row?: RowType) => {
     : gridApi.grid.getCheckboxRecords().map((item) => item.id);
 
   if (ids.length === 0) {
-    ElMessage.warning('Please select at least one item to delete');
+    ElMessage.warning($t('system.common.delete.warning'));
     return;
   }
 
   confirm({
-    content: `Confirm deletion of ${ids.length} record(s)?`,
+    content: $t('system.common.delete.confirm'),
     icon: 'error',
   }).then(async () => {
     try {
       await delDeptById(ids);
       await gridApi.reload();
-      ElMessage.success('Deletion successful');
+      ElMessage.success($t('system.common.delete.success'));
     } catch {
-      ElMessage.error('Deletion failed');
+      ElMessage.error($t('system.common.delete.error'));
     }
   });
 };
@@ -139,27 +140,29 @@ const deleteById = (row?: RowType) => {
       </template>
       <template #toolbar-tools>
         <ElButton class="mr-2" bg text type="primary" @click="expandAll">
-          Expand All
+          {{ $t('system.common.button.expand') }}
         </ElButton>
         <ElButton type="primary" bg text @click="collapseAll">
-          Collapse All
+          {{ $t('system.common.button.collapse') }}
         </ElButton>
       </template>
       <template #toolbar-actions>
         <ElButton class="mr-2" bg text type="primary" @click="openForm">
-          Add
+          {{ $t('system.common.button.add') }}
         </ElButton>
         <ElButton class="mr-2" bg text type="danger" @click="deleteById()">
-          Delete
+          {{ $t('system.common.button.delete') }}
         </ElButton>
         <ElButton class="mr-2" bg text type="info" @click="openRecycleForm">
-          Recycle
+          {{ $t('system.common.button.recycle') }}
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="primary" link @click="editRow(row)"> edit </ElButton>
+        <ElButton type="primary" link @click="editRow(row)">
+          {{ $t('system.common.button.edit') }}
+        </ElButton>
         <ElButton type="danger" link @click="deleteById(row)">
-          delete
+          {{ $t('system.common.button.delete') }}
         </ElButton>
       </template>
     </Grid>
