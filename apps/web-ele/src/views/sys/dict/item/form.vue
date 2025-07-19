@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
+import { $t } from '@vben/locales';
 
 import { ElMessage } from 'element-plus';
 
@@ -67,12 +68,12 @@ const [Drawer, drawerApi] = useVbenDrawer({
         await (writeForm.value.id
           ? updateItem(writeForm.value)
           : createItem(writeForm.value));
-        ElMessage.success('Saved successfully');
+        ElMessage.success($t('system.common.save.success'));
         props.gridApi.reload({
           dictId: writeForm.value.dictId,
         });
       } else {
-        ElMessage.error('Validation failed');
+        ElMessage.error($t('system.common.validation.error'));
       }
       await drawerApi.setState({ loading: false }).close();
     });
@@ -96,7 +97,7 @@ defineExpose({ open, close });
 </script>
 
 <template>
-  <Drawer class="w-[35%]" title="Dictionary Item Data handling">
+  <Drawer class="w-[35%]" :title="$t('system.dict.item.form')">
     <Form style="width: auto" />
   </Drawer>
 </template>

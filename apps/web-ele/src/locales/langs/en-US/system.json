@@ -16,7 +16,8 @@
   "dict": {
     "title": "Dictionary Management",
     "item": {
-      "title": "Item Management"
+      "title": "Item Management",
+      "form": "Dictionary Item Data handling"
     }
   },
   "common": {
