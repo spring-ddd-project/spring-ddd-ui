@@ -4,6 +4,7 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 import { ref } from 'vue';
 
 import { confirm, Page } from '@vben/common-ui';
+import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage } from 'element-plus';
@@ -31,7 +32,13 @@ const gridOptions: VxeGridProps<RowType> = {
   columns: [
     { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
-    { field: 'name', title: 'Menu Name', align: 'left', treeNode: true },
+    {
+      field: 'name',
+      title: 'Menu Name',
+      align: 'left',
+      treeNode: true,
+      slots: { default: 'menuName' },
+    },
     { field: 'component', title: 'Component' },
     { field: 'permission', title: 'Permission' },
     { field: 'path', title: 'Path' },
@@ -136,6 +143,29 @@ const deleteById = (row?: RowType) => {
     <Grid>
       <template #menuType="{ row }">
         <Dict dict-key="menu_types" :value="row.menuType" />
+      </template>
+      <template #menuName="{ row }">
+        <div class="flex w-full items-center gap-1">
+          <div class="size-5 flex-shrink-0">
+            <IconifyIcon
+              v-if="row.menuType === 3"
+              icon="carbon:security"
+              class="size-full"
+            />
+            <IconifyIcon
+              v-else-if="row.meta?.icon"
+              :icon="row.meta?.icon || 'carbon:circle-dash'"
+              class="size-full"
+            />
+          </div>
+          <span class="flex-auto" v-if="row.menuType !== 3">
+            {{ $t(row.meta?.title) }}
+          </span>
+          <span class="flex-auto" v-if="row.menuType === 3">
+            {{ $t(row.name) }}
+          </span>
+          <div class="items-center justify-end"></div>
+        </div>
       </template>
       <template #toolbar-tools>
         <ElButton class="mr-2" bg text type="primary" @click="expandAll">
