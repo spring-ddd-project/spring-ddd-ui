@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import type { VxeGridProps } from '#/adapter/vxe-table';
+import type { VbenFormProps } from '#/adapter/form';
+import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
 
@@ -30,28 +31,59 @@ interface RowType {
   lockStatus: boolean;
 }
 
-const gridOptions: VxeGridProps<RowType> = {
+const formOptions: VbenFormProps = {
+  collapsed: false,
+  schema: [
+    {
+      component: 'Input',
+      componentProps: {
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.username')}`,
+      },
+      fieldName: 'username',
+      label: $t('system.user.username'),
+    },
+    {
+      component: 'Input',
+      componentProps: {
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.phone')}`,
+      },
+      fieldName: 'phone',
+      label: $t('system.user.phone'),
+    },
+  ],
+  showCollapseButton: true,
+  submitButtonOptions: {
+    content: $t('system.common.button.search'),
+  },
+  resetButtonOptions: {
+    content: $t('system.common.button.reset'),
+  },
+  submitOnChange: false,
+  submitOnEnter: true,
+};
+
+const gridOptions: VxeTableGridOptions<RowType> = {
   checkboxConfig: {
     highlight: true,
   },
   columns: [
     { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
-    { field: 'username', title: 'User Name', align: 'left' },
-    { field: 'phone', title: 'phone' },
-    { field: 'avatar', title: 'avatar' },
-    { field: 'email', title: 'email' },
-    { field: 'sex', title: 'sex', slots: { default: 'sex' } },
+    { field: 'username', title: $t('system.user.username'), align: 'left' },
+    { field: 'phone', title: $t('system.user.phone') },
+    { field: 'avatar', title: $t('system.user.avatar') },
+    { field: 'email', title: $t('system.user.email') },
+    { field: 'sex', title: $t('system.user.sex'), slots: { default: 'sex' } },
     {
       field: 'lockStatus',
-      title: 'Lock Status',
+      title: $t('system.user.lockStatus'),
       slots: { default: 'lockStatus' },
     },
     {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
-      title: 'Operation',
+      title: $t('system.common.operation'),
       width: 200,
     },
   ],
@@ -59,10 +91,11 @@ const gridOptions: VxeGridProps<RowType> = {
   keepSource: true,
   proxyConfig: {
     ajax: {
-      query: async ({ page }) => {
+      query: async ({ page }, formValues) => {
         return await getUserPage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
+          ...formValues,
         });
       },
     },
@@ -77,11 +110,13 @@ const gridOptions: VxeGridProps<RowType> = {
     // import: true,
     refresh: true,
     zoom: true,
+    search: true,
   },
 };
 
 const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions,
+  formOptions,
 });
 
 const openRecycleForm = () => {

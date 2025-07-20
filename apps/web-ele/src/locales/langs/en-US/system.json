@@ -8,7 +8,13 @@
   },
   "user": {
     "title": "User Management",
-    "userInfo": "User Info"
+    "userInfo": "User Info",
+    "username": "Username",
+    "phone": "Phone",
+    "avatar": "Avatar",
+    "email": "Email",
+    "sex": "Sex",
+    "lockStatus": "Lock Status"
   },
   "dept": {
     "title": "Department Management"
@@ -40,6 +46,7 @@
     "validation": {
       "error": "Validation failed"
     },
+    "operation": "Operation",
     "button": {
       "add": "Add",
       "edit": "Edit",
@@ -53,12 +60,17 @@
       "cancel": "Cancel",
       "expand": "Expand All",
       "collapse": "Collapse All",
-      "item": "Item"
+      "item": "Item",
+      "search": "Search",
+      "reset": "Reset"
     },
     "alert": {
       "form": "Data handling",
       "permissions": "Granting Permission",
       "recycle": "Data Recycle"
+    },
+    "placeholder": {
+      "input": "Please enter"
     }
 
   }
