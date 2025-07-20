@@ -34,9 +34,10 @@ const [Form, formApi] = useVbenForm({
         valueField: 'id',
         clearable: true,
         multiple: true,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.role.roleId')}`,
       },
       fieldName: 'roleIds',
-      label: 'Roles',
+      label: $t('system.role.roleId'),
     },
   ],
 });
@@ -88,7 +89,7 @@ defineExpose({ open, close });
 </script>
 
 <template>
-  <Modal class="w-[40%]" title="Assign Roles">
+  <Modal class="w-[40%]" :title="$t('system.role.assign')">
     <Form style="width: auto" />
   </Modal>
 </template>

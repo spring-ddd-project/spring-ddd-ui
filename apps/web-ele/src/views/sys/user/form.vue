@@ -31,13 +31,19 @@ const [Form, formApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'username',
-      label: 'User Name',
+      label: $t('system.user.username'),
+      componentProps: {
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.username')}`,
+      },
       rules: 'required',
     },
     {
       component: 'VbenInputPassword',
       fieldName: 'password',
-      label: 'Password',
+      label: $t('system.user.password'),
+      componentProps: {
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.password')}`,
+      },
       rules: 'required',
     },
     {
@@ -52,9 +58,10 @@ const [Form, formApi] = useVbenForm({
         valueField: 'id',
         childrenField: 'children',
         checkStrictly: true,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.dept.deptId')}`,
       },
       fieldName: 'deptId',
-      label: 'Department',
+      label: $t('system.dept.deptId'),
       rules: 'required',
     },
     {
@@ -73,23 +80,32 @@ const [Form, formApi] = useVbenForm({
       },
       defaultValue: true,
       fieldName: 'sex',
-      label: 'Sex',
+      label: $t('system.user.sex'),
       rules: 'required',
     },
     {
       component: 'Input',
       fieldName: 'phone',
-      label: 'Phone',
+      label: $t('system.user.phone'),
+      componentProps: {
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.phone')}`,
+      },
     },
     {
       component: 'Input',
       fieldName: 'avatar',
-      label: 'Avatar',
+      label: $t('system.user.avatar'),
+      componentProps: {
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.avatar')}`,
+      },
     },
     {
       component: 'Input',
       fieldName: 'email',
-      label: 'Email',
+      label: $t('system.user.email'),
+      componentProps: {
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.email')}`,
+      },
     },
     {
       component: 'Switch',
@@ -97,7 +113,7 @@ const [Form, formApi] = useVbenForm({
         class: 'w-auto',
       },
       fieldName: 'lockStatus',
-      label: 'Lock Status',
+      label: $t('system.user.lockStatus'),
       defaultValue: false,
     },
   ],

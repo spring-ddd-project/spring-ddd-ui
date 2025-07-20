@@ -111,10 +111,10 @@ function getNodeClass(node: Recordable<any>) {
           v-bind="slotProps"
           value-field="id"
           label-field="name"
-          icon-field="icon"
+          icon-field="meta.icon"
         >
           <template #node="{ value }">
-            <IconifyIcon v-if="value.icon" :icon="value.icon" />
+            <IconifyIcon v-if="value.meta.icon" :icon="value.meta.icon" />
             {{ value.name }}
           </template>
         </VbenTree>
