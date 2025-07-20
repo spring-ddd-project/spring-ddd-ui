@@ -4,12 +4,15 @@
     "title": "Menu Management"
   },
   "role": {
-    "title": "Role Management"
+    "title": "Role Management",
+    "roleId": "Role",
+    "assign": "Assign Role"
   },
   "user": {
     "title": "User Management",
     "userInfo": "User Info",
     "username": "Username",
+    "password": "Password",
     "phone": "Phone",
     "avatar": "Avatar",
     "email": "Email",
@@ -17,7 +20,9 @@
     "lockStatus": "Lock Status"
   },
   "dept": {
-    "title": "Department Management"
+    "title": "Department Management",
+    "deptName": "Department Name",
+    "deptId": "Department"
   },
   "dict": {
     "title": "Dictionary Management",
