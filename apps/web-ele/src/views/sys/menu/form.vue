@@ -33,29 +33,29 @@ const [Form, formApi] = useVbenForm({
       componentProps: {
         options: [
           {
-            label: 'Catalog',
+            label: $t('system.menu.menuType.catalog'),
             value: 1,
           },
           {
-            label: 'Menu',
+            label: $t('system.menu.menuType.menu'),
             value: 2,
           },
           {
-            label: 'Button',
+            label: $t('system.menu.menuType.button'),
             value: 3,
           },
         ],
       },
       defaultValue: 1,
       fieldName: 'menuType',
-      label: 'Menu Type',
+      label: $t('system.menu.menuType.label'),
       rules: 'required',
     },
     {
       component: 'ApiTreeSelect',
       componentProps: {
         allowClear: true,
-        placeholder: 'If left blank, this will be set as the root menu.',
+        placeholder: $t('system.menu.parent.placeholder'),
         showSearch: true,
         treeNodeFilterProp: 'name',
         api: getMenuTreeWithoutPermission,
@@ -66,13 +66,13 @@ const [Form, formApi] = useVbenForm({
         checkStrictly: true,
       },
       fieldName: 'parentId',
-      label: 'Parent Menu',
-      help: 'Leave blank to make this a root menu.',
+      label: $t('system.menu.parent.label'),
+      help: $t('system.menu.parent.help'),
     },
     {
       component: 'Input',
       fieldName: 'meta.title',
-      label: 'Global Title',
+      label: $t('system.menu.globalTitle'),
       dependencies: {
         if(values) {
           return values.menuType !== 3;
@@ -84,13 +84,13 @@ const [Form, formApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'name',
-      label: 'Menu Name',
+      label: $t('system.menu.name'),
       rules: 'required',
     },
     {
       component: 'Input',
       fieldName: 'path',
-      label: 'Path',
+      label: $t('system.menu.path'),
       rules: 'required',
       dependencies: {
         if(values) {
@@ -102,19 +102,19 @@ const [Form, formApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'component',
-      label: 'Component',
+      label: $t('system.menu.component.label'),
       dependencies: {
         if(values) {
           return values.menuType !== 1;
         },
         triggerFields: ['menuType'],
       },
-      help: "This corresponds to the index.vue path and also serves as the backend API endpoint. If it's a button, it purely represents a backend endpoint.",
+      help: $t('system.menu.component.help'),
     },
     {
       component: 'Input',
       fieldName: 'redirect',
-      label: 'Redirect',
+      label: $t('system.menu.redirect'),
       dependencies: {
         if(values) {
           return values.menuType === 1;
@@ -125,21 +125,21 @@ const [Form, formApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'permission',
-      label: 'Permission',
+      label: $t('system.menu.permission.label'),
       dependencies: {
         if(values) {
           return values.menuType !== 1;
         },
         triggerFields: ['menuType'],
       },
-      help: 'Permission keys must be assigned to both the menu index page and any associated buttons.',
+      help: $t('system.menu.permission.help'),
     },
     {
       component: 'IconPicker',
       fieldName: 'meta.icon',
-      label: 'Icon',
+      label: $t('system.menu.icon'),
       componentProps: {
-        placeholder: 'Please select an icon',
+        placeholder: `${$t('system.common.placeholder')} ${$t('system.menu.icon')}`,
         allowClear: true,
       },
       rules: 'required',
@@ -153,7 +153,7 @@ const [Form, formApi] = useVbenForm({
     {
       component: 'InputNumber',
       fieldName: 'meta.order',
-      label: 'Menu Order',
+      label: $t('system.menu.order'),
       rules: 'required',
     },
     {
@@ -162,7 +162,7 @@ const [Form, formApi] = useVbenForm({
         class: 'w-auto',
       },
       fieldName: 'meta.affixTab',
-      label: 'Affix Tab',
+      label: $t('system.menu.affix'),
       dependencies: {
         if(values) {
           return values.menuType === 2;
@@ -176,7 +176,7 @@ const [Form, formApi] = useVbenForm({
         class: 'w-auto',
       },
       fieldName: 'meta.noBasicLayout',
-      label: 'No Basic Layout',
+      label: $t('system.menu.basicLayout'),
       dependencies: {
         if(values) {
           return values.menuType === 2;
@@ -190,7 +190,7 @@ const [Form, formApi] = useVbenForm({
         class: 'w-auto',
       },
       fieldName: 'visible',
-      label: 'Visible',
+      label: $t('system.menu.visible'),
       dependencies: {
         if(values) {
           return values.menuType !== 3;
@@ -205,7 +205,7 @@ const [Form, formApi] = useVbenForm({
         class: 'w-auto',
       },
       fieldName: 'embedded',
-      label: 'Embedded',
+      label: $t('system.menu.embedded'),
       dependencies: {
         if(values) {
           return values.menuType === 2;
@@ -219,7 +219,7 @@ const [Form, formApi] = useVbenForm({
         class: 'w-auto',
       },
       fieldName: 'menuStatus',
-      label: 'MenuStatus',
+      label: $t('system.menu.status'),
       defaultValue: true,
     },
   ],

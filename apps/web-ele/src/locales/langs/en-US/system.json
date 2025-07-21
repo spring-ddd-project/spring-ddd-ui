@@ -1,7 +1,37 @@
 {
   "title": "System Management",
   "menu": {
-    "title": "Menu Management"
+    "title": "Menu Management",
+    "menuType": {
+      "label": "Menu Type",
+      "catalog": "Catalog",
+      "menu": "Menu",
+      "button": "Button"
+    },
+    "parent": {
+      "placeholder": "If left blank, this will be set as the root menu.",
+      "label": "Parent Menu",
+      "help": "Leave blank to make this a root menu."
+    },
+    "globalTitle": "Global Title",
+    "name": "Menu Name",
+    "path": "Path",
+    "component": {
+      "label": "Component",
+      "help": "This corresponds to the index.vue path and also serves as the backend API endpoint. If it's a button, it purely represents a backend endpoint."
+    },
+    "redirect": "Redirect",
+    "permission": {
+      "label": "Permission",
+      "help": "Permission keys must be assigned to both the menu index page and any associated buttons."
+    },
+    "icon": "Icon",
+    "order": "Order",
+    "affix": "Affix Tab",
+    "basicLayout": "No Basic Layout",
+    "visible": "Visible",
+    "embedded": "Embedded",
+    "status": "Status"
   },
   "role": {
     "title": "Role Management",
