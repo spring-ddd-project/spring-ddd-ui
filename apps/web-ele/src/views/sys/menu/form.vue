@@ -136,7 +136,7 @@ const [Form, formApi] = useVbenForm({
     },
     {
       component: 'IconPicker',
-      fieldName: 'icon',
+      fieldName: 'meta.icon',
       label: 'Icon',
       componentProps: {
         placeholder: 'Please select an icon',
