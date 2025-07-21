@@ -70,6 +70,10 @@
   },
   "dict": {
     "title": "Dictionary Management",
+    "label": "Dictionary Name",
+    "code": "Dictionary Code",
+    "order": "Order",
+    "status": "Status",
     "item": {
       "title": "Item Management",
       "form": "Dictionary Item Data handling"

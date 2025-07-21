@@ -41,24 +41,24 @@ const gridOptions: VxeGridProps<RowType> = {
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
     {
       field: 'dictName',
-      title: 'Dictionary Name',
+      title: $t('system.dict.label'),
       align: 'left',
     },
     {
       field: 'dictCode',
-      title: 'Dictionary Code',
+      title: $t('system.dict.code'),
       align: 'left',
     },
     {
       field: 'dictStatus',
-      title: 'Status',
+      title: $t('system.dict.status'),
       slots: { default: 'status' },
     },
     {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
-      title: 'Operation',
+      title: $t('system.common.operation'),
       width: 150,
     },
   ],
