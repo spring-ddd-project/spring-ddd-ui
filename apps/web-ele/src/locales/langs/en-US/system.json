@@ -59,7 +59,14 @@
   "dept": {
     "title": "Department Management",
     "deptName": "Department Name",
-    "deptId": "Department"
+    "deptId": "Department",
+    "parent": {
+      "label": "Parent Department",
+      "placeholder": "If left blank, this will be set as the root department.",
+      "help": "Leave blank to make this a root department."
+    },
+    "order": "Order",
+    "status": "Status"
   },
   "dict": {
     "title": "Dictionary Management",
