@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-import type { VxeGridProps } from '#/adapter/vxe-table';
+import type { VbenFormProps } from '@vben/common-ui';
+
+import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
 
@@ -30,21 +32,65 @@ interface RowType {
   ownerStatus: boolean;
 }
 
-const gridOptions: VxeGridProps<RowType> = {
+const formOptions: VbenFormProps = {
+  collapsed: false,
+  schema: [
+    {
+      component: 'Input',
+      componentProps: {
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.role.label')}`,
+      },
+      fieldName: 'roleName',
+      label: $t('system.role.label'),
+    },
+    {
+      component: 'Input',
+      componentProps: {
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.role.code')}`,
+      },
+      fieldName: 'roleCode',
+      label: $t('system.role.code'),
+    },
+  ],
+  showCollapseButton: true,
+  submitButtonOptions: {
+    content: $t('system.common.button.search'),
+  },
+  resetButtonOptions: {
+    content: $t('system.common.button.reset'),
+  },
+  submitOnChange: false,
+  submitOnEnter: true,
+};
+
+const gridOptions: VxeTableGridOptions<RowType> = {
   columns: [
     { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
-    { field: 'roleName', title: 'Role Name', align: 'left', treeNode: true },
-    { field: 'roleCode', title: 'Role Code' },
-    { field: 'roleDesc', title: 'Role Description' },
-    { field: 'dataScope', title: 'Data Scope' },
-    { field: 'ownerStatus', title: 'Owner', slots: { default: 'owner' } },
-    { field: 'roleStatus', title: 'Role Status', slots: { default: 'status' } },
+    {
+      field: 'roleName',
+      title: $t('system.role.label'),
+      align: 'left',
+      treeNode: true,
+    },
+    { field: 'roleCode', title: $t('system.role.code') },
+    { field: 'roleDesc', title: $t('system.role.desc') },
+    { field: 'dataScope', title: $t('system.role.scope') },
+    {
+      field: 'ownerStatus',
+      title: $t('system.role.owner'),
+      slots: { default: 'owner' },
+    },
+    {
+      field: 'roleStatus',
+      title: $t('system.role.status'),
+      slots: { default: 'status' },
+    },
     {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
-      title: 'Operation',
+      title: $t('system.common.operation'),
       width: 200,
     },
   ],
@@ -52,10 +98,11 @@ const gridOptions: VxeGridProps<RowType> = {
   keepSource: true,
   proxyConfig: {
     ajax: {
-      query: async ({ page }) => {
+      query: async ({ page }, formValues) => {
         return await getRolePage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
+          ...formValues,
         });
       },
     },
@@ -75,11 +122,13 @@ const gridOptions: VxeGridProps<RowType> = {
     // import: true,
     refresh: true,
     zoom: true,
+    search: true,
   },
 };
 
 const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions,
+  formOptions,
 });
 
 const linkForm = (row: RowType) => {

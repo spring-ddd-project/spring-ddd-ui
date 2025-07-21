@@ -1,12 +1,49 @@
 {
   "title": "System Management",
   "menu": {
-    "title": "Menu Management"
+    "title": "Menu Management",
+    "menuType": {
+      "label": "Menu Type",
+      "catalog": "Catalog",
+      "menu": "Menu",
+      "button": "Button"
+    },
+    "parent": {
+      "placeholder": "If left blank, this will be set as the root menu.",
+      "label": "Parent Menu",
+      "help": "Leave blank to make this a root menu."
+    },
+    "globalTitle": "Global Title",
+    "name": "Menu Name",
+    "path": "Path",
+    "component": {
+      "label": "Component",
+      "help": "This corresponds to the index.vue path and also serves as the backend API endpoint. If it's a button, it purely represents a backend endpoint."
+    },
+    "redirect": "Redirect",
+    "permission": {
+      "label": "Permission",
+      "help": "Permission keys must be assigned to both the menu index page and any associated buttons."
+    },
+    "icon": "Icon",
+    "order": "Order",
+    "affix": "Affix Tab",
+    "basicLayout": "No Basic Layout",
+    "visible": "Visible",
+    "embedded": "Embedded",
+    "status": "Status"
   },
   "role": {
     "title": "Role Management",
     "roleId": "Role",
-    "assign": "Assign Role"
+    "assign": "Assign Role",
+    "label": "Role Name",
+    "code": "Role Code",
+    "desc": "Role Description",
+    "scope": "Data Scope",
+    "owner": "Is Owner",
+    "status": "Status",
+    "permissions": "Permissions"
   },
   "user": {
     "title": "User Management",
@@ -22,13 +59,26 @@
   "dept": {
     "title": "Department Management",
     "deptName": "Department Name",
-    "deptId": "Department"
+    "deptId": "Department",
+    "parent": {
+      "label": "Parent Department",
+      "placeholder": "If left blank, this will be set as the root department.",
+      "help": "Leave blank to make this a root department."
+    },
+    "order": "Order",
+    "status": "Status"
   },
   "dict": {
     "title": "Dictionary Management",
+    "label": "Dictionary Name",
+    "code": "Dictionary Code",
+    "order": "Order",
+    "status": "Status",
     "item": {
       "title": "Item Management",
-      "form": "Dictionary Item Data handling"
+      "form": "Dictionary Item Data handling",
+      "label": "Item Label",
+      "value": "Item Value"
     }
   },
   "common": {

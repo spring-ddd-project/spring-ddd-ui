@@ -32,19 +32,19 @@ const [Form, formApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'itemLabel',
-      label: 'Item Label',
+      label: $t('system.dict.item.label'),
       rules: 'required',
     },
     {
       component: 'Input',
       fieldName: 'itemValue',
-      label: 'Item Value',
+      label: $t('system.dict.item.value'),
       rules: 'required',
     },
     {
       component: 'InputNumber',
       fieldName: 'sortOrder',
-      label: 'Order',
+      label: $t('system.dict.order'),
       rules: 'required',
     },
     {
@@ -53,7 +53,7 @@ const [Form, formApi] = useVbenForm({
         class: 'w-auto',
       },
       fieldName: 'itemStatus',
-      label: 'Status',
+      label: $t('system.dict.status'),
       defaultValue: true,
     },
   ],
