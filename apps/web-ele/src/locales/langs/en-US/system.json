@@ -76,7 +76,9 @@
     "status": "Status",
     "item": {
       "title": "Item Management",
-      "form": "Dictionary Item Data handling"
+      "form": "Dictionary Item Data handling",
+      "label": "Item Label",
+      "value": "Item Value"
     }
   },
   "common": {
