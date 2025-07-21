@@ -23,7 +23,7 @@ const [Form, formApi] = useVbenForm({
       component: 'Input',
       fieldName: 'permissions',
       formItemClass: 'items-start',
-      label: 'Permissions',
+      label: $t('system.role.permissions'),
       modelPropName: 'modelValue',
     },
   ],

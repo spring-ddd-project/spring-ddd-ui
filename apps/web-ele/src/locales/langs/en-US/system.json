@@ -36,7 +36,14 @@
   "role": {
     "title": "Role Management",
     "roleId": "Role",
-    "assign": "Assign Role"
+    "assign": "Assign Role",
+    "label": "Role Name",
+    "code": "Role Code",
+    "desc": "Role Description",
+    "scope": "Data Scope",
+    "owner": "Is Owner",
+    "status": "Status",
+    "permissions": "Permissions"
   },
   "user": {
     "title": "User Management",
