@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-import type { VxeGridProps } from '#/adapter/vxe-table';
+import type { VbenFormProps } from '@vben/common-ui';
+
+import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
 
@@ -27,7 +29,40 @@ interface RowType {
   deptStatus: string;
 }
 
-const gridOptions: VxeGridProps<RowType> = {
+const formOptions: VbenFormProps = {
+  collapsed: false,
+  schema: [
+    {
+      component: 'Input',
+      componentProps: {
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.dict.label')}`,
+      },
+      fieldName: 'dictName',
+      label: $t('system.dict.label'),
+      labelWidth: 120,
+    },
+    {
+      component: 'Input',
+      componentProps: {
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.dict.code')}`,
+      },
+      fieldName: 'dictCode',
+      label: $t('system.dict.code'),
+      labelWidth: 120,
+    },
+  ],
+  showCollapseButton: true,
+  submitButtonOptions: {
+    content: $t('system.common.button.search'),
+  },
+  resetButtonOptions: {
+    content: $t('system.common.button.reset'),
+  },
+  submitOnChange: false,
+  submitOnEnter: true,
+};
+
+const gridOptions: VxeTableGridOptions<RowType> = {
   checkboxConfig: {
     highlight: true,
   },
@@ -61,10 +96,11 @@ const gridOptions: VxeGridProps<RowType> = {
   keepSource: true,
   proxyConfig: {
     ajax: {
-      query: async ({ page }) => {
+      query: async ({ page }, formValues) => {
         return await getDictPage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
+          ...formValues,
         });
       },
     },
@@ -81,11 +117,13 @@ const gridOptions: VxeGridProps<RowType> = {
     // import: true,
     refresh: true,
     zoom: true,
+    search: true,
   },
 };
 
 const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions,
+  formOptions,
 });
 
 const openRecycleForm = () => {
