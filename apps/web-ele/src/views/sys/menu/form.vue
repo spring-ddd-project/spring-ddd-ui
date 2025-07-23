@@ -232,6 +232,7 @@ const [Modal, modalApi] = useVbenModal({
       if (e.valid) {
         Object.assign(writeForm.value, await formApi.getValues());
         writeForm.value.order = writeForm.value.meta?.order;
+        writeForm.value.icon = writeForm.value.meta?.icon;
         writeForm.value.title = writeForm.value.meta?.title;
         writeForm.value.affixTab = writeForm.value.meta?.affixTab;
         writeForm.value.noBasicLayout = writeForm.value.meta?.noBasicLayout;

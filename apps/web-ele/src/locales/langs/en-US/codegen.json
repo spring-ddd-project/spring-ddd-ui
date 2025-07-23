@@ -1,0 +1,11 @@
+{
+  "title": "Code Generation",
+  "table": {
+    "title": "Table Management",
+    "tableName": "Table Name",
+    "tableComment": "Table Comment",
+    "className": "Class Name",
+    "createTime": "Create Time",
+    "tableCollation": "Table Collation"
+  }
+}
