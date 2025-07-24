@@ -71,7 +71,7 @@ const gridOptions: VxeTableGridOptions<RowType> = {
       fixed: 'right',
       slots: { default: 'action' },
       title: $t('system.common.operation'),
-      width: 150,
+      width: 100,
     },
   ],
   exportConfig: {},
@@ -111,16 +111,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
   formOptions,
 });
 
-const openForm = () => {
-  roleFormRef.value?.open();
-};
-
-const openRecycleForm = () => {
-  roleRecycleRef.value?.open();
-};
-
 const editRow = (row: RowType) => {
   roleFormRef.value?.open(row);
+};
+
+const reload = () => {
+  gridApi.reload();
 };
 </script>
 
@@ -134,16 +130,13 @@ const editRow = (row: RowType) => {
         <Dict dict-key="common_status" :value="row.roleStatus" />
       </template>
       <template #toolbar-actions>
-        <ElButton class="mr-2" bg text type="primary" @click="openForm">
-          {{ $t('system.common.button.add') }}
-        </ElButton>
-        <ElButton class="mr-2" bg text type="info" @click="openRecycleForm">
-          {{ $t('system.common.button.recycle') }}
+        <ElButton class="mr-2" bg text type="success" @click="reload">
+          {{ $t('system.common.button.refresh') }}
         </ElButton>
       </template>
       <template #action="{ row }">
         <ElButton type="primary" link @click="editRow(row)">
-          {{ $t('system.common.button.edit') }}
+          {{ $t('codegen.table.button.generate') }}
         </ElButton>
       </template>
     </Grid>

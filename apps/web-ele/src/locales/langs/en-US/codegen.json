@@ -6,6 +6,9 @@
     "tableComment": "Table Comment",
     "className": "Class Name",
     "createTime": "Create Time",
-    "tableCollation": "Table Collation"
+    "tableCollation": "Table Collation",
+    "button": {
+      "generate": "Generate"
+    }
   }
 }

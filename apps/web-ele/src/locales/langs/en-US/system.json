@@ -117,7 +117,8 @@
       "collapse": "Collapse All",
       "item": "Item",
       "search": "Search",
-      "reset": "Reset"
+      "reset": "Reset",
+      "refresh": "Refresh"
     },
     "alert": {
       "form": "Data handling",
