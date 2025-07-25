@@ -3,8 +3,6 @@ import type { VbenFormProps } from '@vben/common-ui';
 
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
-import { ref } from 'vue';
-
 import { Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
@@ -13,12 +11,6 @@ import { ElButton } from 'element-plus';
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getTablePage } from '#/api/gen/table';
-
-import RoleForm from './form.vue';
-import RoleRecycleForm from './recycle.vue';
-
-const roleFormRef = ref();
-const roleRecycleRef = ref();
 
 interface RowType {
   id: string;
@@ -112,7 +104,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
 });
 
 const editRow = (row: RowType) => {
-  roleFormRef.value?.open(row);
+  // TODO: to codegen page
 };
 
 const reload = () => {
@@ -140,7 +132,5 @@ const reload = () => {
         </ElButton>
       </template>
     </Grid>
-    <RoleForm ref="roleFormRef" :grid-api="gridApi" />
-    <RoleRecycleForm ref="roleRecycleRef" :grid-api="gridApi" />
   </Page>
 </template>
