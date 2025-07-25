@@ -12,6 +12,10 @@
     }
   },
   "info": {
-    "title": "Project Management"
+    "title": "Project Management",
+    "tableName": "Table Name",
+    "packageName": "Package Name",
+    "className": "Class Name",
+    "requestName": "Request Name"
   }
 }

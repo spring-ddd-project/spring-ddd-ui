@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import type { VbenFormProps } from '#/adapter/form';
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
@@ -9,9 +8,8 @@ import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage } from 'element-plus';
 
-import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getInfoPage } from '#/api/gen/info';
+import { deleteInfo, getInfoPage } from '#/api/gen/info';
 
 import UserForm from './form.vue';
 import RecycleForm from './recycle.vue';
@@ -29,37 +27,6 @@ interface RowType {
   lockStatus: boolean;
 }
 
-const formOptions: VbenFormProps = {
-  collapsed: false,
-  schema: [
-    {
-      component: 'Input',
-      componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.username')}`,
-      },
-      fieldName: 'username',
-      label: $t('system.user.username'),
-    },
-    {
-      component: 'Input',
-      componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.phone')}`,
-      },
-      fieldName: 'phone',
-      label: $t('system.user.phone'),
-    },
-  ],
-  showCollapseButton: true,
-  submitButtonOptions: {
-    content: $t('system.common.button.search'),
-  },
-  resetButtonOptions: {
-    content: $t('system.common.button.reset'),
-  },
-  submitOnChange: false,
-  submitOnEnter: true,
-};
-
 const gridOptions: VxeTableGridOptions<RowType> = {
   checkboxConfig: {
     highlight: true,
@@ -67,16 +34,10 @@ const gridOptions: VxeTableGridOptions<RowType> = {
   columns: [
     { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
-    { field: 'username', title: $t('system.user.username'), align: 'left' },
-    { field: 'phone', title: $t('system.user.phone') },
-    { field: 'avatar', title: $t('system.user.avatar') },
-    { field: 'email', title: $t('system.user.email') },
-    { field: 'sex', title: $t('system.user.sex'), slots: { default: 'sex' } },
-    {
-      field: 'lockStatus',
-      title: $t('system.user.lockStatus'),
-      slots: { default: 'lockStatus' },
-    },
+    { field: 'tableName', title: $t('codegen.info.tableName'), align: 'left' },
+    { field: 'packageName', title: $t('codegen.info.packageName') },
+    { field: 'className', title: $t('codegen.info.className') },
+    { field: 'requestName', title: $t('codegen.info.requestName') },
     {
       field: 'action',
       fixed: 'right',
@@ -89,11 +50,10 @@ const gridOptions: VxeTableGridOptions<RowType> = {
   keepSource: true,
   proxyConfig: {
     ajax: {
-      query: async ({ page }, formValues) => {
+      query: async ({ page }) => {
         return await getInfoPage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
-          ...formValues,
         });
       },
     },
@@ -114,7 +74,6 @@ const gridOptions: VxeTableGridOptions<RowType> = {
 
 const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions,
-  formOptions,
 });
 
 const openRecycleForm = () => {
@@ -144,7 +103,7 @@ const deleteByIds = (row?: RowType) => {
     icon: 'error',
   }).then(async () => {
     try {
-      await delUserById(ids);
+      await deleteInfo(ids);
       await gridApi.reload();
       ElMessage.success($t('system.common.delete.success'));
     } catch {
@@ -157,12 +116,6 @@ const deleteByIds = (row?: RowType) => {
 <template>
   <Page>
     <Grid>
-      <template #sex="{ row }">
-        <Dict dict-key="sex_type" :value="row.sex" />
-      </template>
-      <template #lockStatus="{ row }">
-        <Dict dict-key="common_status" :value="row.lockStatus" />
-      </template>
       <template #toolbar-actions>
         <ElButton class="mr-2" bg text type="primary" @click="openForm">
           {{ $t('system.common.button.add') }}
