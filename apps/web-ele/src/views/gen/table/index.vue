@@ -3,6 +3,8 @@ import type { VbenFormProps } from '@vben/common-ui';
 
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
+import { ref } from 'vue';
+
 import { Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
@@ -11,6 +13,10 @@ import { ElButton } from 'element-plus';
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getTablePage } from '#/api/gen/table';
+
+import GenInfoForm from '../info/form.vue';
+
+const genInfoFormRef = ref();
 
 interface RowType {
   id: string;
@@ -103,8 +109,8 @@ const [Grid, gridApi] = useVbenVxeGrid({
   formOptions,
 });
 
-const editRow = (row: RowType) => {
-  // TODO: to codegen page
+const codegen = (row: RowType) => {
+  genInfoFormRef.value?.open(row);
 };
 
 const reload = () => {
@@ -127,10 +133,11 @@ const reload = () => {
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="primary" link @click="editRow(row)">
+        <ElButton type="primary" link @click="codegen(row)">
           {{ $t('codegen.table.button.generate') }}
         </ElButton>
       </template>
     </Grid>
+    <GenInfoForm ref="genInfoFormRef" :grid-api="gridApi" />
   </Page>
 </template>
