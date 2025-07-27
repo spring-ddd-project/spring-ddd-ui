@@ -4,14 +4,10 @@ import { ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { ElMessage } from 'element-plus';
+import { ElCard, ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
-import { getTree } from '#/api/sys/dept';
-
-const props = defineProps<{
-  gridApi: any;
-}>();
+import { getTableInfo } from '#/api/gen/table';
 
 const writeForm = ref<Record<string, any>>({});
 
@@ -29,91 +25,90 @@ const [Form, formApi] = useVbenForm({
   schema: [
     {
       component: 'Input',
-      fieldName: 'username',
-      label: $t('system.user.username'),
+      fieldName: 'tableName',
+      label: $t('codegen.info.tableName'),
       componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.username')}`,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.info.tableName')}`,
       },
-      rules: 'required',
-    },
-    {
-      component: 'VbenInputPassword',
-      fieldName: 'password',
-      label: $t('system.user.password'),
-      componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.password')}`,
-      },
-      rules: 'required',
-    },
-    {
-      component: 'ApiTreeSelect',
-      componentProps: {
-        allowClear: true,
-        showSearch: true,
-        treeNodeFilterProp: 'deptName',
-        api: getTree,
-        resultField: 'data',
-        labelField: 'deptName',
-        valueField: 'id',
-        childrenField: 'children',
-        checkStrictly: true,
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.dept.deptId')}`,
-      },
-      fieldName: 'deptId',
-      label: $t('system.dept.deptId'),
-      rules: 'required',
-    },
-    {
-      component: 'RadioGroup',
-      componentProps: {
-        options: [
-          {
-            label: 'Male',
-            value: true,
-          },
-          {
-            label: 'Female',
-            value: false,
-          },
-        ],
-      },
-      defaultValue: true,
-      fieldName: 'sex',
-      label: $t('system.user.sex'),
       rules: 'required',
     },
     {
       component: 'Input',
-      fieldName: 'phone',
-      label: $t('system.user.phone'),
+      fieldName: 'packageName',
+      label: $t('codegen.info.packageName'),
       componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.phone')}`,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.info.packageName')}`,
       },
+      rules: 'required',
     },
     {
       component: 'Input',
-      fieldName: 'avatar',
-      label: $t('system.user.avatar'),
+      fieldName: 'className',
+      label: $t('codegen.info.className'),
       componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.avatar')}`,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.info.className')}`,
       },
+      rules: 'required',
     },
     {
       component: 'Input',
-      fieldName: 'email',
-      label: $t('system.user.email'),
+      fieldName: 'requestName',
+      label: $t('codegen.info.requestName'),
       componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.email')}`,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.info.requestName')}`,
       },
+      rules: 'required',
+    },
+  ],
+});
+
+const [ValueForm, valueFormApi] = useVbenForm({
+  showDefaultActions: false,
+  layout: 'horizontal',
+  commonConfig: {
+    componentProps: {
+      class: 'w-full',
+    },
+    colon: true,
+    labelWidth: 130,
+  },
+  submitOnChange: true,
+  schema: [
+    {
+      component: 'Input',
+      fieldName: 'propColumnName',
+      label: $t('codegen.info.propColumnName'),
+      componentProps: {
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.info.propColumnName')}`,
+      },
+      rules: 'required',
     },
     {
-      component: 'Switch',
+      component: 'Input',
+      fieldName: 'packageName',
+      label: $t('codegen.info.packageName'),
       componentProps: {
-        class: 'w-auto',
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.info.packageName')}`,
       },
-      fieldName: 'lockStatus',
-      label: $t('system.user.lockStatus'),
-      defaultValue: false,
+      rules: 'required',
+    },
+    {
+      component: 'Input',
+      fieldName: 'className',
+      label: $t('codegen.info.className'),
+      componentProps: {
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.info.className')}`,
+      },
+      rules: 'required',
+    },
+    {
+      component: 'Input',
+      fieldName: 'requestName',
+      label: $t('codegen.info.requestName'),
+      componentProps: {
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.info.requestName')}`,
+      },
+      rules: 'required',
     },
   ],
 });
@@ -121,7 +116,9 @@ const [Form, formApi] = useVbenForm({
 const [Drawer, drawerApi] = useVbenDrawer({
   onOpenChange: async (open) => {
     if (open) {
-      // TODO
+      await getTableInfo(writeForm.value?.tableName).then((resp: any) => {
+        valueFormApi.setValues(resp);
+      });
     } else {
       drawerApi.setState({ loading: false });
     }
@@ -131,7 +128,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
     const { valid } = await formApi.validate();
     if (!valid) return;
     const values = await formApi.getValues();
-
+    ElMessage.success($t('system.common.save.success') + values);
     drawerApi.setState({ loading: false }).close();
   },
   onCancel: () => {
@@ -144,7 +141,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
 const open = (row: any) => {
   writeForm.value = {};
-  if (row?.id) {
+  if (row?.tableName) {
     writeForm.value = row;
     formApi.setValues(row);
   } else {
@@ -158,7 +155,22 @@ defineExpose({ open, close });
 </script>
 
 <template>
-  <Drawer class="w-[60%]" :title="$t('system.common.alert.form')">
-    <Form style="width: auto" />
+  <Drawer class="w-[60%]" :title="$t('codegen.table.form')">
+    <ElCard>
+      <template #header>
+        <div class="card-header">
+          <span>{{ $t('codegen.info.title') }}</span>
+        </div>
+      </template>
+      <Form />
+    </ElCard>
+    <ElCard style="margin-top: 1%">
+      <template #header>
+        <div class="card-header">
+          <span>{{ $t('codegen.info.value') }}</span>
+        </div>
+      </template>
+      <ValueForm />
+    </ElCard>
   </Drawer>
 </template>

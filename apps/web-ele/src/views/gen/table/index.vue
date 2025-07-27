@@ -20,12 +20,10 @@ const genInfoFormRef = ref();
 
 interface RowType {
   id: string;
-  roleName: string;
-  roleCode: string;
-  roleDesc: string;
-  dataScope: number;
-  roleStatus: boolean;
-  ownerStatus: boolean;
+  tableName: string;
+  tableComment: string;
+  createTime: string;
+  tableCollation: string;
 }
 
 const formOptions: VbenFormProps = {
@@ -59,7 +57,6 @@ const gridOptions: VxeTableGridOptions<RowType> = {
       field: 'tableName',
       title: $t('codegen.table.tableName'),
       align: 'left',
-      treeNode: true,
     },
     { field: 'tableComment', title: $t('codegen.table.tableComment') },
     { field: 'createTime', title: $t('codegen.table.createTime') },
@@ -88,11 +85,6 @@ const gridOptions: VxeTableGridOptions<RowType> = {
   editConfig: {
     mode: 'row',
     trigger: 'click',
-  },
-  treeConfig: {
-    parentField: 'parentId',
-    rowField: 'id',
-    transform: true,
   },
   toolbarConfig: {
     custom: true,
@@ -138,6 +130,6 @@ const reload = () => {
         </ElButton>
       </template>
     </Grid>
-    <GenInfoForm ref="genInfoFormRef" :grid-api="gridApi" />
+    <GenInfoForm ref="genInfoFormRef" />
   </Page>
 </template>
