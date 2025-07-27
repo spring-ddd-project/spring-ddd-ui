@@ -9,13 +9,31 @@
     "tableCollation": "Table Collation",
     "button": {
       "generate": "Generate"
-    }
+    },
+    "form": "Basic Information Data Processing via Code Generation"
   },
   "info": {
     "title": "Project Management",
+    "value": "Value Management",
     "tableName": "Table Name",
     "packageName": "Package Name",
     "className": "Class Name",
-    "requestName": "Request Name"
+    "requestName": "Request Name",
+    "propValueObject": "Property Value Object",
+    "propColumnKey": "Property Column Key",
+    "propColumnName": "Property Column Name",
+    "propColumnType": "Property Column Type",
+    "propColumnComment": "Property Column Comment",
+    "propJavaEntity": "Property Java Entity",
+    "propJavaType": "Property Java Type",
+    "propDictId": "Property Dictionary ID",
+    "tableVisible": "Table Visible",
+    "tableOrder": "Table Order",
+    "tableFilter": "Table Filter",
+    "tableFilterComponent": "Table Filter Component",
+    "tableFilterType": "Table Filter Type",
+    "formComponent": "Form Component",
+    "formVisible": "Form Visible",
+    "formRequired": "Form Required"
   }
 }
