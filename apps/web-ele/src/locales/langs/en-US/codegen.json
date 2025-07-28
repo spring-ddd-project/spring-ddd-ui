@@ -34,6 +34,12 @@
     "tableFilterType": "Table Filter Type",
     "formComponent": "Form Component",
     "formVisible": "Form Visible",
-    "formRequired": "Form Required"
+    "formRequired": "Form Required",
+    "tag": {
+      "title": "Advance Configuration",
+      "attribute": "Attribute Configuration",
+      "table": "Table Page",
+      "form": "Form Page"
+    }
   }
 }
