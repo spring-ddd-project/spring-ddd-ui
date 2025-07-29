@@ -82,6 +82,47 @@ const [Form, formApi] = useVbenForm({
   ],
 });
 
+const gridOptions: VxeTableGridOptions<any> = {
+  columns: [
+    { title: 'No.', type: 'seq', width: 50 },
+    { align: 'left', title: '#', type: 'checkbox', width: 50 },
+    {
+      field: 'propColumnName',
+      title: $t('codegen.info.propColumnName'),
+      align: 'left',
+    },
+    { field: 'propColumnType', title: $t('codegen.info.propColumnType') },
+    { field: 'propColumnComment', title: $t('codegen.info.propColumnComment') },
+    { field: 'tableCollation', title: $t('codegen.table.tableCollation') },
+    {
+      field: 'action',
+      fixed: 'right',
+      slots: { default: 'action' },
+      title: $t('system.common.operation'),
+      width: 100,
+    },
+  ],
+  exportConfig: {},
+  keepSource: true,
+  proxyConfig: {
+    ajax: {
+      query: async ({ page }) => {
+        return await getTablePage({
+          pageNum: page.currentPage,
+          pageSize: page.pageSize,
+        });
+      },
+    },
+  },
+  pagerConfig: {
+    enabled: false,
+  },
+  editConfig: {
+    mode: 'row',
+    trigger: 'click',
+  },
+};
+
 const [Drawer, drawerApi] = useVbenDrawer({
   onOpenChange: async (open) => {
     if (open) {
@@ -122,46 +163,6 @@ const close = () => drawerApi.close();
 
 defineExpose({ open, close });
 
-const gridOptions: VxeTableGridOptions<any> = {
-  columns: [
-    { title: 'No.', type: 'seq', width: 50 },
-    { align: 'left', title: '#', type: 'checkbox', width: 50 },
-    {
-      field: 'tableName',
-      title: $t('codegen.table.tableName'),
-      align: 'left',
-    },
-    { field: 'tableComment', title: $t('codegen.table.tableComment') },
-    { field: 'createTime', title: $t('codegen.table.createTime') },
-    { field: 'tableCollation', title: $t('codegen.table.tableCollation') },
-    {
-      field: 'action',
-      fixed: 'right',
-      slots: { default: 'action' },
-      title: $t('system.common.operation'),
-      width: 100,
-    },
-  ],
-  exportConfig: {},
-  keepSource: true,
-  proxyConfig: {
-    ajax: {
-      query: async ({ page }) => {
-        return await getTablePage({
-          pageNum: page.currentPage,
-          pageSize: page.pageSize,
-        });
-      },
-    },
-  },
-  pagerConfig: {
-    enabled: false,
-  },
-  editConfig: {
-    mode: 'row',
-    trigger: 'click',
-  },
-};
 const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions,
 });
