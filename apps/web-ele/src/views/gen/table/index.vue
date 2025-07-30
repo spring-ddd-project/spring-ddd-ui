@@ -15,8 +15,10 @@ import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getTablePage } from '#/api/gen/table';
 
 import GenInfoForm from '../info/form.vue';
+import ConfigForm from './config.vue';
 
 const genInfoFormRef = ref();
+const configFormRef = ref();
 
 interface RowType {
   id: string;
@@ -66,7 +68,7 @@ const gridOptions: VxeTableGridOptions<RowType> = {
       fixed: 'right',
       slots: { default: 'action' },
       title: $t('system.common.operation'),
-      width: 100,
+      width: 150,
     },
   ],
   exportConfig: {},
@@ -101,6 +103,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
   formOptions,
 });
 
+const config = (row: RowType) => {
+  configFormRef.value?.open(row);
+};
+
 const codegen = (row: RowType) => {
   genInfoFormRef.value?.open(row);
 };
@@ -125,11 +131,15 @@ const reload = () => {
         </ElButton>
       </template>
       <template #action="{ row }">
+        <ElButton type="warning" link @click="config(row)">
+          {{ $t('codegen.table.button.config') }}
+        </ElButton>
         <ElButton type="primary" link @click="codegen(row)">
           {{ $t('codegen.table.button.generate') }}
         </ElButton>
       </template>
     </Grid>
     <GenInfoForm ref="genInfoFormRef" />
+    <ConfigForm ref="configFormRef" />
   </Page>
 </template>

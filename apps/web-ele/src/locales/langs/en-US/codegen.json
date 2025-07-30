@@ -8,6 +8,7 @@
     "createTime": "Create Time",
     "tableCollation": "Table Collation",
     "button": {
+      "config": "Config",
       "generate": "Generate"
     },
     "form": "Basic Information Data Processing via Code Generation"
@@ -38,6 +39,15 @@
     "tag": {
       "title": "Advance Configuration",
       "attribute": "Attribute Configuration",
+      "table": "Table Page",
+      "form": "Form Page"
+    },
+    "group": {
+      "column": {
+        "title": "Column Mapping",
+        "database": "Database Column",
+        "java": "Java Entity"
+      },
       "table": "Table Page",
       "form": "Form Page"
     }
