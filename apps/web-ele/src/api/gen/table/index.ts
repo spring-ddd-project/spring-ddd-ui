@@ -12,6 +12,14 @@ export async function getTableInfo(data: any) {
   });
 }
 
+export async function createTableInfo(data: any) {
+  return requestClient.post('/gen/info/create', data);
+}
+
+export async function updateTableInfo(data: any) {
+  return requestClient.put('/gen/info/update', data);
+}
+
 export async function getColumnsInfo(data: any) {
   return requestClient.post('/gen/columns/queryByInfoId', null, {
     params: {

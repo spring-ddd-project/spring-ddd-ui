@@ -1,13 +1,17 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 
-import { useVbenDrawer } from '@vben/common-ui';
+import { useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
 import { ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
-import { getTableInfo } from '#/api/gen/table';
+import {
+  createTableInfo,
+  getTableInfo,
+  updateTableInfo,
+} from '#/api/gen/table';
 
 const writeForm = ref<Record<string, any>>({});
 
@@ -30,6 +34,7 @@ const [Form, formApi] = useVbenForm({
       componentProps: {
         placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.info.tableName')}`,
       },
+      disabled: true,
       rules: 'required',
     },
     {
@@ -62,27 +67,35 @@ const [Form, formApi] = useVbenForm({
   ],
 });
 
-const [Drawer, drawerApi] = useVbenDrawer({
+const [Modal, modalApi] = useVbenModal({
   onOpenChange: async (open) => {
     if (open) {
-      await getTableInfo(writeForm.value?.tableName).then((resp: any) => {
-        formApi.setValues(resp);
+      await getTableInfo(writeForm.value?.tableName).then(async (resp: any) => {
+        await formApi.setValues(resp);
+        writeForm.value = {};
+        Object.assign(writeForm.value, await resp);
       });
     } else {
-      drawerApi.setState({ loading: false });
+      modalApi.setState({ loading: false });
     }
   },
   onConfirm: async () => {
-    drawerApi.setState({ loading: true });
-    const { valid } = await formApi.validate();
-    if (!valid) return;
-    const values = await formApi.getValues();
-    ElMessage.success($t('system.common.save.success') + values);
-    drawerApi.setState({ loading: false }).close();
+    formApi.validate().then(async (e) => {
+      if (e.valid) {
+        Object.assign(writeForm.value, await formApi.getValues());
+        await (writeForm.value.id
+          ? updateTableInfo(writeForm.value)
+          : createTableInfo(writeForm.value));
+        ElMessage.success($t('system.common.save.success'));
+      } else {
+        ElMessage.error($t('system.common.validation.error'));
+      }
+      await modalApi.setState({ loading: false }).close();
+    });
   },
   onCancel: () => {
     writeForm.value = {};
-    drawerApi.setState({ loading: false }).close();
+    modalApi.setState({ loading: false }).close();
   },
   confirmText: $t('system.common.button.confirm'),
   cancelText: $t('system.common.button.cancel'),
@@ -96,15 +109,15 @@ const open = (row: any) => {
   } else {
     formApi.setValues({});
   }
-  drawerApi.open();
+  modalApi.open();
 };
-const close = () => drawerApi.close();
+const close = () => modalApi.close();
 
 defineExpose({ open, close });
 </script>
 
 <template>
-  <Drawer class="w-[60%]" :title="$t('codegen.table.form')">
+  <Modal class="w-[40%]" :title="$t('codegen.table.form')">
     <Form />
-  </Drawer>
+  </Modal>
 </template>
