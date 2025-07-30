@@ -40,6 +40,15 @@
       "attribute": "Attribute Configuration",
       "table": "Table Page",
       "form": "Form Page"
+    },
+    "group": {
+      "column": {
+        "title": "Column Mapping",
+        "database": "Database Column",
+        "java": "Java Entity"
+      },
+      "table": "Table Page",
+      "form": "Form Page"
     }
   }
 }

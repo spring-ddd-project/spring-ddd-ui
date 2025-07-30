@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
-import { reactive, ref } from 'vue';
+import { ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
@@ -10,26 +10,9 @@ import { ElCard, ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getTableInfo, getTablePage } from '#/api/gen/table';
+import { getColumnsInfo, getTableInfo } from '#/api/gen/table';
 
 const writeForm = ref<Record<string, any>>({});
-const genTag = reactive([
-  {
-    color: 'processing',
-    label: $t('codegen.info.tag.attribute'),
-    value: 'attribute',
-  },
-  {
-    color: 'success',
-    label: $t('codegen.info.tag.table'),
-    value: 'table',
-  },
-  {
-    color: 'default',
-    label: $t('codegen.info.tag.form'),
-    value: 'form',
-  },
-]);
 
 const [Form, formApi] = useVbenForm({
   showDefaultActions: false,
@@ -87,13 +70,72 @@ const gridOptions: VxeTableGridOptions<any> = {
     { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
     {
-      field: 'propColumnName',
-      title: $t('codegen.info.propColumnName'),
-      align: 'left',
+      title: $t('codegen.info.group.column.title'),
+      children: [
+        {
+          title: $t('codegen.info.group.column.database'),
+          children: [
+            {
+              field: 'propColumnName',
+              title: $t('codegen.info.propColumnName'),
+              align: 'left',
+            },
+            {
+              field: 'propColumnType',
+              title: $t('codegen.info.propColumnType'),
+            },
+            {
+              field: 'propColumnComment',
+              title: $t('codegen.info.propColumnComment'),
+            },
+          ],
+        },
+        {
+          title: $t('codegen.info.group.column.java'),
+          children: [
+            {
+              field: 'propJavaEntity',
+              title: $t('codegen.info.propJavaEntity'),
+            },
+            { field: 'propJavaType', title: $t('codegen.info.propJavaType') },
+          ],
+        },
+      ],
     },
-    { field: 'propColumnType', title: $t('codegen.info.propColumnType') },
-    { field: 'propColumnComment', title: $t('codegen.info.propColumnComment') },
-    { field: 'tableCollation', title: $t('codegen.table.tableCollation') },
+    {
+      title: $t('codegen.info.group.table'),
+      children: [
+        { field: 'tableVisible', title: $t('codegen.info.tableVisible') },
+        { field: 'tableOrder', title: $t('codegen.info.tableOrder') },
+        { field: 'tableFilter', title: $t('codegen.info.tableFilter') },
+        {
+          field: 'tableFilterComponent',
+          title: $t('codegen.info.tableFilterComponent'),
+        },
+        {
+          field: 'tableFilterType',
+          title: $t('codegen.info.tableFilterType'),
+        },
+      ],
+    },
+    {
+      title: $t('codegen.info.group.form'),
+      children: [
+        {
+          field: 'formComponent',
+          title: $t('codegen.info.formComponent'),
+        },
+        {
+          field: 'formVisible',
+          title: $t('codegen.info.formVisible'),
+        },
+        {
+          field: 'formRequired',
+          title: $t('codegen.info.formRequired'),
+        },
+      ],
+    },
+    { field: 'propDictId', title: $t('codegen.info.propDictId') },
     {
       field: 'action',
       fixed: 'right',
@@ -106,11 +148,8 @@ const gridOptions: VxeTableGridOptions<any> = {
   keepSource: true,
   proxyConfig: {
     ajax: {
-      query: async ({ page }) => {
-        return await getTablePage({
-          pageNum: page.currentPage,
-          pageSize: page.pageSize,
-        });
+      query: async () => {
+        return await getColumnsInfo(await formApi.getValues().id);
       },
     },
   },
