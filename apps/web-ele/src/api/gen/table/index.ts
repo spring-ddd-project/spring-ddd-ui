@@ -4,6 +4,10 @@ export async function getTablePage(data: any) {
   return requestClient.post('/gen/table/index', data);
 }
 
+export async function getTableInfoPage(data: any) {
+  return requestClient.post('/gen/info/index', data);
+}
+
 export async function getTableInfo(data: any) {
   return requestClient.post('/gen/info/queryInfoByTableName', null, {
     params: {
