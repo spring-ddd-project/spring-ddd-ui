@@ -12,7 +12,7 @@ import { ElButton } from 'element-plus';
 
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getTablePage } from '#/api/gen/table';
+import { getTableInfo, getTablePage } from "#/api/gen/table";
 
 import GenInfoForm from '../info/form.vue';
 import ConfigForm from './config.vue';
@@ -108,7 +108,9 @@ const config = (row: RowType) => {
 };
 
 const codegen = (row: RowType) => {
-  genInfoFormRef.value?.open(row);
+  getTableInfo(row?.tableName).then((resp: any) => {
+    genInfoFormRef.value?.open(row, resp.id);
+  });
 };
 
 const reload = () => {
