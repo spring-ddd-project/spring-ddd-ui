@@ -6,14 +6,10 @@ import { ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { ElButton, ElCard, ElMessage } from 'element-plus';
+import { ElCard, ElMessage } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import {
-  getColumnsInfo,
-  getTableInfo,
-  getTableInfoPage,
-} from '#/api/gen/table';
+import { getColumnsInfo } from '#/api/gen/table';
 
 import ConfigForm from '../table/config.vue';
 
@@ -21,7 +17,11 @@ const configFormRef = ref();
 
 const writeForm = ref<Record<string, any>>({});
 
+const infoId = ref();
+
 interface RowType {
+  id: string;
+  infoId: string;
   propValueObject: boolean;
   propColumnKey: boolean;
   propColumnName: string;
@@ -39,53 +39,6 @@ interface RowType {
   formRequired: boolean;
   propDictId: string;
 }
-
-const gridInfoOptions: VxeTableGridOptions<any> = {
-  columns: [
-    { title: 'No.', type: 'seq', width: 50 },
-    { align: 'left', title: '#', type: 'checkbox', width: 50 },
-    {
-      field: 'tableName',
-      title: $t('codegen.info.tableName'),
-      align: 'left',
-    },
-    {
-      field: 'packageName',
-      title: $t('codegen.info.packageName'),
-    },
-    {
-      field: 'className',
-      title: $t('codegen.info.className'),
-    },
-    {
-      field: 'requestName',
-      title: $t('codegen.info.requestName'),
-    },
-    {
-      field: 'action',
-      fixed: 'right',
-      slots: { default: 'action' },
-      title: $t('system.common.operation'),
-      width: 150,
-    },
-  ],
-  exportConfig: {},
-  keepSource: true,
-  proxyConfig: {
-    ajax: {
-      query: async ({ page }) => {
-        return await getTableInfoPage({
-          pageNum: page.currentPage,
-          pageSize: page.pageSize,
-        });
-      },
-    },
-  },
-  editConfig: {
-    mode: 'row',
-    trigger: 'click',
-  },
-};
 
 const gridOptions: VxeTableGridOptions<RowType> = {
   columns: [
@@ -157,13 +110,10 @@ const gridOptions: VxeTableGridOptions<RowType> = {
         },
       ],
     },
-    { field: 'propDictId', title: $t('codegen.info.propDictId') },
     {
-      field: 'action',
-      fixed: 'right',
-      slots: { default: 'action' },
-      title: $t('system.common.operation'),
-      width: 100,
+      field: 'propDictId',
+      title: $t('codegen.info.propDictId'),
+      align: 'right',
     },
   ],
   exportConfig: {},
@@ -171,7 +121,7 @@ const gridOptions: VxeTableGridOptions<RowType> = {
   proxyConfig: {
     ajax: {
       query: async () => {
-        return await getColumnsInfo(1);
+        return await getColumnsInfo(infoId.value);
       },
     },
   },
@@ -179,18 +129,14 @@ const gridOptions: VxeTableGridOptions<RowType> = {
     enabled: false,
   },
   editConfig: {
-    mode: 'row',
+    mode: 'cell',
     trigger: 'click',
   },
 };
 
 const [Drawer, drawerApi] = useVbenDrawer({
   onOpenChange: async (open) => {
-    if (open) {
-      await getTableInfo(writeForm.value?.tableName).then((resp: any) => {
-        // TODO valueFormApi.setValues(resp);
-      });
-    } else {
+    if (!open) {
       drawerApi.setState({ loading: false });
     }
   },
@@ -207,19 +153,11 @@ const [Drawer, drawerApi] = useVbenDrawer({
   cancelText: $t('system.common.button.cancel'),
 });
 
-const config = (row: RowType) => {
-  configFormRef.value?.open(row);
-};
-
-const deleteByIds = (row: RowType) => {
-
-};
-
-const open = (row: any) => {
+const open = (row: any, iId: string) => {
   writeForm.value = {};
   if (row?.tableName) {
     writeForm.value = row;
-  } else {
+    infoId.value = iId;
   }
   drawerApi.open();
 };
@@ -227,33 +165,19 @@ const close = () => drawerApi.close();
 
 defineExpose({ open, close });
 
-const [Grid, gridApi] = useVbenVxeGrid({
+const [Grid] = useVbenVxeGrid({
   gridOptions,
-});
-
-const [GridInfo, gridInfoApi] = useVbenVxeGrid({
-  gridOptions: gridInfoOptions,
 });
 </script>
 
 <template>
-  <Drawer class="w-[60%]" :title="$t('codegen.table.form')">
+  <Drawer class="w-[100%]" :title="$t('codegen.table.form')">
     <ElCard>
-      <GridInfo>
-        <template #header>
-          <div class="card-header">
-            <span>{{ $t('codegen.info.title') }}</span>
-          </div>
-        </template>
-        <template #action="{ row }">
-          <ElButton type="warning" link @click="config(row)">
-            {{ $t('system.common.button.edit') }}
-          </ElButton>
-          <ElButton type="danger" link @click="deleteByIds(row)">
-            {{ $t('system.common.button.delete') }}
-          </ElButton>
-        </template>
-      </GridInfo>
+      <template #header>
+        <div class="card-header">
+          <span>{{ $t('codegen.info.title') }}</span>
+        </div>
+      </template>
     </ElCard>
     <ElCard style="margin-top: 1%">
       <template #header>
