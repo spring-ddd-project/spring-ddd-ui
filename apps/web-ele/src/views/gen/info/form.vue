@@ -6,10 +6,10 @@ import { ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { ElButton, ElCard, ElMessage } from 'element-plus';
+import { ElCard, ElMessage } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getColumnsInfo, getTableInfo } from '#/api/gen/table';
+import { getColumnsInfo } from '#/api/gen/table';
 
 import ConfigForm from '../table/config.vue';
 
@@ -41,7 +41,6 @@ interface RowType {
 }
 
 const gridOptions: VxeTableGridOptions<RowType> = {
-
   columns: [
     { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
@@ -122,7 +121,6 @@ const gridOptions: VxeTableGridOptions<RowType> = {
   proxyConfig: {
     ajax: {
       query: async () => {
-        console.log('infoId:', JSON.stringify(infoId.value));
         return await getColumnsInfo(infoId.value);
       },
     },
@@ -160,7 +158,6 @@ const open = (row: any, iId: string) => {
   if (row?.tableName) {
     writeForm.value = row;
     infoId.value = iId;
-  } else {
   }
   drawerApi.open();
 };
@@ -168,7 +165,7 @@ const close = () => drawerApi.close();
 
 defineExpose({ open, close });
 
-const [Grid, gridApi] = useVbenVxeGrid({
+const [Grid] = useVbenVxeGrid({
   gridOptions,
 });
 </script>

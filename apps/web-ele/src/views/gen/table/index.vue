@@ -12,7 +12,7 @@ import { ElButton } from 'element-plus';
 
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getTableInfo, getTablePage } from "#/api/gen/table";
+import { getTableInfo, getTablePage } from '#/api/gen/table';
 
 import GenInfoForm from '../info/form.vue';
 import ConfigForm from './config.vue';
