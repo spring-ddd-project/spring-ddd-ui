@@ -8,7 +8,7 @@ import { ref } from 'vue';
 import { Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { ElButton } from 'element-plus';
+import { ElButton, ElMessage } from 'element-plus';
 
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -109,6 +109,10 @@ const config = (row: RowType) => {
 
 const codegen = (row: RowType) => {
   getTableInfo(row?.tableName).then((resp: any) => {
+    if (!resp) {
+      ElMessage.warning($t('codegen.info.tableInfoConfig'));
+      return;
+    }
     genInfoFormRef.value?.open(row, resp.id);
   });
 };
