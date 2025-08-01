@@ -20,6 +20,10 @@ export async function getItemLabelByDictCodeAndValue(
   });
 }
 
+export async function getAllDict() {
+  return requestClient.post('/sys/dict/queryAll');
+}
+
 export async function createDict(data: any) {
   return requestClient.post('/sys/dict/create', data);
 }

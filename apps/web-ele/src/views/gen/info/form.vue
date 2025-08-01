@@ -6,10 +6,11 @@ import { ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { ElCard, ElMessage } from 'element-plus';
+import { ElCard, ElMessage, ElSwitch } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getColumnsInfo } from '#/api/gen/table';
+import { getAllDict } from '#/api/sys/dict';
 
 import ConfigForm from '../table/config.vue';
 
@@ -69,10 +70,15 @@ const gridOptions: VxeTableGridOptions<RowType> = {
           title: $t('codegen.info.group.column.java'),
           children: [
             {
+              editRender: { name: 'input' },
               field: 'propJavaEntity',
               title: $t('codegen.info.propJavaEntity'),
             },
-            { field: 'propJavaType', title: $t('codegen.info.propJavaType') },
+            {
+              editRender: { name: 'input' },
+              field: 'propJavaType',
+              title: $t('codegen.info.propJavaType'),
+            },
           ],
         },
       ],
@@ -80,9 +86,21 @@ const gridOptions: VxeTableGridOptions<RowType> = {
     {
       title: $t('codegen.info.group.table'),
       children: [
-        { field: 'tableVisible', title: $t('codegen.info.tableVisible') },
-        { field: 'tableOrder', title: $t('codegen.info.tableOrder') },
-        { field: 'tableFilter', title: $t('codegen.info.tableFilter') },
+        {
+          field: 'tableVisible',
+          title: $t('codegen.info.tableVisible'),
+          slots: { default: 'tableVisible' },
+        },
+        {
+          field: 'tableOrder',
+          title: $t('codegen.info.tableOrder'),
+          slots: { default: 'tableOrder' },
+        },
+        {
+          field: 'tableFilter',
+          title: $t('codegen.info.tableFilter'),
+          slots: { default: 'tableFilter' },
+        },
         {
           field: 'tableFilterComponent',
           title: $t('codegen.info.tableFilterComponent'),
@@ -114,6 +132,19 @@ const gridOptions: VxeTableGridOptions<RowType> = {
       field: 'propDictId',
       title: $t('codegen.info.propDictId'),
       align: 'right',
+      width: 100,
+      editRender: {
+        name: 'ApiSelect',
+        props: {
+          allowClear: true,
+          filterOption: true,
+          api: getAllDict(),
+          showSearch: true,
+          labelField: 'dictName',
+          valueField: 'id',
+          clearable: true,
+        },
+      },
     },
   ],
   exportConfig: {},
@@ -185,7 +216,17 @@ const [Grid] = useVbenVxeGrid({
           <span>{{ $t('codegen.info.value') }}</span>
         </div>
       </template>
-      <Grid />
+      <Grid>
+        <template #tableVisible="{ row }">
+          <ElSwitch v-model="row.tableVisible" />
+        </template>
+        <template #tableOrder="{ row }">
+          <ElSwitch v-model="row.tableOrder" />
+        </template>
+        <template #tableFilter="{ row }">
+          <ElSwitch v-model="row.tableFilter" />
+        </template>
+      </Grid>
     </ElCard>
     <ConfigForm ref="configFormRef" />
   </Drawer>
