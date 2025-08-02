@@ -131,18 +131,19 @@ const gridOptions: VxeTableGridOptions<RowType> = {
     {
       field: 'propDictId',
       title: $t('codegen.info.propDictId'),
-      align: 'right',
-      width: 100,
       editRender: {
-        name: 'ApiSelect',
+        name: 'VxeSelect',
         props: {
-          allowClear: true,
-          filterOption: true,
-          api: getAllDict(),
-          showSearch: true,
+          clearable: true,
+          filterable: true,
+          remote: true,
+          remoteConfig: {
+            enabled: true,
+            autoLoad: true,
+            queryMethod: getAllDict,
+          },
           labelField: 'dictName',
           valueField: 'id',
-          clearable: true,
         },
       },
     },
