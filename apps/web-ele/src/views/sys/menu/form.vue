@@ -257,7 +257,7 @@ const open = (row: any) => {
     formApi.setValues(row);
   } else {
     writeForm.value = {};
-    formApi.setValues({});
+    formApi.resetForm();
   }
   modalApi.open();
 };

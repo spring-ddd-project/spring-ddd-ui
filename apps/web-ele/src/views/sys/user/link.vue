@@ -79,7 +79,7 @@ const open = (row: any) => {
     writeForm.value = row;
     formApi.setValues(row);
   } else {
-    formApi.setValues({});
+    formApi.resetForm();
   }
   modalApi.open();
 };

@@ -91,7 +91,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
 });
 
 const openForm = () => {
-  const dictId = writeForm.value.id;
+  const dictId = writeForm.value.id ?? writeForm.value.dictId;
   writeForm.value = {};
   writeForm.value.dictId = dictId;
   itemFormRef.value?.open(writeForm.value);

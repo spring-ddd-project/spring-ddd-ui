@@ -6,11 +6,11 @@ import { ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { ElCard, ElMessage, ElSwitch } from 'element-plus';
+import { ElCard, ElMessage, ElOption, ElSelect, ElSwitch } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getColumnsInfo } from '#/api/gen/table';
-import { getAllDict } from '#/api/sys/dict';
+import { getAllDict, getItemLabelByDictCode } from '#/api/sys/dict';
 
 import ConfigForm from '../table/config.vue';
 
@@ -19,6 +19,19 @@ const configFormRef = ref();
 const writeForm = ref<Record<string, any>>({});
 
 const infoId = ref();
+
+interface DictItem {
+  id: string;
+  dictName: string;
+}
+
+interface ComponenetItem {
+  id: string;
+  itemLabel: string;
+}
+
+const dictData = ref<DictItem[]>([]);
+const componentData = ref<ComponenetItem[]>([]);
 
 interface RowType {
   id: string;
@@ -104,6 +117,7 @@ const gridOptions: VxeTableGridOptions<RowType> = {
         {
           field: 'tableFilterComponent',
           title: $t('codegen.info.tableFilterComponent'),
+          slots: { default: 'tableFilterComponent' },
         },
         {
           field: 'tableFilterType',
@@ -131,21 +145,9 @@ const gridOptions: VxeTableGridOptions<RowType> = {
     {
       field: 'propDictId',
       title: $t('codegen.info.propDictId'),
-      editRender: {
-        name: 'VxeSelect',
-        props: {
-          clearable: true,
-          filterable: true,
-          remote: true,
-          remoteConfig: {
-            enabled: true,
-            autoLoad: true,
-            queryMethod: getAllDict,
-          },
-          labelField: 'dictName',
-          valueField: 'id',
-        },
-      },
+      slots: { default: 'propDictId' },
+      align: 'right',
+      width: 150,
     },
   ],
   exportConfig: {},
@@ -200,6 +202,16 @@ defineExpose({ open, close });
 const [Grid] = useVbenVxeGrid({
   gridOptions,
 });
+
+const getDict = async (e: any) => {
+  if (!e) return;
+  dictData.value = await getAllDict();
+};
+
+const getComponent = async (e: any) => {
+  if (!e) return;
+  componentData.value = await getItemLabelByDictCode('components');
+};
 </script>
 
 <template>
@@ -226,6 +238,36 @@ const [Grid] = useVbenVxeGrid({
         </template>
         <template #tableFilter="{ row }">
           <ElSwitch v-model="row.tableFilter" />
+        </template>
+        <template #propDictId="{ row }">
+          <ElSelect
+            v-model="row.propDictId"
+            clearable
+            filterable
+            @visible-change="getDict"
+          >
+            <ElOption
+              v-for="item in dictData"
+              :key="item.id"
+              :label="item.dictName"
+              :value="item.id"
+            />
+          </ElSelect>
+        </template>
+        <template #tableFilterComponent="{ row }">
+          <ElSelect
+            v-model="row.tableFilterComponent"
+            clearable
+            filterable
+            @visible-change="getComponent"
+          >
+            <ElOption
+              v-for="item in componentData"
+              :key="item.id"
+              :label="item.itemLabel"
+              :value="item.id"
+            />
+          </ElSelect>
         </template>
       </Grid>
     </ElCard>
