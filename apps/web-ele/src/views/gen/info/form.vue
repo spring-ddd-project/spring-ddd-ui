@@ -139,6 +139,8 @@ const gridOptions: VxeTableGridOptions<RowType> = {
       field: 'propDictId',
       title: $t('codegen.info.propDictId'),
       slots: { default: 'propDictId' },
+      align: 'right',
+      width: 150,
     },
   ],
   exportConfig: {},
@@ -226,7 +228,12 @@ const getDict = async (e: any) => {
           <ElSwitch v-model="row.tableFilter" />
         </template>
         <template #propDictId="{ row }">
-          <ElSelect v-model="row.propDictId" @visible-change="getDict">
+          <ElSelect
+            v-model="row.propDictId"
+            clearable
+            filterable
+            @visible-change="getDict"
+          >
             <ElOption
               v-for="item in dictData"
               :key="item.id"

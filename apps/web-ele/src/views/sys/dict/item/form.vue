@@ -87,11 +87,15 @@ const open = (row: any) => {
   } else {
     writeForm.value = {};
     dictId.value = row.dictId;
-    formApi.setValues({});
+    formApi.resetForm();
   }
   drawerApi.open();
 };
-const close = () => drawerApi.close();
+const close = () => {
+  writeForm.value = {};
+  formApi.resetForm();
+  drawerApi.close();
+};
 
 defineExpose({ open, close });
 </script>
