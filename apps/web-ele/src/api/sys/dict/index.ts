@@ -20,6 +20,14 @@ export async function getItemLabelByDictCodeAndValue(
   });
 }
 
+export async function getItemLabelByDictCode(code: string) {
+  return requestClient.post('/sys/dict/item/getItemLabelByCode', null, {
+    params: {
+      dictCode: code,
+    },
+  });
+}
+
 export async function getAllDict() {
   return requestClient.post('/sys/dict/queryAll');
 }

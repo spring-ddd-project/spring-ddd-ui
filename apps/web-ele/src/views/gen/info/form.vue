@@ -10,7 +10,7 @@ import { ElCard, ElMessage, ElOption, ElSelect, ElSwitch } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getColumnsInfo } from '#/api/gen/table';
-import { getAllDict } from '#/api/sys/dict';
+import { getAllDict, getItemLabelByDictCode } from '#/api/sys/dict';
 
 import ConfigForm from '../table/config.vue';
 
@@ -25,7 +25,13 @@ interface DictItem {
   dictName: string;
 }
 
+interface ComponenetItem {
+  id: string;
+  itemLabel: string;
+}
+
 const dictData = ref<DictItem[]>([]);
+const componentData = ref<ComponenetItem[]>([]);
 
 interface RowType {
   id: string;
@@ -111,6 +117,7 @@ const gridOptions: VxeTableGridOptions<RowType> = {
         {
           field: 'tableFilterComponent',
           title: $t('codegen.info.tableFilterComponent'),
+          slots: { default: 'tableFilterComponent' },
         },
         {
           field: 'tableFilterType',
@@ -200,6 +207,11 @@ const getDict = async (e: any) => {
   if (!e) return;
   dictData.value = await getAllDict();
 };
+
+const getComponent = async (e: any) => {
+  if (!e) return;
+  componentData.value = await getItemLabelByDictCode('components');
+};
 </script>
 
 <template>
@@ -238,6 +250,21 @@ const getDict = async (e: any) => {
               v-for="item in dictData"
               :key="item.id"
               :label="item.dictName"
+              :value="item.id"
+            />
+          </ElSelect>
+        </template>
+        <template #tableFilterComponent="{ row }">
+          <ElSelect
+            v-model="row.tableFilterComponent"
+            clearable
+            filterable
+            @visible-change="getComponent"
+          >
+            <ElOption
+              v-for="item in componentData"
+              :key="item.id"
+              :label="item.itemLabel"
               :value="item.id"
             />
           </ElSelect>
