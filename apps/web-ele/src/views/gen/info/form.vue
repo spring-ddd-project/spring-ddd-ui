@@ -32,6 +32,7 @@ interface ComponenetItem {
 
 const dictData = ref<DictItem[]>([]);
 const componentData = ref<ComponenetItem[]>([]);
+const componentTypeData = ref<ComponenetItem[]>([]);
 
 interface RowType {
   id: string;
@@ -56,8 +57,7 @@ interface RowType {
 
 const gridOptions: VxeTableGridOptions<RowType> = {
   columns: [
-    { title: 'No.', type: 'seq', width: 50 },
-    { align: 'left', title: '#', type: 'checkbox', width: 50 },
+    { title: 'No.', type: 'seq', width: 50, fixed: 'left' },
     {
       title: $t('codegen.info.group.column.title'),
       children: [
@@ -67,15 +67,23 @@ const gridOptions: VxeTableGridOptions<RowType> = {
             {
               field: 'propColumnName',
               title: $t('codegen.info.propColumnName'),
-              align: 'left',
+              minWidth: 150,
+              fixed: 'left',
+            },
+            {
+              field: 'propColumnKey',
+              title: $t('codegen.info.propColumnKey'),
+              minWidth: 100,
             },
             {
               field: 'propColumnType',
               title: $t('codegen.info.propColumnType'),
+              minWidth: 100,
             },
             {
               field: 'propColumnComment',
               title: $t('codegen.info.propColumnComment'),
+              minWidth: 100,
             },
           ],
         },
@@ -86,11 +94,13 @@ const gridOptions: VxeTableGridOptions<RowType> = {
               editRender: { name: 'input' },
               field: 'propJavaEntity',
               title: $t('codegen.info.propJavaEntity'),
+              minWidth: 150,
             },
             {
               editRender: { name: 'input' },
               field: 'propJavaType',
               title: $t('codegen.info.propJavaType'),
+              minWidth: 100,
             },
           ],
         },
@@ -103,25 +113,31 @@ const gridOptions: VxeTableGridOptions<RowType> = {
           field: 'tableVisible',
           title: $t('codegen.info.tableVisible'),
           slots: { default: 'tableVisible' },
+          minWidth: 60,
         },
         {
           field: 'tableOrder',
           title: $t('codegen.info.tableOrder'),
           slots: { default: 'tableOrder' },
+          minWidth: 60,
         },
         {
           field: 'tableFilter',
           title: $t('codegen.info.tableFilter'),
           slots: { default: 'tableFilter' },
+          minWidth: 60,
         },
         {
           field: 'tableFilterComponent',
           title: $t('codegen.info.tableFilterComponent'),
           slots: { default: 'tableFilterComponent' },
+          minWidth: 150,
         },
         {
           field: 'tableFilterType',
           title: $t('codegen.info.tableFilterType'),
+          slots: { default: 'tableFilterType' },
+          minWidth: 100,
         },
       ],
     },
@@ -131,14 +147,20 @@ const gridOptions: VxeTableGridOptions<RowType> = {
         {
           field: 'formComponent',
           title: $t('codegen.info.formComponent'),
+          slots: { default: 'formComponent' },
+          minWidth: 150,
         },
         {
           field: 'formVisible',
           title: $t('codegen.info.formVisible'),
+          slots: { default: 'formVisible' },
+          minWidth: 60,
         },
         {
           field: 'formRequired',
           title: $t('codegen.info.formRequired'),
+          slots: { default: 'formRequired' },
+          minWidth: 100,
         },
       ],
     },
@@ -146,7 +168,7 @@ const gridOptions: VxeTableGridOptions<RowType> = {
       field: 'propDictId',
       title: $t('codegen.info.propDictId'),
       slots: { default: 'propDictId' },
-      align: 'right',
+      fixed: 'right',
       width: 150,
     },
   ],
@@ -212,6 +234,11 @@ const getComponent = async (e: any) => {
   if (!e) return;
   componentData.value = await getItemLabelByDictCode('components');
 };
+
+const getComponentType = async (e: any) => {
+  if (!e) return;
+  componentTypeData.value = await getItemLabelByDictCode('component_type');
+};
 </script>
 
 <template>
@@ -219,14 +246,14 @@ const getComponent = async (e: any) => {
     <ElCard>
       <template #header>
         <div class="card-header">
-          <span>{{ $t('codegen.info.title') }}</span>
+          <span>{{ $t('codegen.info.valueObject') }}</span>
         </div>
       </template>
     </ElCard>
     <ElCard style="margin-top: 1%">
       <template #header>
         <div class="card-header">
-          <span>{{ $t('codegen.info.value') }}</span>
+          <span>{{ $t('codegen.info.columnConfig') }}</span>
         </div>
       </template>
       <Grid>
@@ -238,6 +265,12 @@ const getComponent = async (e: any) => {
         </template>
         <template #tableFilter="{ row }">
           <ElSwitch v-model="row.tableFilter" />
+        </template>
+        <template #formVisible="{ row }">
+          <ElSwitch v-model="row.formVisible" />
+        </template>
+        <template #formRequired="{ row }">
+          <ElSwitch v-model="row.formRequired" />
         </template>
         <template #propDictId="{ row }">
           <ElSelect
@@ -257,6 +290,36 @@ const getComponent = async (e: any) => {
         <template #tableFilterComponent="{ row }">
           <ElSelect
             v-model="row.tableFilterComponent"
+            clearable
+            filterable
+            @visible-change="getComponent"
+          >
+            <ElOption
+              v-for="item in componentData"
+              :key="item.id"
+              :label="item.itemLabel"
+              :value="item.id"
+            />
+          </ElSelect>
+        </template>
+        <template #tableFilterType="{ row }">
+          <ElSelect
+            v-model="row.tableFilterType"
+            clearable
+            filterable
+            @visible-change="getComponentType"
+          >
+            <ElOption
+              v-for="item in componentTypeData"
+              :key="item.id"
+              :label="item.itemLabel"
+              :value="item.id"
+            />
+          </ElSelect>
+        </template>
+        <template #formComponent="{ row }">
+          <ElSelect
+            v-model="row.formComponent"
             clearable
             filterable
             @visible-change="getComponent"

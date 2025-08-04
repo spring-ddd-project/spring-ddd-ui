@@ -21,7 +21,7 @@ export async function getItemLabelByDictCodeAndValue(
 }
 
 export async function getItemLabelByDictCode(code: string) {
-  return requestClient.post('/sys/dict/item/getItemLabelByCode', null, {
+  return requestClient.post('/sys/dict/queryItemByDictCode', null, {
     params: {
       dictCode: code,
     },

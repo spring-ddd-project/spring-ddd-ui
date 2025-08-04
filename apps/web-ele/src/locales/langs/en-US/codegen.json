@@ -14,8 +14,8 @@
     "form": "Basic Information Data Processing via Code Generation"
   },
   "info": {
-    "title": "Project Management",
-    "value": "Value Management",
+    "valueObject": "Value Object Config",
+    "columnConfig": "Column Config",
     "tableName": "Table Name",
     "packageName": "Package Name",
     "className": "Class Name",
