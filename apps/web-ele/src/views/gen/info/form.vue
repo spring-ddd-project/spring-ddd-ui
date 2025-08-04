@@ -32,6 +32,7 @@ interface ComponenetItem {
 
 const dictData = ref<DictItem[]>([]);
 const componentData = ref<ComponenetItem[]>([]);
+const componentTypeData = ref<ComponenetItem[]>([]);
 
 interface RowType {
   id: string;
@@ -56,8 +57,7 @@ interface RowType {
 
 const gridOptions: VxeTableGridOptions<RowType> = {
   columns: [
-    { title: 'No.', type: 'seq', width: 50 },
-    { align: 'left', title: '#', type: 'checkbox', width: 50 },
+    { title: 'No.', type: 'seq', width: 50, fixed: 'left' },
     {
       title: $t('codegen.info.group.column.title'),
       children: [
@@ -67,7 +67,6 @@ const gridOptions: VxeTableGridOptions<RowType> = {
             {
               field: 'propColumnName',
               title: $t('codegen.info.propColumnName'),
-              align: 'left',
             },
             {
               field: 'propColumnType',
@@ -118,10 +117,13 @@ const gridOptions: VxeTableGridOptions<RowType> = {
           field: 'tableFilterComponent',
           title: $t('codegen.info.tableFilterComponent'),
           slots: { default: 'tableFilterComponent' },
+          width: 150,
         },
         {
           field: 'tableFilterType',
           title: $t('codegen.info.tableFilterType'),
+          slots: { default: 'tableFilterType' },
+          width: 100,
         },
       ],
     },
@@ -131,14 +133,18 @@ const gridOptions: VxeTableGridOptions<RowType> = {
         {
           field: 'formComponent',
           title: $t('codegen.info.formComponent'),
+          slots: { default: 'formComponent' },
+          width: 150,
         },
         {
           field: 'formVisible',
           title: $t('codegen.info.formVisible'),
+          slots: { default: 'formVisible' },
         },
         {
           field: 'formRequired',
           title: $t('codegen.info.formRequired'),
+          slots: { default: 'formRequired' },
         },
       ],
     },
@@ -146,7 +152,7 @@ const gridOptions: VxeTableGridOptions<RowType> = {
       field: 'propDictId',
       title: $t('codegen.info.propDictId'),
       slots: { default: 'propDictId' },
-      align: 'right',
+      fixed: 'right',
       width: 150,
     },
   ],
@@ -212,6 +218,11 @@ const getComponent = async (e: any) => {
   if (!e) return;
   componentData.value = await getItemLabelByDictCode('components');
 };
+
+const getComponentType = async (e: any) => {
+  if (!e) return;
+  componentTypeData.value = await getItemLabelByDictCode('component_type');
+};
 </script>
 
 <template>
@@ -239,6 +250,12 @@ const getComponent = async (e: any) => {
         <template #tableFilter="{ row }">
           <ElSwitch v-model="row.tableFilter" />
         </template>
+        <template #formVisible="{ row }">
+          <ElSwitch v-model="row.formVisible" />
+        </template>
+        <template #formRequired="{ row }">
+          <ElSwitch v-model="row.formRequired" />
+        </template>
         <template #propDictId="{ row }">
           <ElSelect
             v-model="row.propDictId"
@@ -257,6 +274,36 @@ const getComponent = async (e: any) => {
         <template #tableFilterComponent="{ row }">
           <ElSelect
             v-model="row.tableFilterComponent"
+            clearable
+            filterable
+            @visible-change="getComponent"
+          >
+            <ElOption
+              v-for="item in componentData"
+              :key="item.id"
+              :label="item.itemLabel"
+              :value="item.id"
+            />
+          </ElSelect>
+        </template>
+        <template #tableFilterType="{ row }">
+          <ElSelect
+            v-model="row.tableFilterType"
+            clearable
+            filterable
+            @visible-change="getComponentType"
+          >
+            <ElOption
+              v-for="item in componentTypeData"
+              :key="item.id"
+              :label="item.itemLabel"
+              :value="item.id"
+            />
+          </ElSelect>
+        </template>
+        <template #formComponent="{ row }">
+          <ElSelect
+            v-model="row.formComponent"
             clearable
             filterable
             @visible-change="getComponent"
