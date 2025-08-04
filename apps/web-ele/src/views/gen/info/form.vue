@@ -67,14 +67,23 @@ const gridOptions: VxeTableGridOptions<RowType> = {
             {
               field: 'propColumnName',
               title: $t('codegen.info.propColumnName'),
+              minWidth: 150,
+              fixed: 'left',
+            },
+            {
+              field: 'propColumnKey',
+              title: $t('codegen.info.propColumnKey'),
+              minWidth: 100,
             },
             {
               field: 'propColumnType',
               title: $t('codegen.info.propColumnType'),
+              minWidth: 100,
             },
             {
               field: 'propColumnComment',
               title: $t('codegen.info.propColumnComment'),
+              minWidth: 100,
             },
           ],
         },
@@ -85,11 +94,13 @@ const gridOptions: VxeTableGridOptions<RowType> = {
               editRender: { name: 'input' },
               field: 'propJavaEntity',
               title: $t('codegen.info.propJavaEntity'),
+              minWidth: 150,
             },
             {
               editRender: { name: 'input' },
               field: 'propJavaType',
               title: $t('codegen.info.propJavaType'),
+              minWidth: 100,
             },
           ],
         },
@@ -102,28 +113,31 @@ const gridOptions: VxeTableGridOptions<RowType> = {
           field: 'tableVisible',
           title: $t('codegen.info.tableVisible'),
           slots: { default: 'tableVisible' },
+          minWidth: 60,
         },
         {
           field: 'tableOrder',
           title: $t('codegen.info.tableOrder'),
           slots: { default: 'tableOrder' },
+          minWidth: 60,
         },
         {
           field: 'tableFilter',
           title: $t('codegen.info.tableFilter'),
           slots: { default: 'tableFilter' },
+          minWidth: 60,
         },
         {
           field: 'tableFilterComponent',
           title: $t('codegen.info.tableFilterComponent'),
           slots: { default: 'tableFilterComponent' },
-          width: 150,
+          minWidth: 150,
         },
         {
           field: 'tableFilterType',
           title: $t('codegen.info.tableFilterType'),
           slots: { default: 'tableFilterType' },
-          width: 100,
+          minWidth: 100,
         },
       ],
     },
@@ -134,17 +148,19 @@ const gridOptions: VxeTableGridOptions<RowType> = {
           field: 'formComponent',
           title: $t('codegen.info.formComponent'),
           slots: { default: 'formComponent' },
-          width: 150,
+          minWidth: 150,
         },
         {
           field: 'formVisible',
           title: $t('codegen.info.formVisible'),
           slots: { default: 'formVisible' },
+          minWidth: 60,
         },
         {
           field: 'formRequired',
           title: $t('codegen.info.formRequired'),
           slots: { default: 'formRequired' },
+          minWidth: 100,
         },
       ],
     },
@@ -230,14 +246,14 @@ const getComponentType = async (e: any) => {
     <ElCard>
       <template #header>
         <div class="card-header">
-          <span>{{ $t('codegen.info.title') }}</span>
+          <span>{{ $t('codegen.info.valueObject') }}</span>
         </div>
       </template>
     </ElCard>
     <ElCard style="margin-top: 1%">
       <template #header>
         <div class="card-header">
-          <span>{{ $t('codegen.info.value') }}</span>
+          <span>{{ $t('codegen.info.columnConfig') }}</span>
         </div>
       </template>
       <Grid>
