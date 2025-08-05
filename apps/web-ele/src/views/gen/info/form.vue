@@ -38,7 +38,7 @@ interface RowType {
   id: string;
   infoId: string;
   propValueObject: boolean;
-  propColumnKey: boolean;
+  propColumnKey: string;
   propColumnName: string;
   propColumnType: string;
   propColumnComment: string;
