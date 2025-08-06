@@ -6,7 +6,14 @@ import { ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { ElButton, ElCard, ElMessage, ElOption, ElSelect, ElSwitch } from "element-plus";
+import {
+  ElButton,
+  ElCard,
+  ElMessage,
+  ElOption,
+  ElSelect,
+  ElSwitch,
+} from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getColumnsInfo } from '#/api/gen/table';
@@ -37,7 +44,7 @@ const componentTypeData = ref<ComponenetItem[]>([]);
 interface RowType {
   id: string;
   infoId: string;
-  propValueObject: boolean;
+  propAggregate: string;
   propColumnKey: string;
   propColumnName: string;
   propColumnType: string;
