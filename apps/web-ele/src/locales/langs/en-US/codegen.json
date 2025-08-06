@@ -51,6 +51,11 @@
       },
       "table": "Table Page",
       "form": "Form Page"
+    },
+    "aggregate": {
+      "id": "Set as Aggregate Root ID",
+      "value": "Set as Value Object",
+      "entity": "Set as Entity"
     }
   }
 }
