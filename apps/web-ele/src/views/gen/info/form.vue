@@ -6,7 +6,14 @@ import { ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { ElCard, ElMessage, ElOption, ElSelect, ElSwitch } from 'element-plus';
+import {
+  ElButton,
+  ElCard,
+  ElMessage,
+  ElOption,
+  ElSelect,
+  ElSwitch,
+} from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getColumnsInfo } from '#/api/gen/table';
@@ -37,7 +44,7 @@ const componentTypeData = ref<ComponenetItem[]>([]);
 interface RowType {
   id: string;
   infoId: string;
-  propValueObject: boolean;
+  propAggregate: string;
   propColumnKey: string;
   propColumnName: string;
   propColumnType: string;
@@ -58,6 +65,7 @@ interface RowType {
 const gridOptions: VxeTableGridOptions<RowType> = {
   columns: [
     { title: 'No.', type: 'seq', width: 50, fixed: 'left' },
+    { align: 'left', title: '#', type: 'checkbox', width: 50, fixed: 'left' },
     {
       title: $t('codegen.info.group.column.title'),
       children: [
@@ -188,6 +196,12 @@ const gridOptions: VxeTableGridOptions<RowType> = {
     mode: 'cell',
     trigger: 'click',
   },
+  toolbarConfig: {
+    custom: true,
+    export: true,
+    refresh: true,
+    zoom: true,
+  },
 };
 
 const [Drawer, drawerApi] = useVbenDrawer({
@@ -257,6 +271,17 @@ const getComponentType = async (e: any) => {
         </div>
       </template>
       <Grid>
+        <template #toolbar-actions>
+          <ElButton class="mr-2" bg text type="primary">
+            {{ $t('codegen.info.aggregate.id') }}
+          </ElButton>
+          <ElButton class="mr-2" bg text type="danger">
+            {{ $t('codegen.info.aggregate.value') }}
+          </ElButton>
+          <ElButton class="mr-2" bg text type="info">
+            {{ $t('codegen.info.aggregate.entity') }}
+          </ElButton>
+        </template>
         <template #tableVisible="{ row }">
           <ElSwitch v-model="row.tableVisible" />
         </template>
