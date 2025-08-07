@@ -3,7 +3,7 @@ import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
 
-import { useVbenDrawer } from '@vben/common-ui';
+import { prompt, useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
 import {
@@ -43,8 +43,8 @@ const dictData = ref<DictItem[]>([]);
 const componentData = ref<ComponenetItem[]>([]);
 const componentTypeData = ref<ComponenetItem[]>([]);
 
-const aggregateData = ref();
-const valueObjectData = ref([]);
+const aggregateData = ref<string[]>([]);
+const valueObjectData = ref<{ [key: string]: string[] }[]>([]);
 const entityData = ref([]);
 
 interface RowType {
@@ -260,14 +260,34 @@ const getComponentType = async (e: any) => {
 };
 
 const setAggregate = () => {
-  const data = gridApi.grid
+  const aggregate = gridApi.grid
     .getCheckboxRecords()
     .map((item) => item.propJavaEntity);
-  if (data.length !== 1) {
+  if (aggregate.length !== 1) {
     ElMessage.warning($t('codegen.info.aggregate.alert.id'));
     return;
   }
-  aggregateData.value = data;
+  aggregateData.value = aggregate;
+};
+
+const setValueObject = () => {
+  prompt({
+    content: '请输入一些东西',
+  })
+    .then((val) => {
+      const valueObject = gridApi.grid
+        .getCheckboxRecords()
+        .map((item) => item.propJavaEntity);
+
+      if (valueObject.length === 0) {
+        ElMessage.warning($t('codegen.info.valueObject.alert.valueObject'));
+        return;
+      }
+
+      const valueObjectEntry = { [val]: valueObject };
+      valueObjectData.value.push(valueObjectEntry);
+    })
+    .catch(() => {});
 };
 </script>
 
@@ -282,25 +302,41 @@ const setAggregate = () => {
       <ElDivider content-position="center">
         <span>{{ $t('codegen.info.aggregate.title.id') }}</span>
       </ElDivider>
-      <ElTag type="success"> {{ aggregateData }} </ElTag>
+      <ElTag size="large" type="success">
+        <span v-if="aggregateData.length > 0">
+          aggregateId: {{ aggregateData[0] }}
+        </span>
+      </ElTag>
       <ElDivider content-position="center">
         <span>{{ $t('codegen.info.aggregate.title.value') }}</span>
       </ElDivider>
       <div class="flex gap-2">
         <ElTag
           type="danger"
-          v-for="value in valueObjectData"
-          :key="value"
+          size="large"
+          v-for="(item, index) in valueObjectData"
+          :key="index"
           closable
         >
-          {{ value }}
+          <template v-if="item && Object.keys(item).length > 0">
+            <span v-for="(value, key) in item" :key="key">
+              {{ key }}: [{{ value.join(', ') }}]
+            </span>
+          </template>
+          <template v-else> Invalid data </template>
         </ElTag>
       </div>
       <ElDivider content-position="center">
         <span>{{ $t('codegen.info.aggregate.title.entity') }}</span>
       </ElDivider>
       <div class="flex gap-2">
-        <ElTag type="info" v-for="value in entityData" :key="value" closable>
+        <ElTag
+          type="info"
+          size="large"
+          v-for="value in entityData"
+          :key="value"
+          closable
+        >
           {{ value }}
         </ElTag>
       </div>
@@ -316,7 +352,7 @@ const setAggregate = () => {
           <ElButton class="mr-2" bg text type="primary" @click="setAggregate">
             {{ $t('codegen.info.aggregate.id') }}
           </ElButton>
-          <ElButton class="mr-2" bg text type="danger">
+          <ElButton class="mr-2" bg text type="danger" @click="setValueObject">
             {{ $t('codegen.info.aggregate.value') }}
           </ElButton>
           <ElButton class="mr-2" bg text type="info">
