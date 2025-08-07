@@ -45,7 +45,7 @@ const componentTypeData = ref<ComponenetItem[]>([]);
 
 const aggregateData = ref<string[]>([]);
 const valueObjectData = ref<{ [key: string]: string[] }[]>([]);
-const entityData = ref([]);
+const entityData = ref<{ [key: string]: string[] }[]>([]);
 
 interface RowType {
   id: string;
@@ -267,12 +267,25 @@ const setAggregate = () => {
     ElMessage.warning($t('codegen.info.aggregate.alert.id'));
     return;
   }
+
+  const isDuplicate = checkDuplicate(
+    aggregate,
+    aggregateData.value,
+    valueObjectData.value,
+    'aggregate',
+  );
+
+  if (isDuplicate) {
+    return;
+  }
+
   aggregateData.value = aggregate;
+  setEntity();
 };
 
 const setValueObject = () => {
   prompt({
-    content: '请输入一些东西',
+    content: $t('codegen.info.aggregate.alert.inputValueObject'),
   })
     .then((val) => {
       const valueObject = gridApi.grid
@@ -280,14 +293,103 @@ const setValueObject = () => {
         .map((item) => item.propJavaEntity);
 
       if (valueObject.length === 0) {
-        ElMessage.warning($t('codegen.info.valueObject.alert.valueObject'));
+        ElMessage.warning($t('codegen.info.aggregate.alert.value'));
+        return;
+      }
+
+      const isDuplicate = checkDuplicate(
+        valueObject,
+        aggregateData.value,
+        valueObjectData.value,
+        'valueObject',
+      );
+
+      if (isDuplicate) {
         return;
       }
 
       const valueObjectEntry = { [val]: valueObject };
       valueObjectData.value.push(valueObjectEntry);
+      setEntity();
     })
     .catch(() => {});
+};
+
+const setEntity = () => {
+  const allColumnPropJavaEntity = gridApi.grid
+    .getFullData()
+    .map((item) => item.propJavaEntity)
+    .filter((prop) => prop !== null && prop !== undefined);
+
+  let filteredEntityData = allColumnPropJavaEntity.filter(
+    (item) => !aggregateData.value.includes(item),
+  );
+
+  filteredEntityData = filteredEntityData.filter(
+    (item) =>
+      !valueObjectData.value.some((entry) =>
+        Object.values(entry).flat().includes(item),
+      ),
+  );
+
+  entityData.value = [{ ExtendInfo: filteredEntityData }];
+};
+
+const checkDuplicate = (
+  newValues: string[],
+  aggregateData: string[] | { [key: string]: string[] }[],
+  valueObjectData: string[] | { [key: string]: string[] }[],
+  context: 'aggregate' | 'valueObject',
+): boolean => {
+  let isDuplicateFound = false;
+
+  if (Array.isArray(aggregateData) && typeof aggregateData[0] === 'string') {
+    isDuplicateFound = aggregateData.some((item) =>
+      newValues.includes(item as string),
+    );
+  }
+
+  if (
+    !isDuplicateFound &&
+    Array.isArray(valueObjectData) &&
+    typeof valueObjectData[0] === 'string'
+  ) {
+    isDuplicateFound = valueObjectData.some((item) =>
+      newValues.includes(item as string),
+    );
+  }
+
+  if (
+    !isDuplicateFound &&
+    Array.isArray(aggregateData) &&
+    typeof aggregateData[0] === 'object'
+  ) {
+    isDuplicateFound = aggregateData.some((entry) =>
+      newValues.some((value) => Object.values(entry).flat().includes(value)),
+    );
+  }
+
+  if (
+    !isDuplicateFound &&
+    Array.isArray(valueObjectData) &&
+    typeof valueObjectData[0] === 'object'
+  ) {
+    isDuplicateFound = valueObjectData.some((entry) =>
+      newValues.some((value) => Object.values(entry).flat().includes(value)),
+    );
+  }
+
+  if (isDuplicateFound) {
+    if (context === 'aggregate') {
+      ElMessage.warning($t('codegen.info.aggregate.alert.duplicate.id'));
+    } else if (context === 'valueObject') {
+      ElMessage.warning(
+        $t('codegen.info.aggregate.alert.duplicate.valueObject'),
+      );
+    }
+  }
+
+  return isDuplicateFound;
 };
 </script>
 
@@ -333,11 +435,16 @@ const setValueObject = () => {
         <ElTag
           type="info"
           size="large"
-          v-for="value in entityData"
-          :key="value"
+          v-for="(item, index) in entityData"
+          :key="index"
           closable
         >
-          {{ value }}
+          <template v-if="item && Object.keys(item).length > 0">
+            <span v-for="(value, key) in item" :key="key">
+              {{ key }}: [{{ value.join(', ') }}]
+            </span>
+          </template>
+          <template v-else> Invalid data </template>
         </ElTag>
       </div>
     </ElCard>
@@ -354,9 +461,6 @@ const setValueObject = () => {
           </ElButton>
           <ElButton class="mr-2" bg text type="danger" @click="setValueObject">
             {{ $t('codegen.info.aggregate.value') }}
-          </ElButton>
-          <ElButton class="mr-2" bg text type="info">
-            {{ $t('codegen.info.aggregate.entity') }}
           </ElButton>
         </template>
         <template #tableVisible="{ row }">
