@@ -47,6 +47,16 @@ const aggregateData = ref<string[]>([]);
 const valueObjectData = ref<{ [key: string]: string[] }[]>([]);
 const entityData = ref<{ [key: string]: string[] }[]>([]);
 
+const commonData = ref([
+  'createBy',
+  'updateBy',
+  'createTime',
+  'updateTime',
+  'deleteStatus',
+  'deptId',
+  'version',
+]);
+
 interface RowType {
   id: string;
   infoId: string;
@@ -325,12 +335,14 @@ const setEntity = () => {
     (item) => !aggregateData.value.includes(item),
   );
 
-  filteredEntityData = filteredEntityData.filter(
-    (item) =>
-      !valueObjectData.value.some((entry) =>
-        Object.values(entry).flat().includes(item),
-      ),
-  );
+  filteredEntityData = filteredEntityData
+    .filter(
+      (item) =>
+        !valueObjectData.value.some((entry) =>
+          Object.values(entry).flat().includes(item),
+        ),
+    )
+    .filter((e) => !commonData.value.includes(e));
 
   entityData.value = [{ ExtendInfo: filteredEntityData }];
 };
