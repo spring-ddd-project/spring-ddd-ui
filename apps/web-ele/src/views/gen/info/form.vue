@@ -1,22 +1,24 @@
 <script lang="ts" setup>
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 
-import { useVbenDrawer } from '@vben/common-ui';
+import { prompt, useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
 import {
   ElButton,
   ElCard,
+  ElDivider,
   ElMessage,
   ElOption,
   ElSelect,
   ElSwitch,
+  ElTag,
 } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getColumnsInfo } from '#/api/gen/table';
+import { createColumns, getColumnsInfo } from '#/api/gen/table';
 import { getAllDict, getItemLabelByDictCode } from '#/api/sys/dict';
 
 import ConfigForm from '../table/config.vue';
@@ -40,6 +42,27 @@ interface ComponenetItem {
 const dictData = ref<DictItem[]>([]);
 const componentData = ref<ComponenetItem[]>([]);
 const componentTypeData = ref<ComponenetItem[]>([]);
+
+const aggregateData = ref<string[]>([]);
+const valueObjectData = ref<{ [key: string]: string[] }[]>([]);
+const entityData = ref<{ [key: string]: string[] }[]>([]);
+
+const commonData = ref([
+  'createBy',
+  'updateBy',
+  'createTime',
+  'updateTime',
+  'deleteStatus',
+  'deptId',
+  'version',
+]);
+
+const aggregateStruct = reactive({
+  aggregateId: aggregateData.value,
+  valueObject: valueObjectData.value,
+  extendInfo: entityData.value,
+  common: commonData.value,
+});
 
 interface RowType {
   id: string;
@@ -76,7 +99,6 @@ const gridOptions: VxeTableGridOptions<RowType> = {
               field: 'propColumnName',
               title: $t('codegen.info.propColumnName'),
               minWidth: 150,
-              fixed: 'left',
             },
             {
               field: 'propColumnKey',
@@ -211,9 +233,19 @@ const [Drawer, drawerApi] = useVbenDrawer({
     }
   },
   onConfirm: async () => {
-    drawerApi.setState({ loading: true });
-    ElMessage.success($t('system.common.save.success'));
-    drawerApi.setState({ loading: false }).close();
+    const data = gridApi.grid.getFullData().map((d) => {
+      d.infoId = infoId.value;
+      return d;
+    });
+    await createColumns(data)
+      .then((resp: any) => {
+        if (resp) {
+          ElMessage.success($t('system.common.save.success'));
+        }
+      })
+      .finally(() => {
+        drawerApi.setState({ loading: false }).close();
+      });
   },
   onCancel: () => {
     writeForm.value = {};
@@ -235,7 +267,7 @@ const close = () => drawerApi.close();
 
 defineExpose({ open, close });
 
-const [Grid] = useVbenVxeGrid({
+const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions,
 });
 
@@ -253,6 +285,141 @@ const getComponentType = async (e: any) => {
   if (!e) return;
   componentTypeData.value = await getItemLabelByDictCode('component_type');
 };
+
+const setAggregate = () => {
+  const aggregate = gridApi.grid
+    .getCheckboxRecords()
+    .map((item) => item.propJavaEntity);
+  if (aggregate.length !== 1) {
+    ElMessage.warning($t('codegen.info.aggregate.alert.id'));
+    return;
+  }
+
+  const isDuplicate = checkDuplicate(
+    aggregate,
+    aggregateData.value,
+    valueObjectData.value,
+    'aggregate',
+  );
+
+  if (isDuplicate) {
+    return;
+  }
+
+  aggregateData.value = aggregate;
+  setEntity();
+};
+
+const setValueObject = () => {
+  prompt({
+    content: $t('codegen.info.aggregate.alert.inputValueObject'),
+  })
+    .then((val) => {
+      const valueObject = gridApi.grid
+        .getCheckboxRecords()
+        .map((item) => item.propJavaEntity);
+
+      if (valueObject.length === 0) {
+        ElMessage.warning($t('codegen.info.aggregate.alert.value'));
+        return;
+      }
+
+      const isDuplicate = checkDuplicate(
+        valueObject,
+        aggregateData.value,
+        valueObjectData.value,
+        'valueObject',
+      );
+
+      if (isDuplicate) {
+        return;
+      }
+
+      const valueObjectEntry = { [val]: valueObject };
+      valueObjectData.value.push(valueObjectEntry);
+      setEntity();
+    })
+    .catch(() => {});
+};
+
+const setEntity = () => {
+  const allColumnPropJavaEntity = gridApi.grid
+    .getFullData()
+    .map((item) => item.propJavaEntity)
+    .filter((prop) => prop !== null && prop !== undefined);
+
+  let filteredEntityData = allColumnPropJavaEntity.filter(
+    (item) => !aggregateData.value.includes(item),
+  );
+
+  filteredEntityData = filteredEntityData
+    .filter(
+      (item) =>
+        !valueObjectData.value.some((entry) =>
+          Object.values(entry).flat().includes(item),
+        ),
+    )
+    .filter((e) => !commonData.value.includes(e));
+
+  entityData.value = [{ ExtendInfo: filteredEntityData }];
+};
+
+const checkDuplicate = (
+  newValues: string[],
+  aggregateData: string[] | { [key: string]: string[] }[],
+  valueObjectData: string[] | { [key: string]: string[] }[],
+  context: 'aggregate' | 'valueObject',
+): boolean => {
+  let isDuplicateFound = false;
+
+  if (Array.isArray(aggregateData) && typeof aggregateData[0] === 'string') {
+    isDuplicateFound = aggregateData.some((item) =>
+      newValues.includes(item as string),
+    );
+  }
+
+  if (
+    !isDuplicateFound &&
+    Array.isArray(valueObjectData) &&
+    typeof valueObjectData[0] === 'string'
+  ) {
+    isDuplicateFound = valueObjectData.some((item) =>
+      newValues.includes(item as string),
+    );
+  }
+
+  if (
+    !isDuplicateFound &&
+    Array.isArray(aggregateData) &&
+    typeof aggregateData[0] === 'object'
+  ) {
+    isDuplicateFound = aggregateData.some((entry) =>
+      newValues.some((value) => Object.values(entry).flat().includes(value)),
+    );
+  }
+
+  if (
+    !isDuplicateFound &&
+    Array.isArray(valueObjectData) &&
+    typeof valueObjectData[0] === 'object'
+  ) {
+    isDuplicateFound = valueObjectData.some((entry) =>
+      newValues.some((value) => Object.values(entry).flat().includes(value)),
+    );
+  }
+
+  if (isDuplicateFound) {
+    if (context === 'aggregate') {
+      ElMessage.warning($t('codegen.info.aggregate.alert.duplicate.id'));
+    } else if (context === 'valueObject') {
+      ElMessage.warning(
+        $t('codegen.info.aggregate.alert.duplicate.valueObject'),
+      );
+    }
+  }
+
+  return isDuplicateFound;
+};
 </script>
 
 <template>
@@ -263,6 +430,52 @@ const getComponentType = async (e: any) => {
           <span>{{ $t('codegen.info.valueObject') }}</span>
         </div>
       </template>
+      <ElDivider content-position="center">
+        <span>{{ $t('codegen.info.aggregate.title.id') }}</span>
+      </ElDivider>
+      <ElTag size="large" type="success">
+        <span v-if="aggregateData.length > 0">
+          aggregateId: {{ aggregateData[0] }}
+        </span>
+      </ElTag>
+      <ElDivider content-position="center">
+        <span>{{ $t('codegen.info.aggregate.title.value') }}</span>
+      </ElDivider>
+      <div class="flex gap-2">
+        <ElTag
+          type="danger"
+          size="large"
+          v-for="(item, index) in valueObjectData"
+          :key="index"
+          closable
+        >
+          <template v-if="item && Object.keys(item).length > 0">
+            <span v-for="(value, key) in item" :key="key">
+              {{ key }}: [{{ value.join(', ') }}]
+            </span>
+          </template>
+          <template v-else> Invalid data </template>
+        </ElTag>
+      </div>
+      <ElDivider content-position="center">
+        <span>{{ $t('codegen.info.aggregate.title.entity') }}</span>
+      </ElDivider>
+      <div class="flex gap-2">
+        <ElTag
+          type="info"
+          size="large"
+          v-for="(item, index) in entityData"
+          :key="index"
+          closable
+        >
+          <template v-if="item && Object.keys(item).length > 0">
+            <span v-for="(value, key) in item" :key="key">
+              {{ key }}: [{{ value.join(', ') }}]
+            </span>
+          </template>
+          <template v-else> Invalid data </template>
+        </ElTag>
+      </div>
     </ElCard>
     <ElCard style="margin-top: 1%">
       <template #header>
@@ -272,14 +485,11 @@ const getComponentType = async (e: any) => {
       </template>
       <Grid>
         <template #toolbar-actions>
-          <ElButton class="mr-2" bg text type="primary">
+          <ElButton class="mr-2" bg text type="primary" @click="setAggregate">
             {{ $t('codegen.info.aggregate.id') }}
           </ElButton>
-          <ElButton class="mr-2" bg text type="danger">
+          <ElButton class="mr-2" bg text type="danger" @click="setValueObject">
             {{ $t('codegen.info.aggregate.value') }}
-          </ElButton>
-          <ElButton class="mr-2" bg text type="info">
-            {{ $t('codegen.info.aggregate.entity') }}
           </ElButton>
         </template>
         <template #tableVisible="{ row }">

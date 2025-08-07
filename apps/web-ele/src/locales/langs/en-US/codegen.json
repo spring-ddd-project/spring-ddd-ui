@@ -55,7 +55,21 @@
     "aggregate": {
       "id": "Set as Aggregate Root ID",
       "value": "Set as Value Object",
-      "entity": "Set as Entity"
+      "entity": "Set as Entity",
+      "title": {
+        "id": "Aggregate Root ID",
+        "value": "Value Object",
+        "entity": "Entity"
+      },
+      "alert": {
+        "id": "Please select a field as the aggregate root ID.",
+        "value": "Please select at least one field as the value object.",
+        "inputValueObject": "Please enter the value object name.",
+        "duplicate": {
+          "id": "The value is already present in the aggregate root ID.",
+          "valueObject": "The value is already present in the value object."
+        }
+      }
     }
   }
 }
