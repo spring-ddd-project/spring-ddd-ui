@@ -9,10 +9,12 @@ import { $t } from '@vben/locales';
 import {
   ElButton,
   ElCard,
+  ElDivider,
   ElMessage,
   ElOption,
   ElSelect,
   ElSwitch,
+  ElTag,
 } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -40,6 +42,10 @@ interface ComponenetItem {
 const dictData = ref<DictItem[]>([]);
 const componentData = ref<ComponenetItem[]>([]);
 const componentTypeData = ref<ComponenetItem[]>([]);
+
+const aggregateData = ref();
+const valueObjectData = ref([]);
+const entityData = ref([]);
 
 interface RowType {
   id: string;
@@ -76,7 +82,6 @@ const gridOptions: VxeTableGridOptions<RowType> = {
               field: 'propColumnName',
               title: $t('codegen.info.propColumnName'),
               minWidth: 150,
-              fixed: 'left',
             },
             {
               field: 'propColumnKey',
@@ -235,7 +240,7 @@ const close = () => drawerApi.close();
 
 defineExpose({ open, close });
 
-const [Grid] = useVbenVxeGrid({
+const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions,
 });
 
@@ -253,6 +258,17 @@ const getComponentType = async (e: any) => {
   if (!e) return;
   componentTypeData.value = await getItemLabelByDictCode('component_type');
 };
+
+const setAggregate = () => {
+  const data = gridApi.grid
+    .getCheckboxRecords()
+    .map((item) => item.propJavaEntity);
+  if (data.length !== 1) {
+    ElMessage.warning($t('codegen.info.aggregate.alert.id'));
+    return;
+  }
+  aggregateData.value = data;
+};
 </script>
 
 <template>
@@ -263,6 +279,31 @@ const getComponentType = async (e: any) => {
           <span>{{ $t('codegen.info.valueObject') }}</span>
         </div>
       </template>
+      <ElDivider content-position="center">
+        <span>{{ $t('codegen.info.aggregate.title.id') }}</span>
+      </ElDivider>
+      <ElTag type="success"> {{ aggregateData }} </ElTag>
+      <ElDivider content-position="center">
+        <span>{{ $t('codegen.info.aggregate.title.value') }}</span>
+      </ElDivider>
+      <div class="flex gap-2">
+        <ElTag
+          type="danger"
+          v-for="value in valueObjectData"
+          :key="value"
+          closable
+        >
+          {{ value }}
+        </ElTag>
+      </div>
+      <ElDivider content-position="center">
+        <span>{{ $t('codegen.info.aggregate.title.entity') }}</span>
+      </ElDivider>
+      <div class="flex gap-2">
+        <ElTag type="info" v-for="value in entityData" :key="value" closable>
+          {{ value }}
+        </ElTag>
+      </div>
     </ElCard>
     <ElCard style="margin-top: 1%">
       <template #header>
@@ -272,7 +313,7 @@ const getComponentType = async (e: any) => {
       </template>
       <Grid>
         <template #toolbar-actions>
-          <ElButton class="mr-2" bg text type="primary">
+          <ElButton class="mr-2" bg text type="primary" @click="setAggregate">
             {{ $t('codegen.info.aggregate.id') }}
           </ElButton>
           <ElButton class="mr-2" bg text type="danger">
