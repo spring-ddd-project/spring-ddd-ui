@@ -31,3 +31,7 @@ export async function getColumnsInfo(data: any) {
     },
   });
 }
+
+export async function createColumns(data: any) {
+  return requestClient.post('/gen/columns/batchCreate', data);
+}

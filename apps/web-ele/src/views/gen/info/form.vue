@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 
 import { prompt, useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
@@ -18,7 +18,7 @@ import {
 } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getColumnsInfo } from '#/api/gen/table';
+import { createColumns, getColumnsInfo } from '#/api/gen/table';
 import { getAllDict, getItemLabelByDictCode } from '#/api/sys/dict';
 
 import ConfigForm from '../table/config.vue';
@@ -56,6 +56,13 @@ const commonData = ref([
   'deptId',
   'version',
 ]);
+
+const aggregateStruct = reactive({
+  aggregateId: aggregateData.value,
+  valueObject: valueObjectData.value,
+  extendInfo: entityData.value,
+  common: commonData.value,
+});
 
 interface RowType {
   id: string;
@@ -226,9 +233,16 @@ const [Drawer, drawerApi] = useVbenDrawer({
     }
   },
   onConfirm: async () => {
-    drawerApi.setState({ loading: true });
-    ElMessage.success($t('system.common.save.success'));
-    drawerApi.setState({ loading: false }).close();
+    const data = gridApi.grid.getFullData();
+    await createColumns(data)
+      .then((resp: any) => {
+        if (resp) {
+          ElMessage.success($t('system.common.save.success'));
+        }
+      })
+      .finally(() => {
+        drawerApi.setState({ loading: false }).close();
+      });
   },
   onCancel: () => {
     writeForm.value = {};
