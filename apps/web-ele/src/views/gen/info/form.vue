@@ -233,7 +233,10 @@ const [Drawer, drawerApi] = useVbenDrawer({
     }
   },
   onConfirm: async () => {
-    const data = gridApi.grid.getFullData();
+    const data = gridApi.grid.getFullData().map((d) => {
+      d.infoId = infoId.value;
+      return d;
+    });
     await createColumns(data)
       .then((resp: any) => {
         if (resp) {
