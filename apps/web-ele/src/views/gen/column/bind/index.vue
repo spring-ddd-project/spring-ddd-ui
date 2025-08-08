@@ -12,10 +12,10 @@ import { ElButton, ElMessage } from 'element-plus';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { deleteBind, getBindPage } from '#/api/gen/bind';
 
-import UserForm from './form.vue';
+import BindForm from './form.vue';
 import RecycleForm from './recycle.vue';
 
-const userFormRef = ref();
+const bindFormRef = ref();
 const recycleFormRef = ref();
 
 interface RowType {
@@ -103,11 +103,11 @@ const openRecycleForm = () => {
 };
 
 const openForm = () => {
-  userFormRef.value?.open();
+  bindFormRef.value?.open();
 };
 
 const editRow = (row: RowType) => {
-  userFormRef.value?.open(row);
+  bindFormRef.value?.open(row);
 };
 
 const deleteByIds = (row?: RowType) => {
@@ -158,7 +158,7 @@ const deleteByIds = (row?: RowType) => {
         </ElButton>
       </template>
     </Grid>
-    <UserForm ref="userFormRef" :grid-api="gridApi" />
+    <BindForm ref="bindFormRef" :grid-api="gridApi" />
     <RecycleForm ref="recycleFormRef" :grid-api="gridApi" />
   </Page>
 </template>

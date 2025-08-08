@@ -4,11 +4,11 @@ export async function getBindPage(data: any) {
   return requestClient.post('/gen/column/bind/index', data);
 }
 export async function createBind(data: any) {
-  return requestClient.post('/gen/column/bindcreate', data);
+  return requestClient.post('/gen/column/bind/create', data);
 }
 
 export async function updateBind(data: any) {
-  return requestClient.put('/gen/column/bindupdate', data);
+  return requestClient.put('/gen/column/bind/update', data);
 }
 
 export async function deleteBind(data: any) {

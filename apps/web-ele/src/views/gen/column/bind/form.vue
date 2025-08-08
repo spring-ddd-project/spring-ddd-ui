@@ -7,8 +7,7 @@ import { $t } from '@vben/locales';
 import { ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
-import { getTree } from '#/api/sys/dept';
-import { createUser, updateUser } from '#/api/sys/user/';
+import { createBind, updateBind } from '#/api/gen/bind/';
 
 const props = defineProps<{
   gridApi: any;
@@ -24,97 +23,36 @@ const [Form, formApi] = useVbenForm({
       class: 'w-full',
     },
     colon: true,
-    labelWidth: 130,
+    labelWidth: 150,
   },
   submitOnChange: true,
   schema: [
     {
       component: 'Input',
-      fieldName: 'username',
-      label: $t('system.user.username'),
+      fieldName: 'columnName',
+      label: $t('codegen.bind.columnName'),
       componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.username')}`,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.bind.columnName')}`,
       },
-      rules: 'required',
-    },
-    {
-      component: 'VbenInputPassword',
-      fieldName: 'password',
-      label: $t('system.user.password'),
-      componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.password')}`,
-      },
-      rules: 'required',
-    },
-    {
-      component: 'ApiTreeSelect',
-      componentProps: {
-        allowClear: true,
-        showSearch: true,
-        treeNodeFilterProp: 'deptName',
-        api: getTree,
-        resultField: 'data',
-        labelField: 'deptName',
-        valueField: 'id',
-        childrenField: 'children',
-        checkStrictly: true,
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.dept.deptId')}`,
-      },
-      fieldName: 'deptId',
-      label: $t('system.dept.deptId'),
-      rules: 'required',
-    },
-    {
-      component: 'RadioGroup',
-      componentProps: {
-        options: [
-          {
-            label: 'Male',
-            value: true,
-          },
-          {
-            label: 'Female',
-            value: false,
-          },
-        ],
-      },
-      defaultValue: true,
-      fieldName: 'sex',
-      label: $t('system.user.sex'),
       rules: 'required',
     },
     {
       component: 'Input',
-      fieldName: 'phone',
-      label: $t('system.user.phone'),
+      fieldName: 'entityName',
+      label: $t('codegen.bind.entityName'),
       componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.phone')}`,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.bind.entityName')}`,
       },
+      rules: 'required',
     },
     {
       component: 'Input',
-      fieldName: 'avatar',
-      label: $t('system.user.avatar'),
+      fieldName: 'componentName',
+      label: $t('codegen.bind.componentName'),
       componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.avatar')}`,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.bind.componentName')}`,
       },
-    },
-    {
-      component: 'Input',
-      fieldName: 'email',
-      label: $t('system.user.email'),
-      componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.email')}`,
-      },
-    },
-    {
-      component: 'Switch',
-      componentProps: {
-        class: 'w-auto',
-      },
-      fieldName: 'lockStatus',
-      label: $t('system.user.lockStatus'),
-      defaultValue: false,
+      rules: 'required',
     },
   ],
 });
@@ -125,8 +63,8 @@ const [Modal, modalApi] = useVbenModal({
       if (e.valid) {
         Object.assign(writeForm.value, await formApi.getValues());
         await (writeForm.value.id
-          ? updateUser(writeForm.value)
-          : createUser(writeForm.value));
+          ? updateBind(writeForm.value)
+          : createBind(writeForm.value));
         ElMessage.success($t('system.common.save.success'));
         props.gridApi.reload();
       } else {
