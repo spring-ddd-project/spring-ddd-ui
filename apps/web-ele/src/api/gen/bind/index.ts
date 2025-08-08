@@ -3,6 +3,10 @@ import { requestClient } from '#/api/request';
 export async function getBindPage(data: any) {
   return requestClient.post('/gen/column/bind/index', data);
 }
+
+export async function getBindRecyclePage(data: any) {
+  return requestClient.post('/gen/column/bind/recycle', data);
+}
 export async function createBind(data: any) {
   return requestClient.post('/gen/column/bind/create', data);
 }
@@ -28,7 +32,7 @@ export async function restoreBind(data: any) {
 }
 
 export async function wipeBind(data: any) {
-  return requestClient.delete('/gen/column/bind/delete', {
+  return requestClient.delete('/gen/column/bind/wipe', {
     params: {
       ids: data,
     },

@@ -6,9 +6,8 @@ import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage } from 'element-plus';
 
-import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getRecyclePage, restoreUser, wipeUserById } from '#/api/sys/user';
+import { getBindRecyclePage, restoreBind, wipeBind } from '#/api/gen/bind';
 
 const props = defineProps<{
   gridApi: any;
@@ -16,12 +15,9 @@ const props = defineProps<{
 
 interface RowType {
   id: string;
-  username: string;
-  phone: string;
-  avatar: string;
-  email: string;
-  sex: boolean;
-  lockStatus: boolean;
+  columnName: string;
+  entityName: string;
+  componentName: string;
 }
 
 const gridOptions: VxeGridProps<RowType> = {
@@ -31,16 +27,9 @@ const gridOptions: VxeGridProps<RowType> = {
   columns: [
     { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
-    { field: 'username', title: $t('system.user.username'), align: 'left' },
-    { field: 'phone', title: $t('system.user.phone') },
-    { field: 'avatar', title: $t('system.user.avatar') },
-    { field: 'email', title: $t('system.user.email') },
-    { field: 'sex', title: $t('system.user.sex'), slots: { default: 'sex' } },
-    {
-      field: 'lockStatus',
-      title: $t('system.user.lockStatus'),
-      slots: { default: 'lockStatus' },
-    },
+    { field: 'columnName', title: $t('codegen.bind.columnName') },
+    { field: 'entityName', title: $t('codegen.bind.entityName') },
+    { field: 'componentName', title: $t('codegen.bind.componentName') },
     {
       field: 'action',
       fixed: 'right',
@@ -54,7 +43,7 @@ const gridOptions: VxeGridProps<RowType> = {
   proxyConfig: {
     ajax: {
       query: async ({ page }) => {
-        return await getRecyclePage({
+        return await getBindRecyclePage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
         });
@@ -83,7 +72,7 @@ const [Grid, localGridApi] = useVbenVxeGrid({
   gridOptions,
 });
 
-const wipeUsers = (row?: RowType) => {
+const wipe = (row?: RowType) => {
   const ids: string[] = row
     ? [row.id]
     : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
@@ -97,7 +86,7 @@ const wipeUsers = (row?: RowType) => {
     content: $t('system.common.delete.confirm'),
     icon: 'error',
   }).then(async () => {
-    await wipeUserById(ids)
+    await wipeBind(ids)
       .then(async () => {
         await localGridApi.reload();
         ElMessage.success($t('system.common.delete.success'));
@@ -109,7 +98,7 @@ const wipeUsers = (row?: RowType) => {
   });
 };
 
-const restoreUsers = (row?: RowType) => {
+const restore = (row?: RowType) => {
   const ids: string[] = row
     ? [row.id]
     : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
@@ -124,7 +113,7 @@ const restoreUsers = (row?: RowType) => {
     icon: 'error',
   }).then(async () => {
     try {
-      await restoreUser(ids);
+      await restoreBind(ids);
       await localGridApi.reload();
       await props.gridApi.reload();
       ElMessage.success($t('system.common.restore.success'));
@@ -153,25 +142,19 @@ defineExpose({ open, close });
 <template>
   <Modal class="w-[70%]" :title="$t('system.common.alert.recycle')">
     <Grid>
-      <template #sex="{ row }">
-        <Dict dict-key="sex_type" :value="row.sex" />
-      </template>
-      <template #lockStatus="{ row }">
-        <Dict dict-key="common_status" :value="row.lockStatus" />
-      </template>
       <template #toolbar-actions>
-        <ElButton class="mr-2" bg text type="success" @click="restoreUsers()">
+        <ElButton class="mr-2" bg text type="success" @click="restore()">
           {{ $t('system.common.button.restore') }}
         </ElButton>
-        <ElButton class="mr-2" bg text type="danger" @click="wipeUsers()">
+        <ElButton class="mr-2" bg text type="danger" @click="wipe()">
           {{ $t('system.common.button.wipe') }}
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="success" link @click="restoreUsers(row)">
+        <ElButton type="success" link @click="restore(row)">
           {{ $t('system.common.button.restore') }}
         </ElButton>
-        <ElButton type="danger" link @click="wipeUsers(row)">
+        <ElButton type="danger" link @click="wipe(row)">
           {{ $t('system.common.button.wipe') }}
         </ElButton>
       </template>
