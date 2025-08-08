@@ -70,8 +70,6 @@ const gridOptions: VxeTableGridOptions<RowType> = {
     {
       field: 'roleName',
       title: $t('system.role.label'),
-      align: 'left',
-      treeNode: true,
     },
     { field: 'roleCode', title: $t('system.role.code') },
     { field: 'roleDesc', title: $t('system.role.desc') },

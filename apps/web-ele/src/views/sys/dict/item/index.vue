@@ -38,12 +38,10 @@ const gridOptions: VxeGridProps<RowType> = {
     {
       field: 'itemLabel',
       title: $t('system.dict.item.label'),
-      align: 'left',
     },
     {
       field: 'itemValue',
       title: $t('system.dict.item.value'),
-      align: 'left',
     },
     {
       field: 'itemStatus',

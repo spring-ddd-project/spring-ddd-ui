@@ -42,12 +42,10 @@ const gridOptions: VxeGridProps<RowType> = {
     {
       field: 'dictName',
       title: $t('system.dict.label'),
-      align: 'left',
     },
     {
       field: 'dictCode',
       title: $t('system.dict.code'),
-      align: 'left',
     },
     {
       field: 'dictStatus',
