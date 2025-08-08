@@ -69,7 +69,7 @@ const gridOptions: VxeTableGridOptions<RowType> = {
   columns: [
     { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
-    { field: 'username', title: $t('system.user.username'), align: 'left' },
+    { field: 'username', title: $t('system.user.username') },
     { field: 'phone', title: $t('system.user.phone') },
     { field: 'avatar', title: $t('system.user.avatar') },
     { field: 'email', title: $t('system.user.email') },

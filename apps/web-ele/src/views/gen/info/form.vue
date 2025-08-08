@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
-import { reactive, ref } from 'vue';
+import { ref } from 'vue';
 
 import { prompt, useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
@@ -36,6 +36,7 @@ interface DictItem {
 
 interface ComponenetItem {
   id: string;
+  itemValue: number;
   itemLabel: string;
 }
 
@@ -57,12 +58,19 @@ const commonData = ref([
   'version',
 ]);
 
-const aggregateStruct = reactive({
+interface AggregateStructType {
+  aggregateId: any;
+  valueObject: any;
+  extendInfo: any;
+  common: any;
+}
+
+const aggregateStruct: AggregateStructType = {
   aggregateId: aggregateData.value,
   valueObject: valueObjectData.value,
   extendInfo: entityData.value,
   common: commonData.value,
-});
+};
 
 interface RowType {
   id: string;
@@ -235,6 +243,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
   onConfirm: async () => {
     const data = gridApi.grid.getFullData().map((d) => {
       d.infoId = infoId.value;
+      d.propAggregate = JSON.stringify(aggregateStruct);
       return d;
     });
     await createColumns(data)
@@ -244,7 +253,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
         }
       })
       .finally(() => {
-        drawerApi.setState({ loading: false }).close();
+        // drawerApi.setState({ loading: false }).close();
       });
   },
   onCancel: () => {
@@ -533,7 +542,7 @@ const checkDuplicate = (
               v-for="item in componentData"
               :key="item.id"
               :label="item.itemLabel"
-              :value="item.id"
+              :value="item.itemValue"
             />
           </ElSelect>
         </template>
@@ -548,7 +557,7 @@ const checkDuplicate = (
               v-for="item in componentTypeData"
               :key="item.id"
               :label="item.itemLabel"
-              :value="item.id"
+              :value="item.itemValue"
             />
           </ElSelect>
         </template>
@@ -563,7 +572,7 @@ const checkDuplicate = (
               v-for="item in componentData"
               :key="item.id"
               :label="item.itemLabel"
-              :value="item.id"
+              :value="item.itemValue"
             />
           </ElSelect>
         </template>

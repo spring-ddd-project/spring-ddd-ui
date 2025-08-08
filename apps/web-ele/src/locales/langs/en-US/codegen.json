@@ -71,5 +71,11 @@
         }
       }
     }
+  },
+  "bind": {
+    "title": "Column Bind",
+    "columnName": "Column Name",
+    "entityName": "Entity Name",
+    "componentName": "Component Name"
   }
 }

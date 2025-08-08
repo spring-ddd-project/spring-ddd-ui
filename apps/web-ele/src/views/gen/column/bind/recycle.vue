@@ -6,13 +6,8 @@ import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage } from 'element-plus';
 
-import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import {
-  getItemRecyclePage,
-  restoreItemById,
-  wipeItemById,
-} from '#/api/sys/dict';
+import { getBindRecyclePage, restoreBind, wipeBind } from '#/api/gen/bind';
 
 const props = defineProps<{
   gridApi: any;
@@ -20,9 +15,9 @@ const props = defineProps<{
 
 interface RowType {
   id: string;
-  parentId: null | number;
-  deptName: string;
-  deptStatus: string;
+  columnName: string;
+  entityName: string;
+  componentName: string;
 }
 
 const gridOptions: VxeGridProps<RowType> = {
@@ -32,25 +27,15 @@ const gridOptions: VxeGridProps<RowType> = {
   columns: [
     { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
-    {
-      field: 'itemLabel',
-      title: $t('system.dict.item.label'),
-    },
-    {
-      field: 'itemValue',
-      title: $t('system.dict.item.value'),
-    },
-    {
-      field: 'itemStatus',
-      title: $t('system.dict.status'),
-      slots: { default: 'status' },
-    },
+    { field: 'columnName', title: $t('codegen.bind.columnName') },
+    { field: 'entityName', title: $t('codegen.bind.entityName') },
+    { field: 'componentName', title: $t('codegen.bind.componentName') },
     {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
       title: $t('system.common.operation'),
-      width: 120,
+      width: 200,
     },
   ],
   exportConfig: {},
@@ -58,19 +43,22 @@ const gridOptions: VxeGridProps<RowType> = {
   proxyConfig: {
     ajax: {
       query: async ({ page }) => {
-        return await getItemRecyclePage({
+        return await getBindRecyclePage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
         });
       },
     },
   },
-
   editConfig: {
     mode: 'row',
     trigger: 'click',
   },
-
+  treeConfig: {
+    parentField: 'parentId',
+    rowField: 'id',
+    transform: true,
+  },
   toolbarConfig: {
     custom: true,
     export: true,
@@ -84,7 +72,7 @@ const [Grid, localGridApi] = useVbenVxeGrid({
   gridOptions,
 });
 
-const deleteByIds = (row?: RowType) => {
+const wipe = (row?: RowType) => {
   const ids: string[] = row
     ? [row.id]
     : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
@@ -98,17 +86,19 @@ const deleteByIds = (row?: RowType) => {
     content: $t('system.common.delete.confirm'),
     icon: 'error',
   }).then(async () => {
-    try {
-      await wipeItemById(ids);
-      await localGridApi.reload();
-      ElMessage.success($t('system.common.delete.success'));
-    } catch {
-      ElMessage.error($t('system.common.delete.error'));
-    }
+    await wipeBind(ids)
+      .then(async () => {
+        await localGridApi.reload();
+        ElMessage.success($t('system.common.delete.success'));
+        await props.gridApi.reload();
+      })
+      .catch(() => {
+        ElMessage.error($t('system.common.delete.error'));
+      });
   });
 };
 
-const restoreItemByIds = (row?: RowType) => {
+const restore = (row?: RowType) => {
   const ids: string[] = row
     ? [row.id]
     : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
@@ -123,7 +113,7 @@ const restoreItemByIds = (row?: RowType) => {
     icon: 'error',
   }).then(async () => {
     try {
-      await restoreItemById(ids);
+      await restoreBind(ids);
       await localGridApi.reload();
       await props.gridApi.reload();
       ElMessage.success($t('system.common.restore.success'));
@@ -152,28 +142,19 @@ defineExpose({ open, close });
 <template>
   <Modal class="w-[70%]" :title="$t('system.common.alert.recycle')">
     <Grid>
-      <template #status="{ row }">
-        <Dict dict-key="common_status" :value="row.itemStatus" />
-      </template>
       <template #toolbar-actions>
-        <ElButton
-          class="mr-2"
-          bg
-          text
-          type="success"
-          @click="restoreItemByIds()"
-        >
+        <ElButton class="mr-2" bg text type="success" @click="restore()">
           {{ $t('system.common.button.restore') }}
         </ElButton>
-        <ElButton class="mr-2" bg text type="danger" @click="deleteByIds()">
+        <ElButton class="mr-2" bg text type="danger" @click="wipe()">
           {{ $t('system.common.button.wipe') }}
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="success" link @click="restoreItemByIds(row)">
+        <ElButton type="success" link @click="restore(row)">
           {{ $t('system.common.button.restore') }}
         </ElButton>
-        <ElButton type="danger" link @click="deleteByIds(row)">
+        <ElButton type="danger" link @click="wipe(row)">
           {{ $t('system.common.button.wipe') }}
         </ElButton>
       </template>
