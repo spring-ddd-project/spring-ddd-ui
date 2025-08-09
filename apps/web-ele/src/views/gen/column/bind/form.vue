@@ -29,19 +29,19 @@ const [Form, formApi] = useVbenForm({
   schema: [
     {
       component: 'Input',
-      fieldName: 'columnName',
-      label: $t('codegen.bind.columnName'),
+      fieldName: 'columnType',
+      label: $t('codegen.bind.columnType'),
       componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.bind.columnName')}`,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.bind.columnType')}`,
       },
       rules: 'required',
     },
     {
       component: 'Input',
-      fieldName: 'entityName',
-      label: $t('codegen.bind.entityName'),
+      fieldName: 'entityType',
+      label: $t('codegen.bind.entityType'),
       componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.bind.entityName')}`,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.bind.entityType')}`,
       },
       rules: 'required',
     },

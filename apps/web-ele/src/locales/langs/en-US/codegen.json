@@ -74,8 +74,8 @@
   },
   "bind": {
     "title": "Column Bind",
-    "columnName": "Column Name",
-    "entityName": "Entity Name",
+    "columnType": "Column Type",
+    "entityType": "Entity Type",
     "componentName": "Component Name"
   }
 }
