@@ -6,7 +6,7 @@ import { $t } from '@vben/locales';
 
 import { ElMessage } from 'element-plus';
 
-import { useVbenForm } from '#/adapter/form';
+import { useVbenForm, z } from '#/adapter/form';
 import { createBind, updateBind } from '#/api/gen/bind/';
 
 const props = defineProps<{
@@ -33,8 +33,19 @@ const [Form, formApi] = useVbenForm({
       label: $t('codegen.bind.columnType'),
       componentProps: {
         placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.bind.columnType')}`,
+        onInput: (e: any) => {
+          e.target.value = e.target.value.toLowerCase();
+        },
       },
-      rules: 'required',
+      rules: z
+        .string()
+        .min(1, { message: $t('system.common.placeholder.input') })
+        .regex(/^[a-z]+$/, {
+          message: $t('codegen.bind.columnTypeLowercaseOnly'),
+        })
+        .refine((value) => /^[a-z]+$/.test(value), {
+          message: $t('codegen.bind.columnTypeLowercaseOnly'),
+        }),
     },
     {
       component: 'Input',

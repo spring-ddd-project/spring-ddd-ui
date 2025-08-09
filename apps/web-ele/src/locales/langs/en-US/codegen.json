@@ -76,6 +76,7 @@
     "title": "Column Bind",
     "columnType": "Column Type",
     "entityType": "Entity Type",
-    "componentName": "Component Name"
+    "componentName": "Component Name",
+    "columnTypeLowercaseOnly": "Column Type (Lowercase Only)"
   }
 }
