@@ -6,7 +6,7 @@ import { $t } from '@vben/locales';
 
 import { ElMessage } from 'element-plus';
 
-import { useVbenForm } from '#/adapter/form';
+import { useVbenForm, z } from '#/adapter/form';
 import { createBind, updateBind } from '#/api/gen/bind/';
 
 const props = defineProps<{
@@ -29,19 +29,30 @@ const [Form, formApi] = useVbenForm({
   schema: [
     {
       component: 'Input',
-      fieldName: 'columnName',
-      label: $t('codegen.bind.columnName'),
+      fieldName: 'columnType',
+      label: $t('codegen.bind.columnType'),
       componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.bind.columnName')}`,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.bind.columnType')}`,
+        onInput: (e: any) => {
+          e.target.value = e.target.value.toLowerCase();
+        },
       },
-      rules: 'required',
+      rules: z
+        .string()
+        .min(1, { message: $t('system.common.placeholder.input') })
+        .regex(/^[a-z]+$/, {
+          message: $t('codegen.bind.columnTypeLowercaseOnly'),
+        })
+        .refine((value) => /^[a-z]+$/.test(value), {
+          message: $t('codegen.bind.columnTypeLowercaseOnly'),
+        }),
     },
     {
       component: 'Input',
-      fieldName: 'entityName',
-      label: $t('codegen.bind.entityName'),
+      fieldName: 'entityType',
+      label: $t('codegen.bind.entityType'),
       componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.bind.entityName')}`,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.bind.entityType')}`,
       },
       rules: 'required',
     },

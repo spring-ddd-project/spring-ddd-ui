@@ -15,8 +15,8 @@ const props = defineProps<{
 
 interface RowType {
   id: string;
-  columnName: string;
-  entityName: string;
+  columnType: string;
+  entityType: string;
   componentName: string;
 }
 
@@ -27,8 +27,8 @@ const gridOptions: VxeGridProps<RowType> = {
   columns: [
     { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
-    { field: 'columnName', title: $t('codegen.bind.columnName') },
-    { field: 'entityName', title: $t('codegen.bind.entityName') },
+    { field: 'columnType', title: $t('codegen.bind.columnType') },
+    { field: 'entityType', title: $t('codegen.bind.entityType') },
     { field: 'componentName', title: $t('codegen.bind.componentName') },
     {
       field: 'action',

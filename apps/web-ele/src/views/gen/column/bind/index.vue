@@ -20,8 +20,8 @@ const recycleFormRef = ref();
 
 interface RowType {
   id: string;
-  columnName: string;
-  entityName: string;
+  columnType: string;
+  entityType: string;
   componentName: string;
 }
 
@@ -31,10 +31,10 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.bind.columnName')}`,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.bind.columnType')}`,
       },
-      fieldName: 'columnName',
-      label: $t('codegen.bind.columnName'),
+      fieldName: 'columnType',
+      label: $t('codegen.bind.columnType'),
     },
   ],
   showCollapseButton: true,
@@ -55,8 +55,8 @@ const gridOptions: VxeTableGridOptions<RowType> = {
   columns: [
     { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
-    { field: 'columnName', title: $t('codegen.bind.columnName') },
-    { field: 'entityName', title: $t('codegen.bind.entityName') },
+    { field: 'columnType', title: $t('codegen.bind.columnType') },
+    { field: 'entityType', title: $t('codegen.bind.entityType') },
     { field: 'componentName', title: $t('codegen.bind.componentName') },
     {
       field: 'action',
