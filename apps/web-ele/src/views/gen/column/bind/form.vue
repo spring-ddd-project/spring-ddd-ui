@@ -8,6 +8,7 @@ import { ElMessage } from 'element-plus';
 
 import { useVbenForm, z } from '#/adapter/form';
 import { createBind, updateBind } from '#/api/gen/bind/';
+import { getItemLabelByDictCode } from '#/api/sys/dict/';
 
 const props = defineProps<{
   gridApi: any;
@@ -57,12 +58,19 @@ const [Form, formApi] = useVbenForm({
       rules: 'required',
     },
     {
-      component: 'Input',
-      fieldName: 'componentName',
-      label: $t('codegen.bind.componentName'),
+      component: 'ApiSelect',
       componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.bind.componentName')}`,
+        allowClear: true,
+        filterOption: true,
+        api: getComponentDict,
+        showSearch: true,
+        labelField: 'itemLabel',
+        valueField: 'itemValue',
+        clearable: true,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.bind.componentType')}`,
       },
+      fieldName: 'componentType',
+      label: $t('codegen.bind.componentType'),
       rules: 'required',
     },
   ],
@@ -101,6 +109,10 @@ const open = (row: any) => {
 const close = () => modalApi.close();
 
 defineExpose({ open, close });
+
+function getComponentDict() {
+  return getItemLabelByDictCode('components');
+}
 </script>
 
 <template>
