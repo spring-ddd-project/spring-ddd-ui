@@ -17,7 +17,7 @@ interface RowType {
   id: string;
   columnType: string;
   entityType: string;
-  componentName: string;
+  componentType: string;
 }
 
 const gridOptions: VxeGridProps<RowType> = {
@@ -29,7 +29,7 @@ const gridOptions: VxeGridProps<RowType> = {
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
     { field: 'columnType', title: $t('codegen.bind.columnType') },
     { field: 'entityType', title: $t('codegen.bind.entityType') },
-    { field: 'componentName', title: $t('codegen.bind.componentName') },
+    { field: 'componentType', title: $t('codegen.bind.componentType') },
     {
       field: 'action',
       fixed: 'right',
