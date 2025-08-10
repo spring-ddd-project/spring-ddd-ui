@@ -9,6 +9,7 @@ import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage } from 'element-plus';
 
+import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { deleteBind, getBindPage } from '#/api/gen/bind';
 
@@ -22,7 +23,7 @@ interface RowType {
   id: string;
   columnType: string;
   entityType: string;
-  componentName: string;
+  componentType: number;
 }
 
 const formOptions: VbenFormProps = {
@@ -57,7 +58,11 @@ const gridOptions: VxeTableGridOptions<RowType> = {
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
     { field: 'columnType', title: $t('codegen.bind.columnType') },
     { field: 'entityType', title: $t('codegen.bind.entityType') },
-    { field: 'componentName', title: $t('codegen.bind.componentName') },
+    {
+      field: 'componentType',
+      title: $t('codegen.bind.componentType'),
+      slots: { default: 'componentType' },
+    },
     {
       field: 'action',
       fixed: 'right',
@@ -138,6 +143,9 @@ const deleteByIds = (row?: RowType) => {
 <template>
   <Page>
     <Grid>
+      <template #componentType="{ row }">
+        <Dict dict-key="components" :value="row.componentType" />
+      </template>
       <template #toolbar-actions>
         <ElButton class="mr-2" bg text type="primary" @click="openForm">
           {{ $t('system.common.button.add') }}
