@@ -9,10 +9,9 @@ import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage } from 'element-plus';
 
+import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { deleteBind, getBindPage } from '#/api/gen/bind';
-
-import Dict from '#/adapter/component/Dict.vue';
 
 import BindForm from './form.vue';
 import RecycleForm from './recycle.vue';

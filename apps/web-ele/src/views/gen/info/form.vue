@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import { prompt, useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
@@ -47,6 +47,10 @@ const componentTypeData = ref<ComponenetItem[]>([]);
 const aggregateData = ref<string[]>([]);
 const valueObjectData = ref<{ [key: string]: string[] }[]>([]);
 const entityData = ref<{ [key: string]: string[] }[]>([]);
+
+onMounted(() => {
+  getComponent(true);
+});
 
 const commonData = ref([
   'createBy',
