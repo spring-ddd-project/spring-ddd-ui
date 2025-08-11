@@ -257,7 +257,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
         }
       })
       .finally(() => {
-        // drawerApi.setState({ loading: false }).close();
+        drawerApi.setState({ loading: false }).close();
       });
   },
   onCancel: () => {
