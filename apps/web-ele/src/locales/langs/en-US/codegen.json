@@ -11,7 +11,11 @@
       "config": "Config",
       "generate": "Generate"
     },
-    "form": "Basic Information Data Processing via Code Generation"
+    "form": "Basic Information Data Processing via Code Generation",
+    "sync": {
+      "title": "Sync Database",
+      "result": "Sync Success"
+    }
   },
   "info": {
     "valueObject": "Value Object Config",
