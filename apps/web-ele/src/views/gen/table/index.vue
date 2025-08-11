@@ -12,7 +12,7 @@ import { ElButton, ElMessage } from 'element-plus';
 
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getTableInfo, getTablePage } from '#/api/gen/table';
+import { getTableInfo, getTablePage, wipeTableData } from '#/api/gen/table';
 
 import GenInfoForm from '../info/form.vue';
 import ConfigForm from './config.vue';
@@ -117,8 +117,11 @@ const codegen = (row: RowType) => {
   });
 };
 
-const reload = () => {
-  gridApi.reload();
+const sync = async () => {
+  await wipeTableData().then(() => {
+    ElMessage.success($t('codegen.table.sync.result'));
+    gridApi.reload();
+  });
 };
 </script>
 
@@ -132,8 +135,8 @@ const reload = () => {
         <Dict dict-key="common_status" :value="row.roleStatus" />
       </template>
       <template #toolbar-actions>
-        <ElButton class="mr-2" bg text type="success" @click="reload">
-          {{ $t('system.common.button.refresh') }}
+        <ElButton class="mr-2" bg text type="danger" @click="sync">
+          {{ $t('codegen.table.sync.title') }}
         </ElButton>
       </template>
       <template #action="{ row }">

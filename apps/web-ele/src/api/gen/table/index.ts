@@ -4,6 +4,10 @@ export async function getTablePage(data: any) {
   return requestClient.post('/gen/table/index', data);
 }
 
+export async function wipeTableData() {
+  return requestClient.delete('/gen/table/wipe');
+}
+
 export async function getTableInfoPage(data: any) {
   return requestClient.post('/gen/info/index', data);
 }
