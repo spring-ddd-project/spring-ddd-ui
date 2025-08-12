@@ -247,6 +247,10 @@ const [Drawer, drawerApi] = useVbenDrawer({
   onConfirm: async () => {
     const data = gridApi.grid.getFullData().map((d) => {
       d.infoId = infoId.value;
+      aggregateStruct.aggregateId = aggregateData.value;
+      aggregateStruct.valueObject = valueObjectData.value;
+      aggregateStruct.extendInfo = entityData.value;
+      aggregateStruct.common = commonData.value;
       d.propAggregate = JSON.stringify(aggregateStruct);
       return d;
     });
@@ -448,7 +452,7 @@ const checkDuplicate = (
       </ElDivider>
       <ElTag size="large" type="success">
         <span v-if="aggregateData.length > 0">
-          aggregateId: {{ aggregateData[0] }}
+          aggregateId: {{ aggregateData }}
         </span>
       </ElTag>
       <ElDivider content-position="center">
