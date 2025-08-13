@@ -3,19 +3,10 @@ import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
 import { onMounted, ref } from 'vue';
 
-import { prompt, useVbenDrawer } from '@vben/common-ui';
+import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import {
-  ElButton,
-  ElCard,
-  ElDivider,
-  ElMessage,
-  ElOption,
-  ElSelect,
-  ElSwitch,
-  ElTag,
-} from 'element-plus';
+import { ElMessage, ElOption, ElSelect, ElSwitch } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { createColumns, getColumnsInfo } from '#/api/gen/table';
@@ -44,37 +35,9 @@ const dictData = ref<DictItem[]>([]);
 const componentData = ref<ComponenetItem[]>([]);
 const componentTypeData = ref<ComponenetItem[]>([]);
 
-const aggregateData = ref<string[]>([]);
-const valueObjectData = ref<{ [key: string]: string[] }[]>([]);
-const entityData = ref<{ [key: string]: string[] }[]>([]);
-
 onMounted(() => {
   getComponent(true);
 });
-
-const commonData = ref([
-  'createBy',
-  'updateBy',
-  'createTime',
-  'updateTime',
-  'deleteStatus',
-  'deptId',
-  'version',
-]);
-
-interface AggregateStructType {
-  aggregateId: any;
-  valueObject: any;
-  extendInfo: any;
-  common: any;
-}
-
-const aggregateStruct: AggregateStructType = {
-  aggregateId: aggregateData.value,
-  valueObject: valueObjectData.value,
-  extendInfo: entityData.value,
-  common: commonData.value,
-};
 
 interface RowType {
   id: string;
@@ -98,6 +61,12 @@ interface RowType {
 }
 
 const gridOptions: VxeTableGridOptions<RowType> = {
+  columnConfig: {
+    resizable: true,
+  },
+  rowConfig: {
+    isHover: true,
+  },
   columns: [
     { title: 'No.', type: 'seq', width: 50, fixed: 'left' },
     { align: 'left', title: '#', type: 'checkbox', width: 50, fixed: 'left' },
@@ -247,11 +216,6 @@ const [Drawer, drawerApi] = useVbenDrawer({
   onConfirm: async () => {
     const data = gridApi.grid.getFullData().map((d) => {
       d.infoId = infoId.value;
-      aggregateStruct.aggregateId = aggregateData.value;
-      aggregateStruct.valueObject = valueObjectData.value;
-      aggregateStruct.extendInfo = entityData.value;
-      aggregateStruct.common = commonData.value;
-      d.propAggregate = JSON.stringify(aggregateStruct);
       return d;
     });
     await createColumns(data)
@@ -302,290 +266,91 @@ const getComponentType = async (e: any) => {
   if (!e) return;
   componentTypeData.value = await getItemLabelByDictCode('component_type');
 };
-
-const setAggregate = () => {
-  const aggregate = gridApi.grid
-    .getCheckboxRecords()
-    .map((item) => item.propJavaEntity);
-  if (aggregate.length !== 1) {
-    ElMessage.warning($t('codegen.info.aggregate.alert.id'));
-    return;
-  }
-
-  const isDuplicate = checkDuplicate(
-    aggregate,
-    aggregateData.value,
-    valueObjectData.value,
-    'aggregate',
-  );
-
-  if (isDuplicate) {
-    return;
-  }
-
-  aggregateData.value = aggregate;
-  setEntity();
-};
-
-const setValueObject = () => {
-  prompt({
-    content: $t('codegen.info.aggregate.alert.inputValueObject'),
-  })
-    .then((val) => {
-      const valueObject = gridApi.grid
-        .getCheckboxRecords()
-        .map((item) => item.propJavaEntity);
-
-      if (valueObject.length === 0) {
-        ElMessage.warning($t('codegen.info.aggregate.alert.value'));
-        return;
-      }
-
-      const isDuplicate = checkDuplicate(
-        valueObject,
-        aggregateData.value,
-        valueObjectData.value,
-        'valueObject',
-      );
-
-      if (isDuplicate) {
-        return;
-      }
-
-      const valueObjectEntry = { [val]: valueObject };
-      valueObjectData.value.push(valueObjectEntry);
-      setEntity();
-    })
-    .catch(() => {});
-};
-
-const setEntity = () => {
-  const allColumnPropJavaEntity = gridApi.grid
-    .getFullData()
-    .map((item) => item.propJavaEntity)
-    .filter((prop) => prop !== null && prop !== undefined);
-
-  let filteredEntityData = allColumnPropJavaEntity.filter(
-    (item) => !aggregateData.value.includes(item),
-  );
-
-  filteredEntityData = filteredEntityData
-    .filter(
-      (item) =>
-        !valueObjectData.value.some((entry) =>
-          Object.values(entry).flat().includes(item),
-        ),
-    )
-    .filter((e) => !commonData.value.includes(e));
-
-  entityData.value = [{ ExtendInfo: filteredEntityData }];
-};
-
-const checkDuplicate = (
-  newValues: string[],
-  aggregateData: string[] | { [key: string]: string[] }[],
-  valueObjectData: string[] | { [key: string]: string[] }[],
-  context: 'aggregate' | 'valueObject',
-): boolean => {
-  let isDuplicateFound = false;
-
-  if (Array.isArray(aggregateData) && typeof aggregateData[0] === 'string') {
-    isDuplicateFound = aggregateData.some((item) =>
-      newValues.includes(item as string),
-    );
-  }
-
-  if (
-    !isDuplicateFound &&
-    Array.isArray(valueObjectData) &&
-    typeof valueObjectData[0] === 'string'
-  ) {
-    isDuplicateFound = valueObjectData.some((item) =>
-      newValues.includes(item as string),
-    );
-  }
-
-  if (
-    !isDuplicateFound &&
-    Array.isArray(aggregateData) &&
-    typeof aggregateData[0] === 'object'
-  ) {
-    isDuplicateFound = aggregateData.some((entry) =>
-      newValues.some((value) => Object.values(entry).flat().includes(value)),
-    );
-  }
-
-  if (
-    !isDuplicateFound &&
-    Array.isArray(valueObjectData) &&
-    typeof valueObjectData[0] === 'object'
-  ) {
-    isDuplicateFound = valueObjectData.some((entry) =>
-      newValues.some((value) => Object.values(entry).flat().includes(value)),
-    );
-  }
-
-  if (isDuplicateFound) {
-    if (context === 'aggregate') {
-      ElMessage.warning($t('codegen.info.aggregate.alert.duplicate.id'));
-    } else if (context === 'valueObject') {
-      ElMessage.warning(
-        $t('codegen.info.aggregate.alert.duplicate.valueObject'),
-      );
-    }
-  }
-
-  return isDuplicateFound;
-};
 </script>
 
 <template>
-  <Drawer class="w-[100%]" :title="$t('codegen.table.form')">
-    <ElCard>
-      <template #header>
-        <div class="card-header">
-          <span>{{ $t('codegen.info.valueObject') }}</span>
-        </div>
+  <Drawer
+    class="w-[100%]"
+    :title="$t('codegen.table.form')"
+    :destroy-on-close="true"
+  >
+    <Grid>
+      <template #tableVisible="{ row }">
+        <ElSwitch v-model="row.tableVisible" />
       </template>
-      <ElDivider content-position="center">
-        <span>{{ $t('codegen.info.aggregate.title.id') }}</span>
-      </ElDivider>
-      <ElTag size="large" type="success">
-        <span v-if="aggregateData.length > 0">
-          aggregateId: {{ aggregateData }}
-        </span>
-      </ElTag>
-      <ElDivider content-position="center">
-        <span>{{ $t('codegen.info.aggregate.title.value') }}</span>
-      </ElDivider>
-      <div class="flex gap-2">
-        <ElTag
-          type="danger"
-          size="large"
-          v-for="(item, index) in valueObjectData"
-          :key="index"
-          closable
-        >
-          <template v-if="item && Object.keys(item).length > 0">
-            <span v-for="(value, key) in item" :key="key">
-              {{ key }}: [{{ value.join(', ') }}]
-            </span>
-          </template>
-          <template v-else> Invalid data </template>
-        </ElTag>
-      </div>
-      <ElDivider content-position="center">
-        <span>{{ $t('codegen.info.aggregate.title.entity') }}</span>
-      </ElDivider>
-      <div class="flex gap-2">
-        <ElTag
-          type="info"
-          size="large"
-          v-for="(item, index) in entityData"
-          :key="index"
-          closable
-        >
-          <template v-if="item && Object.keys(item).length > 0">
-            <span v-for="(value, key) in item" :key="key">
-              {{ key }}: [{{ value.join(', ') }}]
-            </span>
-          </template>
-          <template v-else> Invalid data </template>
-        </ElTag>
-      </div>
-    </ElCard>
-    <ElCard style="margin-top: 1%">
-      <template #header>
-        <div class="card-header">
-          <span>{{ $t('codegen.info.columnConfig') }}</span>
-        </div>
+      <template #tableOrder="{ row }">
+        <ElSwitch v-model="row.tableOrder" />
       </template>
-      <Grid>
-        <template #toolbar-actions>
-          <ElButton class="mr-2" bg text type="primary" @click="setAggregate">
-            {{ $t('codegen.info.aggregate.id') }}
-          </ElButton>
-          <ElButton class="mr-2" bg text type="danger" @click="setValueObject">
-            {{ $t('codegen.info.aggregate.value') }}
-          </ElButton>
-        </template>
-        <template #tableVisible="{ row }">
-          <ElSwitch v-model="row.tableVisible" />
-        </template>
-        <template #tableOrder="{ row }">
-          <ElSwitch v-model="row.tableOrder" />
-        </template>
-        <template #tableFilter="{ row }">
-          <ElSwitch v-model="row.tableFilter" />
-        </template>
-        <template #formVisible="{ row }">
-          <ElSwitch v-model="row.formVisible" />
-        </template>
-        <template #formRequired="{ row }">
-          <ElSwitch v-model="row.formRequired" />
-        </template>
-        <template #propDictId="{ row }">
-          <ElSelect
-            v-model="row.propDictId"
-            clearable
-            filterable
-            @visible-change="getDict"
-          >
-            <ElOption
-              v-for="item in dictData"
-              :key="item.id"
-              :label="item.dictName"
-              :value="item.id"
-            />
-          </ElSelect>
-        </template>
-        <template #tableFilterComponent="{ row }">
-          <ElSelect
-            v-model="row.tableFilterComponent"
-            clearable
-            filterable
-            @visible-change="getComponent"
-          >
-            <ElOption
-              v-for="item in componentData"
-              :key="item.id"
-              :label="item.itemLabel"
-              :value="item.itemValue"
-            />
-          </ElSelect>
-        </template>
-        <template #tableFilterType="{ row }">
-          <ElSelect
-            v-model="row.tableFilterType"
-            clearable
-            filterable
-            @visible-change="getComponentType"
-          >
-            <ElOption
-              v-for="item in componentTypeData"
-              :key="item.id"
-              :label="item.itemLabel"
-              :value="item.itemValue"
-            />
-          </ElSelect>
-        </template>
-        <template #formComponent="{ row }">
-          <ElSelect
-            v-model="row.formComponent"
-            clearable
-            filterable
-            @visible-change="getComponent"
-          >
-            <ElOption
-              v-for="item in componentData"
-              :key="item.id"
-              :label="item.itemLabel"
-              :value="item.itemValue"
-            />
-          </ElSelect>
-        </template>
-      </Grid>
-    </ElCard>
+      <template #tableFilter="{ row }">
+        <ElSwitch v-model="row.tableFilter" />
+      </template>
+      <template #formVisible="{ row }">
+        <ElSwitch v-model="row.formVisible" />
+      </template>
+      <template #formRequired="{ row }">
+        <ElSwitch v-model="row.formRequired" />
+      </template>
+      <template #propDictId="{ row }">
+        <ElSelect
+          v-model="row.propDictId"
+          clearable
+          filterable
+          @visible-change="getDict"
+        >
+          <ElOption
+            v-for="item in dictData"
+            :key="item.id"
+            :label="item.dictName"
+            :value="item.id"
+          />
+        </ElSelect>
+      </template>
+      <template #tableFilterComponent="{ row }">
+        <ElSelect
+          v-model="row.tableFilterComponent"
+          clearable
+          filterable
+          @visible-change="getComponent"
+        >
+          <ElOption
+            v-for="item in componentData"
+            :key="item.id"
+            :label="item.itemLabel"
+            :value="item.itemValue"
+          />
+        </ElSelect>
+      </template>
+      <template #tableFilterType="{ row }">
+        <ElSelect
+          v-model="row.tableFilterType"
+          clearable
+          filterable
+          @visible-change="getComponentType"
+        >
+          <ElOption
+            v-for="item in componentTypeData"
+            :key="item.id"
+            :label="item.itemLabel"
+            :value="item.itemValue"
+          />
+        </ElSelect>
+      </template>
+      <template #formComponent="{ row }">
+        <ElSelect
+          v-model="row.formComponent"
+          clearable
+          filterable
+          @visible-change="getComponent"
+        >
+          <ElOption
+            v-for="item in componentData"
+            :key="item.id"
+            :label="item.itemLabel"
+            :value="item.itemValue"
+          />
+        </ElSelect>
+      </template>
+    </Grid>
     <ConfigForm ref="configFormRef" />
   </Drawer>
 </template>
