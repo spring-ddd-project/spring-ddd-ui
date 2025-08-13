@@ -39,6 +39,15 @@ const [Form, formApi] = useVbenForm({
     },
     {
       component: 'Input',
+      fieldName: 'databaseName',
+      label: $t('codegen.info.databaseName'),
+      componentProps: {
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.info.databaseName')}`,
+      },
+      rules: 'required',
+    },
+    {
+      component: 'Input',
       fieldName: 'packageName',
       label: $t('codegen.info.packageName'),
       componentProps: {
