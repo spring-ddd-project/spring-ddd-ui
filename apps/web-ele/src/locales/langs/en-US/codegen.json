@@ -2,6 +2,7 @@
   "title": "Code Generation",
   "table": {
     "title": "Table Management",
+    "tableSchema": "Database Name",
     "tableName": "Table Name",
     "tableComment": "Table Comment",
     "className": "Class Name",
@@ -20,6 +21,7 @@
   "info": {
     "valueObject": "Value Object Config",
     "columnConfig": "Column Config",
+    "databaseName": "Database Name",
     "tableName": "Table Name",
     "packageName": "Package Name",
     "className": "Class Name",

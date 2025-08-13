@@ -9,11 +9,11 @@ export async function wipeTableData() {
 }
 
 export async function getTableInfoPage(data: any) {
-  return requestClient.post('/gen/info/index', data);
+  return requestClient.post('/gen/projectInfo/index', data);
 }
 
 export async function getTableInfo(data: any) {
-  return requestClient.post('/gen/info/queryInfoByTableName', null, {
+  return requestClient.post('/gen/projectInfo/queryInfoByTableName', null, {
     params: {
       tableName: data,
     },
@@ -21,17 +21,18 @@ export async function getTableInfo(data: any) {
 }
 
 export async function createTableInfo(data: any) {
-  return requestClient.post('/gen/info/create', data);
+  return requestClient.post('/gen/projectInfo/create', data);
 }
 
 export async function updateTableInfo(data: any) {
-  return requestClient.put('/gen/info/update', data);
+  return requestClient.put('/gen/projectInfo/update', data);
 }
 
-export async function getColumnsInfo(data: any) {
+export async function getColumnsInfo(iId: string, database: string) {
   return requestClient.post('/gen/columns/queryByInfoId', null, {
     params: {
-      infoId: data,
+      infoId: iId,
+      databaseName: database,
     },
   });
 }
