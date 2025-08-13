@@ -34,6 +34,16 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       componentProps: {
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.info.databaseName')}`,
+      },
+      fieldName: 'databaseName',
+      label: $t('codegen.info.databaseName'),
+      labelWidth: 120,
+      rules: 'required',
+    },
+    {
+      component: 'Input',
+      componentProps: {
         placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.table.tableName')}`,
       },
       fieldName: 'tableName',
@@ -56,9 +66,13 @@ const gridOptions: VxeTableGridOptions<RowType> = {
     { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
     {
+      field: 'tableSchema',
+      title: $t('codegen.table.tableSchema'),
+      align: 'left',
+    },
+    {
       field: 'tableName',
       title: $t('codegen.table.tableName'),
-      align: 'left',
     },
     { field: 'tableComment', title: $t('codegen.table.tableComment') },
     { field: 'createTime', title: $t('codegen.table.createTime') },
