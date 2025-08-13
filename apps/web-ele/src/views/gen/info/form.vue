@@ -19,6 +19,7 @@ const configFormRef = ref();
 const writeForm = ref<Record<string, any>>({});
 
 const infoId = ref();
+const databaseName = ref();
 
 interface DictItem {
   id: string;
@@ -188,7 +189,7 @@ const gridOptions: VxeTableGridOptions<RowType> = {
   proxyConfig: {
     ajax: {
       query: async () => {
-        return await getColumnsInfo(infoId.value);
+        return await getColumnsInfo(infoId.value, databaseName.value);
       },
     },
   },
@@ -241,6 +242,7 @@ const open = (row: any, iId: string) => {
   if (row?.tableName) {
     writeForm.value = row;
     infoId.value = iId;
+    databaseName.value = row.tableSchema;
   }
   drawerApi.open();
 };

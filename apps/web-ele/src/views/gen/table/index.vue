@@ -22,6 +22,7 @@ const configFormRef = ref();
 
 interface RowType {
   id: string;
+  tableSchema: string;
   tableName: string;
   tableComment: string;
   createTime: string;

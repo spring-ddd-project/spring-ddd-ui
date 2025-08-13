@@ -28,10 +28,11 @@ export async function updateTableInfo(data: any) {
   return requestClient.put('/gen/projectInfo/update', data);
 }
 
-export async function getColumnsInfo(data: any) {
+export async function getColumnsInfo(iId: string, database: string) {
   return requestClient.post('/gen/columns/queryByInfoId', null, {
     params: {
-      infoId: data,
+      infoId: iId,
+      databaseName: database,
     },
   });
 }
