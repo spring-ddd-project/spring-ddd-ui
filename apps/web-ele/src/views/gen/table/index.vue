@@ -5,6 +5,7 @@ import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
 
+import { useAccess } from '@vben/access';
 import { Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
@@ -16,6 +17,8 @@ import { getTableInfo, getTablePage, wipeTableData } from '#/api/gen/table';
 
 import GenInfoForm from '../info/form.vue';
 import ConfigForm from './config.vue';
+
+const { hasAccessByCodes } = useAccess();
 
 const genInfoFormRef = ref();
 const configFormRef = ref();
@@ -83,7 +86,7 @@ const gridOptions: VxeTableGridOptions<RowType> = {
       fixed: 'right',
       slots: { default: 'action' },
       title: $t('system.common.operation'),
-      width: 150,
+      width: 360,
     },
   ],
   exportConfig: {},
@@ -155,11 +158,19 @@ const sync = async () => {
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="warning" link @click="config(row)">
-          {{ $t('codegen.table.button.config') }}
+        <ElButton
+          type="warning"
+          link
+          @click="config(row)"
+          v-if="hasAccessByCodes(['gen:projectInfo:index'])"
+        >
+          {{ $t('codegen.table.button.projectConfig') }}
         </ElButton>
         <ElButton type="primary" link @click="codegen(row)">
-          {{ $t('codegen.table.button.generate') }}
+          {{ $t('codegen.table.button.columnConfig') }}
+        </ElButton>
+        <ElButton type="danger" link>
+          {{ $t('codegen.table.button.aggregateConfig') }}
         </ElButton>
       </template>
     </Grid>

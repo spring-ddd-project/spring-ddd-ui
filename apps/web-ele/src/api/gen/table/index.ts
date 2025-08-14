@@ -40,3 +40,7 @@ export async function getColumnsInfo(iId: string, database: string) {
 export async function createColumns(data: any) {
   return requestClient.post('/gen/columns/batchCreate', data);
 }
+
+export async function updateColumns(data: any) {
+  return requestClient.put('/gen/columns/batchUpdate', data);
+}
