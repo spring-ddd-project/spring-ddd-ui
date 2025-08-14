@@ -9,7 +9,7 @@ import { $t } from '@vben/locales';
 import { ElMessage, ElOption, ElSelect, ElSwitch } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { createColumns, getColumnsInfo } from '#/api/gen/table';
+import { createColumns, getColumnsInfo, updateColumns } from '#/api/gen/table';
 import { getAllDict, getItemLabelByDictCode } from '#/api/sys/dict';
 
 import ConfigForm from '../table/config.vue';
@@ -215,19 +215,15 @@ const [Drawer, drawerApi] = useVbenDrawer({
     }
   },
   onConfirm: async () => {
-    const data = gridApi.grid.getFullData().map((d) => {
-      d.infoId = infoId.value;
-      return d;
-    });
-    await createColumns(data)
-      .then((resp: any) => {
-        if (resp) {
-          ElMessage.success($t('system.common.save.success'));
-        }
-      })
-      .finally(() => {
-        drawerApi.setState({ loading: false }).close();
-      });
+    const data: RowType[] = gridApi.grid.getFullData().map((d) => ({
+      ...d,
+      infoId: infoId.value,
+    }));
+
+    if (data.length === 0) return;
+    await (data[0]?.id ? updateColumns(data) : createColumns(data));
+    ElMessage.success($t('system.common.save.success'));
+    await drawerApi.setState({ loading: false }).close();
   },
   onCancel: () => {
     writeForm.value = {};
