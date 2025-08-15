@@ -43,7 +43,6 @@ onMounted(() => {
 interface RowType {
   id: string;
   infoId: string;
-  propAggregate: string;
   propColumnKey: string;
   propColumnName: string;
   propColumnType: string;
