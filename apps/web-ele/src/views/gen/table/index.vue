@@ -166,7 +166,12 @@ const sync = async () => {
         >
           {{ $t('codegen.table.button.projectConfig') }}
         </ElButton>
-        <ElButton type="primary" link @click="codegen(row)">
+        <ElButton
+          type="primary"
+          link
+          @click="codegen(row)"
+          v-if="hasAccessByCodes(['gen:columns:queryByInfoId'])"
+        >
           {{ $t('codegen.table.button.columnConfig') }}
         </ElButton>
         <ElButton type="danger" link>
