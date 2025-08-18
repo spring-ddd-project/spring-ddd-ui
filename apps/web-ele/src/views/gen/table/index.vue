@@ -15,6 +15,7 @@ import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getTableInfo, getTablePage, wipeTableData } from '#/api/gen/table';
 
+import AggregateForm from '../aggregate/index.vue';
 import GenInfoForm from '../info/form.vue';
 import ConfigForm from './config.vue';
 
@@ -22,6 +23,7 @@ const { hasAccessByCodes } = useAccess();
 
 const genInfoFormRef = ref();
 const configFormRef = ref();
+const aggregateFormRef = ref();
 
 interface RowType {
   id: string;
@@ -135,6 +137,16 @@ const codegen = (row: RowType) => {
   });
 };
 
+const openAggregate = (row: RowType) => {
+  getTableInfo(row?.tableName).then((resp: any) => {
+    if (!resp) {
+      ElMessage.warning($t('codegen.info.tableInfoConfig'));
+      return;
+    }
+    aggregateFormRef.value?.open(row, resp.id);
+  });
+};
+
 const sync = async () => {
   await wipeTableData().then(() => {
     ElMessage.success($t('codegen.table.sync.result'));
@@ -174,12 +186,13 @@ const sync = async () => {
         >
           {{ $t('codegen.table.button.columnConfig') }}
         </ElButton>
-        <ElButton type="danger" link>
+        <ElButton type="danger" link @click="openAggregate(row)">
           {{ $t('codegen.table.button.aggregateConfig') }}
         </ElButton>
       </template>
     </Grid>
     <GenInfoForm ref="genInfoFormRef" />
     <ConfigForm ref="configFormRef" />
+    <AggregateForm ref="aggregateFormRef" />
   </Page>
 </template>
