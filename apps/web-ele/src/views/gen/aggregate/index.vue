@@ -1,35 +1,24 @@
 <script lang="ts" setup>
-import type { VbenFormProps } from '@vben/common-ui';
-
+import type { VbenFormProps } from '#/adapter/form';
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
-import { ref } from 'vue';
-
-import { useAccess } from '@vben/access';
-import { Page } from '@vben/common-ui';
+import { confirm, Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage } from 'element-plus';
 
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getTableInfo, getTablePage, wipeTableData } from '#/api/gen/table';
-
-import GenInfoForm from '../info/form.vue';
-import ConfigForm from './config.vue';
-
-const { hasAccessByCodes } = useAccess();
-
-const genInfoFormRef = ref();
-const configFormRef = ref();
+import { getAggregatePage, wipeAggregate } from '#/api/gen/aggregate';
 
 interface RowType {
   id: string;
-  tableSchema: string;
-  tableName: string;
-  tableComment: string;
-  createTime: string;
-  tableCollation: string;
+  username: string;
+  phone: string;
+  avatar: string;
+  email: string;
+  sex: boolean;
+  lockStatus: boolean;
 }
 
 const formOptions: VbenFormProps = {
@@ -38,20 +27,18 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.info.databaseName')}`,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.username')}`,
       },
-      fieldName: 'databaseName',
-      label: $t('codegen.info.databaseName'),
-      labelWidth: 120,
-      rules: 'required',
+      fieldName: 'username',
+      label: $t('system.user.username'),
     },
     {
       component: 'Input',
       componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.table.tableName')}`,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.phone')}`,
       },
-      fieldName: 'tableName',
-      label: $t('codegen.table.tableName'),
+      fieldName: 'phone',
+      label: $t('system.user.phone'),
     },
   ],
   showCollapseButton: true,
@@ -66,38 +53,38 @@ const formOptions: VbenFormProps = {
 };
 
 const gridOptions: VxeTableGridOptions<RowType> = {
+  checkboxConfig: {
+    highlight: true,
+  },
   columns: [
     { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
+    { field: 'username', title: $t('system.user.username') },
+    { field: 'phone', title: $t('system.user.phone') },
+    { field: 'avatar', title: $t('system.user.avatar') },
+    { field: 'email', title: $t('system.user.email') },
+    { field: 'sex', title: $t('system.user.sex'), slots: { default: 'sex' } },
     {
-      field: 'tableSchema',
-      title: $t('codegen.table.tableSchema'),
-      align: 'left',
+      field: 'lockStatus',
+      title: $t('system.user.lockStatus'),
+      slots: { default: 'lockStatus' },
     },
-    {
-      field: 'tableName',
-      title: $t('codegen.table.tableName'),
-    },
-    { field: 'tableComment', title: $t('codegen.table.tableComment') },
-    { field: 'createTime', title: $t('codegen.table.createTime') },
-    { field: 'tableCollation', title: $t('codegen.table.tableCollation') },
     {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
       title: $t('system.common.operation'),
-      width: 360,
+      width: 200,
     },
   ],
   exportConfig: {},
   keepSource: true,
   proxyConfig: {
     ajax: {
-      query: async ({ page }, formValues) => {
-        return await getTablePage({
+      query: async ({ page }) => {
+        return await getAggregatePage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
-          ...formValues,
         });
       },
     },
@@ -118,27 +105,45 @@ const gridOptions: VxeTableGridOptions<RowType> = {
 
 const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions,
-  formOptions,
 });
 
-const config = (row: RowType) => {
-  configFormRef.value?.open(row);
+const openRecycleForm = () => {
+  recycleFormRef.value?.open();
 };
 
-const codegen = (row: RowType) => {
-  getTableInfo(row?.tableName).then((resp: any) => {
-    if (!resp) {
-      ElMessage.warning($t('codegen.info.tableInfoConfig'));
-      return;
+const openForm = () => {
+  userFormRef.value?.open();
+};
+
+const editRow = (row: RowType) => {
+  userFormRef.value?.open(row);
+};
+
+const linkRow = (row: RowType) => {
+  linkFormRef.value?.open(row);
+};
+
+const deleteByIds = (row?: RowType) => {
+  const ids: string[] = row
+    ? [row.id]
+    : gridApi.grid.getCheckboxRecords().map((item) => item.id);
+
+  if (ids.length === 0) {
+    ElMessage.warning($t('system.common.delete.warning'));
+    return;
+  }
+
+  confirm({
+    content: $t('system.common.delete.confirm'),
+    icon: 'error',
+  }).then(async () => {
+    try {
+      await delUserById(ids);
+      await gridApi.reload();
+      ElMessage.success($t('system.common.delete.success'));
+    } catch {
+      ElMessage.error($t('system.common.delete.error'));
     }
-    genInfoFormRef.value?.open(row, resp.id);
-  });
-};
-
-const sync = async () => {
-  await wipeTableData().then(() => {
-    ElMessage.success($t('codegen.table.sync.result'));
-    gridApi.reload();
   });
 };
 </script>
@@ -146,40 +151,37 @@ const sync = async () => {
 <template>
   <Page>
     <Grid>
-      <template #owner="{ row }">
-        <Dict dict-key="common_status" :value="row.ownerStatus" />
+      <template #sex="{ row }">
+        <Dict dict-key="sex_type" :value="row.sex" />
       </template>
-      <template #status="{ row }">
-        <Dict dict-key="common_status" :value="row.roleStatus" />
+      <template #lockStatus="{ row }">
+        <Dict dict-key="common_status" :value="row.lockStatus" />
       </template>
       <template #toolbar-actions>
-        <ElButton class="mr-2" bg text type="danger" @click="sync">
-          {{ $t('codegen.table.sync.title') }}
+        <ElButton class="mr-2" bg text type="primary" @click="openForm">
+          {{ $t('system.common.button.add') }}
+        </ElButton>
+        <ElButton class="mr-2" bg text type="danger" @click="deleteByIds()">
+          {{ $t('system.common.button.delete') }}
+        </ElButton>
+        <ElButton class="mr-2" bg text type="info" @click="openRecycleForm">
+          {{ $t('system.common.button.recycle') }}
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton
-          type="warning"
-          link
-          @click="config(row)"
-          v-if="hasAccessByCodes(['gen:projectInfo:index'])"
-        >
-          {{ $t('codegen.table.button.projectConfig') }}
+        <ElButton type="success" link @click="linkRow(row)">
+          {{ $t('system.common.button.roles') }}
         </ElButton>
-        <ElButton
-          type="primary"
-          link
-          @click="codegen(row)"
-          v-if="hasAccessByCodes(['gen:columns:queryByInfoId'])"
-        >
-          {{ $t('codegen.table.button.columnConfig') }}
+        <ElButton type="primary" link @click="editRow(row)">
+          {{ $t('system.common.button.edit') }}
         </ElButton>
-        <ElButton type="danger" link>
-          {{ $t('codegen.table.button.aggregateConfig') }}
+        <ElButton type="danger" link @click="deleteByIds(row)">
+          {{ $t('system.common.button.delete') }}
         </ElButton>
       </template>
     </Grid>
-    <GenInfoForm ref="genInfoFormRef" />
-    <ConfigForm ref="configFormRef" />
+    <UserForm ref="userFormRef" :grid-api="gridApi" />
+    <RecycleForm ref="recycleFormRef" :grid-api="gridApi" />
+    <LinkForm ref="linkFormRef" />
   </Page>
 </template>
