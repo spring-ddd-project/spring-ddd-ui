@@ -71,6 +71,7 @@
     "objectName": "Object Name",
     "objectValue": "Object Value",
     "objectType": "Object Type",
-    "hasCreated": "Is Created"
+    "hasCreated": "Is Created",
+    "title": "Aggregate Config"
   }
 }
