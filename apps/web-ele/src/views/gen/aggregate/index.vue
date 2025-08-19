@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import type { VbenFormProps } from '#/adapter/form';
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
-import { confirm, Page } from '@vben/common-ui';
+import { ref } from 'vue';
+
+import { confirm, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage } from 'element-plus';
@@ -11,46 +12,21 @@ import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getAggregatePage, wipeAggregate } from '#/api/gen/aggregate';
 
+import AggregateForm from './form.vue';
+
+const props = defineProps<{
+  gridApi: any;
+}>();
+
 interface RowType {
   id: string;
-  username: string;
-  phone: string;
-  avatar: string;
-  email: string;
-  sex: boolean;
-  lockStatus: boolean;
+  objectName: string;
+  objectValue: string;
+  objectType: number;
+  hasCreated: boolean;
 }
 
-const formOptions: VbenFormProps = {
-  collapsed: false,
-  schema: [
-    {
-      component: 'Input',
-      componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.username')}`,
-      },
-      fieldName: 'username',
-      label: $t('system.user.username'),
-    },
-    {
-      component: 'Input',
-      componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.phone')}`,
-      },
-      fieldName: 'phone',
-      label: $t('system.user.phone'),
-    },
-  ],
-  showCollapseButton: true,
-  submitButtonOptions: {
-    content: $t('system.common.button.search'),
-  },
-  resetButtonOptions: {
-    content: $t('system.common.button.reset'),
-  },
-  submitOnChange: false,
-  submitOnEnter: true,
-};
+const aggregateFormRef = ref();
 
 const gridOptions: VxeTableGridOptions<RowType> = {
   checkboxConfig: {
@@ -59,16 +35,10 @@ const gridOptions: VxeTableGridOptions<RowType> = {
   columns: [
     { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
-    { field: 'username', title: $t('system.user.username') },
-    { field: 'phone', title: $t('system.user.phone') },
-    { field: 'avatar', title: $t('system.user.avatar') },
-    { field: 'email', title: $t('system.user.email') },
-    { field: 'sex', title: $t('system.user.sex'), slots: { default: 'sex' } },
-    {
-      field: 'lockStatus',
-      title: $t('system.user.lockStatus'),
-      slots: { default: 'lockStatus' },
-    },
+    { field: 'objectName', title: $t('codegen.aggregate.objectName') },
+    { field: 'objectValue', title: $t('codegen.aggregate.objectValue') },
+    { field: 'objectType', title: $t('codegen.aggregate.objectType') },
+    { field: 'hasCreated', title: $t('codegen.aggregate.hasCreated') },
     {
       field: 'action',
       fixed: 'right',
@@ -103,30 +73,22 @@ const gridOptions: VxeTableGridOptions<RowType> = {
   },
 };
 
-const [Grid, gridApi] = useVbenVxeGrid({
+const [Grid, gridLocalApi] = useVbenVxeGrid({
   gridOptions,
 });
 
-const openRecycleForm = () => {
-  recycleFormRef.value?.open();
-};
-
 const openForm = () => {
-  userFormRef.value?.open();
+  aggregateFormRef.value?.open();
 };
 
 const editRow = (row: RowType) => {
-  userFormRef.value?.open(row);
-};
-
-const linkRow = (row: RowType) => {
-  linkFormRef.value?.open(row);
+  aggregateFormRef.value?.open(row);
 };
 
 const deleteByIds = (row?: RowType) => {
   const ids: string[] = row
     ? [row.id]
-    : gridApi.grid.getCheckboxRecords().map((item) => item.id);
+    : gridLocalApi.grid.getCheckboxRecords().map((item) => item.id);
 
   if (ids.length === 0) {
     ElMessage.warning($t('system.common.delete.warning'));
@@ -138,18 +100,34 @@ const deleteByIds = (row?: RowType) => {
     icon: 'error',
   }).then(async () => {
     try {
-      await delUserById(ids);
-      await gridApi.reload();
+      await wipeAggregate(ids);
+      await gridLocalApi.reload();
+      await props.gridApi.reload();
       ElMessage.success($t('system.common.delete.success'));
     } catch {
       ElMessage.error($t('system.common.delete.error'));
     }
   });
 };
+
+const [Modal, modalApi] = useVbenModal({
+  onClosed: () => {
+    modalApi.setData({ loading: false }).close();
+  },
+  showConfirmButton: false,
+  showCancelButton: false,
+});
+
+const open = () => {
+  modalApi.open();
+};
+const close = () => modalApi.close();
+
+defineExpose({ open, close });
 </script>
 
 <template>
-  <Page>
+  <Modal class="w-[70%]" :title="$t('codegen.aggregate.title')">
     <Grid>
       <template #sex="{ row }">
         <Dict dict-key="sex_type" :value="row.sex" />
@@ -164,14 +142,8 @@ const deleteByIds = (row?: RowType) => {
         <ElButton class="mr-2" bg text type="danger" @click="deleteByIds()">
           {{ $t('system.common.button.delete') }}
         </ElButton>
-        <ElButton class="mr-2" bg text type="info" @click="openRecycleForm">
-          {{ $t('system.common.button.recycle') }}
-        </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="success" link @click="linkRow(row)">
-          {{ $t('system.common.button.roles') }}
-        </ElButton>
         <ElButton type="primary" link @click="editRow(row)">
           {{ $t('system.common.button.edit') }}
         </ElButton>
@@ -180,8 +152,6 @@ const deleteByIds = (row?: RowType) => {
         </ElButton>
       </template>
     </Grid>
-    <UserForm ref="userFormRef" :grid-api="gridApi" />
-    <RecycleForm ref="recycleFormRef" :grid-api="gridApi" />
-    <LinkForm ref="linkFormRef" />
-  </Page>
+  </Modal>
+  <AggregateForm ref="aggregateFormRef" :grid-api="gridApi" />
 </template>

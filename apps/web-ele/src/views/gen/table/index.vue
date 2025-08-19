@@ -15,7 +15,7 @@ import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getTableInfo, getTablePage, wipeTableData } from '#/api/gen/table';
 
-import AggregateForm from '../aggregate/index.vue';
+import AggregateIndex from '../aggregate/index.vue';
 import GenInfoForm from '../info/form.vue';
 import ConfigForm from './config.vue';
 
@@ -23,7 +23,7 @@ const { hasAccessByCodes } = useAccess();
 
 const genInfoFormRef = ref();
 const configFormRef = ref();
-const aggregateFormRef = ref();
+const aggregateIndexRef = ref();
 
 interface RowType {
   id: string;
@@ -143,7 +143,7 @@ const openAggregate = (row: RowType) => {
       ElMessage.warning($t('codegen.info.tableInfoConfig'));
       return;
     }
-    aggregateFormRef.value?.open(row, resp.id);
+    aggregateIndexRef.value?.open(row, resp.id);
   });
 };
 
@@ -193,6 +193,6 @@ const sync = async () => {
     </Grid>
     <GenInfoForm ref="genInfoFormRef" />
     <ConfigForm ref="configFormRef" />
-    <AggregateForm ref="aggregateFormRef" />
+    <AggregateIndex ref="aggregateIndexRef" />
   </Page>
 </template>
