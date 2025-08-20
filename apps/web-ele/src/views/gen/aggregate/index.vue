@@ -18,8 +18,11 @@ const props = defineProps<{
   gridApi: any;
 }>();
 
+const infoId = ref();
+
 interface RowType {
   id: string;
+  infoId: string;
   objectName: string;
   objectValue: string;
   objectType: number;
@@ -55,6 +58,7 @@ const gridOptions: VxeTableGridOptions<RowType> = {
         return await getAggregatePage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
+          infoId: infoId.value,
         });
       },
     },
@@ -78,7 +82,7 @@ const [Grid, gridLocalApi] = useVbenVxeGrid({
 });
 
 const openForm = () => {
-  aggregateFormRef.value?.open();
+  aggregateFormRef.value?.open(infoId.value);
 };
 
 const editRow = (row: RowType) => {
@@ -118,7 +122,10 @@ const [Modal, modalApi] = useVbenModal({
   showCancelButton: false,
 });
 
-const open = () => {
+const open = (row: any, iId: string) => {
+  if (row?.tableName) {
+    infoId.value = iId;
+  }
   modalApi.open();
 };
 const close = () => modalApi.close();
@@ -129,12 +136,6 @@ defineExpose({ open, close });
 <template>
   <Modal class="w-[70%]" :title="$t('codegen.aggregate.title')">
     <Grid>
-      <template #sex="{ row }">
-        <Dict dict-key="sex_type" :value="row.sex" />
-      </template>
-      <template #lockStatus="{ row }">
-        <Dict dict-key="common_status" :value="row.lockStatus" />
-      </template>
       <template #toolbar-actions>
         <ElButton class="mr-2" bg text type="primary" @click="openForm">
           {{ $t('system.common.button.add') }}

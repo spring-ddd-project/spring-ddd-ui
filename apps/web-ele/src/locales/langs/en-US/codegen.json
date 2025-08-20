@@ -72,6 +72,12 @@
     "objectValue": "Object Value",
     "objectType": "Object Type",
     "hasCreated": "Is Created",
-    "title": "Aggregate Config"
+    "title": "Aggregate Config",
+    "radio": {
+      "root": "Aggregate Root Id",
+      "valueObject": "Value Object",
+      "extend": "Extend Info",
+      "mask": "Domain Mask"
+    }
   }
 }

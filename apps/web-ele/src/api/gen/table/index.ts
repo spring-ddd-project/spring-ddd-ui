@@ -37,6 +37,14 @@ export async function getColumnsInfo(iId: string, database: string) {
   });
 }
 
+export async function getJaveEntityInfo(iId: string) {
+  return requestClient.post('/gen/columns/queryJavaEntityInfoByInfoId', null, {
+    params: {
+      infoId: iId,
+    },
+  });
+}
+
 export async function createColumns(data: any) {
   return requestClient.post('/gen/columns/batchCreate', data);
 }
