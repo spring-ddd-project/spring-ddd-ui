@@ -158,12 +158,6 @@ const sync = async () => {
 <template>
   <Page>
     <Grid>
-      <template #owner="{ row }">
-        <Dict dict-key="common_status" :value="row.ownerStatus" />
-      </template>
-      <template #status="{ row }">
-        <Dict dict-key="common_status" :value="row.roleStatus" />
-      </template>
       <template #toolbar-actions>
         <ElButton class="mr-2" bg text type="danger" @click="sync">
           {{ $t('codegen.table.sync.title') }}
@@ -193,6 +187,6 @@ const sync = async () => {
     </Grid>
     <GenInfoForm ref="genInfoFormRef" />
     <ConfigForm ref="configFormRef" />
-    <AggregateIndex ref="aggregateIndexRef" />
+    <AggregateIndex ref="aggregateIndexRef" :grid-api="gridApi" />
   </Page>
 </template>
