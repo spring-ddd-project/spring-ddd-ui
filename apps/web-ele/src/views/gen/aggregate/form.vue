@@ -97,6 +97,10 @@ const [Drawer, drawerApi] = useVbenDrawer({
     formApi.validate().then(async (e) => {
       if (e.valid) {
         Object.assign(writeForm.value, await formApi.getValues());
+        writeForm.value.infoId = infoId.value;
+        writeForm.value.objectValue = JSON.stringify(
+          writeForm.value.objectValue,
+        );
         await (writeForm.value.id
           ? updateAggregate(writeForm.value)
           : createAggregate(writeForm.value));
@@ -112,29 +116,45 @@ const [Drawer, drawerApi] = useVbenDrawer({
   cancelText: $t('system.common.button.cancel'),
 });
 
-const open = (row: any) => {
+const open = (row: any, fData: string[]) => {
   writeForm.value = {};
   if (row?.id) {
     writeForm.value = row;
     infoId.value = row.infoId;
+    writeForm.value.objectValue = JSON.parse(row.objectValue) as string[];
     formApi.setValues(row);
   } else {
     infoId.value = row;
     formApi.resetForm();
+    getEntityInfo(infoId.value, fData);
   }
-  getEntityInfo(infoId.value);
   drawerApi.open();
 };
 const close = () => drawerApi.close();
 
 defineExpose({ open, close });
 
-const getEntityInfo = async (infoId: string) => {
+const getEntityInfo = async (infoId: string, fData: string[]) => {
   return await getJaveEntityInfo(infoId).then((resp: any) => {
-    entityList.value = resp.map((item: any) => ({
+    const fullEntityList = (entityList.value = resp.map((item: any) => ({
       label: `${item.propJavaEntity} - ${item.propColumnComment}`,
       value: item.propJavaEntity,
-    }));
+    })));
+
+    const excludeValues: Set<any> = new Set(
+      fData.flatMap((str) => {
+        try {
+          return JSON.parse(str) as string[];
+        } catch {
+          return [];
+        }
+      }),
+    );
+
+    entityList.value = fullEntityList.filter(
+      (item: any) => !excludeValues.has(item.value),
+    );
+
     formApi.updateSchema([
       {
         componentProps: {

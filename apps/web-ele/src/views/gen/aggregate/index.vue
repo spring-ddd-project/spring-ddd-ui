@@ -8,17 +8,13 @@ import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage } from 'element-plus';
 
-import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getAggregatePage, wipeAggregate } from '#/api/gen/aggregate';
 
 import AggregateForm from './form.vue';
 
-const props = defineProps<{
-  gridApi: any;
-}>();
-
 const infoId = ref();
+const fullData = ref<string[]>([]);
 
 interface RowType {
   id: string;
@@ -82,11 +78,17 @@ const [Grid, gridLocalApi] = useVbenVxeGrid({
 });
 
 const openForm = () => {
-  aggregateFormRef.value?.open(infoId.value);
+  fullData.value = gridLocalApi.grid
+    .getFullData()
+    .map((item) => item.objectValue);
+  aggregateFormRef.value?.open(infoId.value, fullData.value);
 };
 
 const editRow = (row: RowType) => {
-  aggregateFormRef.value?.open(row);
+  fullData.value = gridLocalApi.grid
+    .getCheckboxRecords()
+    .map((item) => item.objectValue);
+  aggregateFormRef.value?.open(row, fullData.value);
 };
 
 const deleteByIds = (row?: RowType) => {
@@ -106,7 +108,6 @@ const deleteByIds = (row?: RowType) => {
     try {
       await wipeAggregate(ids);
       await gridLocalApi.reload();
-      await props.gridApi.reload();
       ElMessage.success($t('system.common.delete.success'));
     } catch {
       ElMessage.error($t('system.common.delete.error'));
@@ -125,6 +126,9 @@ const [Modal, modalApi] = useVbenModal({
 const open = (row: any, iId: string) => {
   if (row?.tableName) {
     infoId.value = iId;
+    modalApi.setState({
+      title: `${$t('codegen.aggregate.title')}: ${row.tableName}`,
+    });
   }
   modalApi.open();
 };
@@ -134,7 +138,7 @@ defineExpose({ open, close });
 </script>
 
 <template>
-  <Modal class="w-[70%]" :title="$t('codegen.aggregate.title')">
+  <Modal class="w-[70%]">
     <Grid>
       <template #toolbar-actions>
         <ElButton class="mr-2" bg text type="primary" @click="openForm">
@@ -154,5 +158,5 @@ defineExpose({ open, close });
       </template>
     </Grid>
   </Modal>
-  <AggregateForm ref="aggregateFormRef" :grid-api="gridApi" />
+  <AggregateForm ref="aggregateFormRef" :grid-api="gridLocalApi" />
 </template>
