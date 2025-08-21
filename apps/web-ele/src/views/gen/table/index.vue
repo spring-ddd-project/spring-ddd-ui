@@ -11,7 +11,6 @@ import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage } from 'element-plus';
 
-import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getTableInfo, getTablePage, wipeTableData } from '#/api/gen/table';
 
