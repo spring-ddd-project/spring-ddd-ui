@@ -11,7 +11,11 @@
     "button": {
       "projectConfig": "Project Config",
       "columnConfig": "Column Config",
-      "aggregateConfig": "Aggregate Config"
+      "aggregateConfig": "Aggregate Config",
+      "generate": {
+        "title": "Generate",
+        "result": "Generate Success"
+      }
     },
     "form": "Basic Information Data Processing via Code Generation",
     "sync": {

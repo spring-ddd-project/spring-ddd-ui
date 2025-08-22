@@ -8,6 +8,7 @@ import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage } from 'element-plus';
 
+import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getAggregatePage, wipeAggregate } from '#/api/gen/aggregate';
 
@@ -36,8 +37,16 @@ const gridOptions: VxeTableGridOptions<RowType> = {
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
     { field: 'objectName', title: $t('codegen.aggregate.objectName') },
     { field: 'objectValue', title: $t('codegen.aggregate.objectValue') },
-    { field: 'objectType', title: $t('codegen.aggregate.objectType') },
-    { field: 'hasCreated', title: $t('codegen.aggregate.hasCreated') },
+    {
+      field: 'objectType',
+      title: $t('codegen.aggregate.objectType'),
+      slots: { default: 'objectType' },
+    },
+    {
+      field: 'hasCreated',
+      title: $t('codegen.aggregate.hasCreated'),
+      slots: { default: 'hasCreated' },
+    },
     {
       field: 'action',
       fixed: 'right',
@@ -140,6 +149,12 @@ defineExpose({ open, close });
 <template>
   <Modal class="w-[70%]">
     <Grid>
+      <template #objectType="{ row }">
+        <Dict dict-key="aggregate_type" :value="row.objectType" />
+      </template>
+      <template #hasCreated="{ row }">
+        <Dict dict-key="create_skip" :value="row.hasCreated" />
+      </template>
       <template #toolbar-actions>
         <ElButton class="mr-2" bg text type="primary" @click="openForm">
           {{ $t('system.common.button.add') }}
