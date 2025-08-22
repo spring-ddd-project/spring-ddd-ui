@@ -12,7 +12,7 @@ import { $t } from '@vben/locales';
 import { ElButton, ElMessage } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getTableInfo, getTablePage, wipeTableData } from '#/api/gen/table';
+import { getTableInfo, getTablePage, wipeTableData, codeGenerate } from '#/api/gen/table';
 
 import AggregateIndex from '../aggregate/index.vue';
 import GenInfoForm from '../info/form.vue';
@@ -87,7 +87,7 @@ const gridOptions: VxeTableGridOptions<RowType> = {
       fixed: 'right',
       slots: { default: 'action' },
       title: $t('system.common.operation'),
-      width: 360,
+      width: 450,
     },
   ],
   exportConfig: {},
@@ -146,6 +146,14 @@ const openAggregate = (row: RowType) => {
   });
 };
 
+const generate = (row: RowType) => {
+  codeGenerate(row?.tableName).then((resp: any) => {
+    if (resp) {
+      ElMessage.success($t('codegen.table.generate.result'));
+    }
+  });
+};
+
 const sync = async () => {
   await wipeTableData().then(() => {
     ElMessage.success($t('codegen.table.sync.result'));
@@ -181,6 +189,9 @@ const sync = async () => {
         </ElButton>
         <ElButton type="danger" link @click="openAggregate(row)">
           {{ $t('codegen.table.button.aggregateConfig') }}
+        </ElButton>
+        <ElButton type="success" link @click="generate(row)">
+          {{ $t('codegen.table.button.generate.title') }}
         </ElButton>
       </template>
     </Grid>

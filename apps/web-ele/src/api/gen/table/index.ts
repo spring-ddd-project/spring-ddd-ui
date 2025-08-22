@@ -8,6 +8,14 @@ export async function wipeTableData() {
   return requestClient.delete('/gen/table/wipe');
 }
 
+export async function codeGenerate(data: any) {
+  return requestClient.post('/gen/table/generate', null, {
+    params: {
+      tableName: data,
+    },
+  });
+}
+
 export async function getTableInfoPage(data: any) {
   return requestClient.post('/gen/projectInfo/index', data);
 }
