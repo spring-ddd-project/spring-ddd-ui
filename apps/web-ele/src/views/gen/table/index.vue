@@ -12,7 +12,12 @@ import { $t } from '@vben/locales';
 import { ElButton, ElMessage } from 'element-plus';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getTableInfo, getTablePage, wipeTableData, codeGenerate } from '#/api/gen/table';
+import {
+  codeGenerate,
+  getTableInfo,
+  getTablePage,
+  wipeTableData,
+} from '#/api/gen/table';
 
 import AggregateIndex from '../aggregate/index.vue';
 import GenInfoForm from '../info/form.vue';
@@ -187,7 +192,12 @@ const sync = async () => {
         >
           {{ $t('codegen.table.button.columnConfig') }}
         </ElButton>
-        <ElButton type="danger" link @click="openAggregate(row)">
+        <ElButton
+          type="danger"
+          link
+          @click="openAggregate(row)"
+          v-if="hasAccessByCodes(['gen:aggregate:index'])"
+        >
           {{ $t('codegen.table.button.aggregateConfig') }}
         </ElButton>
         <ElButton type="success" link @click="generate(row)">
