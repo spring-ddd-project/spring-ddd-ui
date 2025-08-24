@@ -200,7 +200,12 @@ const sync = async () => {
         >
           {{ $t('codegen.table.button.aggregateConfig') }}
         </ElButton>
-        <ElButton type="success" link @click="generate(row)">
+        <ElButton
+          type="success"
+          link
+          @click="generate(row)"
+          v-if="hasAccessByCodes(['gen:table:generate'])"
+        >
           {{ $t('codegen.table.button.generate.title') }}
         </ElButton>
       </template>
