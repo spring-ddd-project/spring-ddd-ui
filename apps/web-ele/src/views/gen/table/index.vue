@@ -171,7 +171,14 @@ const sync = async () => {
   <Page>
     <Grid>
       <template #toolbar-actions>
-        <ElButton class="mr-2" bg text type="danger" @click="sync">
+        <ElButton
+          class="mr-2"
+          bg
+          text
+          type="danger"
+          @click="sync"
+          v-if="hasAccessByCodes(['gen:table:wipe'])"
+        >
           {{ $t('codegen.table.sync.title') }}
         </ElButton>
       </template>
