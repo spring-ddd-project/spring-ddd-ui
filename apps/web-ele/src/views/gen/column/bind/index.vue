@@ -4,6 +4,7 @@ import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
 
+import { useAccess } from "@vben/access";
 import { confirm, Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
@@ -15,6 +16,8 @@ import { deleteBind, getBindPage } from '#/api/gen/bind';
 
 import BindForm from './form.vue';
 import RecycleForm from './recycle.vue';
+
+const { hasAccessByCodes } = useAccess();
 
 const bindFormRef = ref();
 const recycleFormRef = ref();
@@ -147,10 +150,24 @@ const deleteByIds = (row?: RowType) => {
         <Dict dict-key="components" :value="row.componentType" />
       </template>
       <template #toolbar-actions>
-        <ElButton class="mr-2" bg text type="primary" @click="openForm">
+        <ElButton
+          class="mr-2"
+          bg
+          text
+          type="primary"
+          @click="openForm"
+          v-if="hasAccessByCodes(['gen:column:bind:create'])"
+        >
           {{ $t('system.common.button.add') }}
         </ElButton>
-        <ElButton class="mr-2" bg text type="danger" @click="deleteByIds()">
+        <ElButton
+          class="mr-2"
+          bg
+          text
+          type="danger"
+          @click="deleteByIds()"
+          v-if="hasAccessByCodes(['gen:column:bind:delete'])"
+        >
           {{ $t('system.common.button.delete') }}
         </ElButton>
         <ElButton class="mr-2" bg text type="info" @click="openRecycleForm">
