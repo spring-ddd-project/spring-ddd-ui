@@ -83,5 +83,8 @@
       "extend": "Extend Info",
       "mask": "Domain Mask"
     }
+  },
+  "template": {
+    "title": "Template Config"
   }
 }
