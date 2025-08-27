@@ -13,7 +13,7 @@ export async function updateTemplate(data: any) {
 }
 
 export async function deleteTemplate(data: any) {
-  return requestClient.put('/gen/template/delete', null, {
+  return requestClient.post('/gen/template/delete', null, {
     params: {
       ids: data,
     },

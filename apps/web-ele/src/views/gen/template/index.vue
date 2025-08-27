@@ -11,10 +11,10 @@ import { ElButton, ElMessage } from 'element-plus';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { deleteTemplate, getTemplatePage } from '#/api/gen/template';
 
-import UserForm from './form.vue';
+import TemplateForm from './form.vue';
 import RecycleForm from './recycle.vue';
 
-const userFormRef = ref();
+const templateFormRef = ref();
 const recycleFormRef = ref();
 
 interface RowType {
@@ -34,14 +34,14 @@ const gridOptions: VxeTableGridOptions<RowType> = {
   columns: [
     { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
-    { field: 'templateName', title: $t('codegen.template.templateName') },
-    { field: 'templateContent', title: $t('codegen.template.templateContent') },
+    { field: 'templateName', title: $t('codegen.template.name') },
+    { field: 'templateContent', title: $t('codegen.template.content') },
     {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
       title: $t('system.common.operation'),
-      width: 200,
+      width: 150,
     },
   ],
   exportConfig: {},
@@ -66,7 +66,7 @@ const gridOptions: VxeTableGridOptions<RowType> = {
     // import: true,
     refresh: true,
     zoom: true,
-    search: true,
+    search: false,
   },
 };
 
@@ -79,11 +79,11 @@ const openRecycleForm = () => {
 };
 
 const openForm = () => {
-  userFormRef.value?.open();
+  templateFormRef.value?.open();
 };
 
 const editRow = (row: RowType) => {
-  userFormRef.value?.open(row);
+  templateFormRef.value?.open(row);
 };
 
 const deleteByIds = (row?: RowType) => {
@@ -134,7 +134,7 @@ const deleteByIds = (row?: RowType) => {
         </ElButton>
       </template>
     </Grid>
-    <UserForm ref="userFormRef" :grid-api="gridApi" />
+    <TemplateForm ref="templateFormRef" :grid-api="gridApi" />
     <RecycleForm ref="recycleFormRef" :grid-api="gridApi" />
   </Page>
 </template>
