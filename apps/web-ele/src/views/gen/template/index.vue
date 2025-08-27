@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import type { VbenFormProps } from '#/adapter/form';
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
@@ -9,17 +8,14 @@ import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage } from 'element-plus';
 
-import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { delUserById, getUserPage } from '#/api/sys/user';
+import { deleteTemplate, getTemplatePage } from '#/api/gen/template';
 
 import UserForm from './form.vue';
-import LinkForm from './link.vue';
 import RecycleForm from './recycle.vue';
 
 const userFormRef = ref();
 const recycleFormRef = ref();
-const linkFormRef = ref();
 
 interface RowType {
   id: string;
@@ -31,37 +27,6 @@ interface RowType {
   lockStatus: boolean;
 }
 
-const formOptions: VbenFormProps = {
-  collapsed: false,
-  schema: [
-    {
-      component: 'Input',
-      componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.username')}`,
-      },
-      fieldName: 'username',
-      label: $t('system.user.username'),
-    },
-    {
-      component: 'Input',
-      componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.phone')}`,
-      },
-      fieldName: 'phone',
-      label: $t('system.user.phone'),
-    },
-  ],
-  showCollapseButton: true,
-  submitButtonOptions: {
-    content: $t('system.common.button.search'),
-  },
-  resetButtonOptions: {
-    content: $t('system.common.button.reset'),
-  },
-  submitOnChange: false,
-  submitOnEnter: true,
-};
-
 const gridOptions: VxeTableGridOptions<RowType> = {
   checkboxConfig: {
     highlight: true,
@@ -69,16 +34,8 @@ const gridOptions: VxeTableGridOptions<RowType> = {
   columns: [
     { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
-    { field: 'username', title: $t('system.user.username') },
-    { field: 'phone', title: $t('system.user.phone') },
-    { field: 'avatar', title: $t('system.user.avatar') },
-    { field: 'email', title: $t('system.user.email') },
-    { field: 'sex', title: $t('system.user.sex'), slots: { default: 'sex' } },
-    {
-      field: 'lockStatus',
-      title: $t('system.user.lockStatus'),
-      slots: { default: 'lockStatus' },
-    },
+    { field: 'templateName', title: $t('codegen.template.templateName') },
+    { field: 'templateContent', title: $t('codegen.template.templateContent') },
     {
       field: 'action',
       fixed: 'right',
@@ -91,11 +48,10 @@ const gridOptions: VxeTableGridOptions<RowType> = {
   keepSource: true,
   proxyConfig: {
     ajax: {
-      query: async ({ page }, formValues) => {
-        return await getUserPage({
+      query: async ({ page }) => {
+        return await getTemplatePage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
-          ...formValues,
         });
       },
     },
@@ -116,7 +72,6 @@ const gridOptions: VxeTableGridOptions<RowType> = {
 
 const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions,
-  formOptions,
 });
 
 const openRecycleForm = () => {
@@ -129,10 +84,6 @@ const openForm = () => {
 
 const editRow = (row: RowType) => {
   userFormRef.value?.open(row);
-};
-
-const linkRow = (row: RowType) => {
-  linkFormRef.value?.open(row);
 };
 
 const deleteByIds = (row?: RowType) => {
@@ -150,7 +101,7 @@ const deleteByIds = (row?: RowType) => {
     icon: 'error',
   }).then(async () => {
     try {
-      await delUserById(ids);
+      await deleteTemplate(ids);
       await gridApi.reload();
       ElMessage.success($t('system.common.delete.success'));
     } catch {
@@ -163,12 +114,6 @@ const deleteByIds = (row?: RowType) => {
 <template>
   <Page>
     <Grid>
-      <template #sex="{ row }">
-        <Dict dict-key="sex_type" :value="row.sex" />
-      </template>
-      <template #lockStatus="{ row }">
-        <Dict dict-key="common_status" :value="row.lockStatus" />
-      </template>
       <template #toolbar-actions>
         <ElButton class="mr-2" bg text type="primary" @click="openForm">
           {{ $t('system.common.button.add') }}
@@ -181,9 +126,6 @@ const deleteByIds = (row?: RowType) => {
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="success" link @click="linkRow(row)">
-          {{ $t('system.common.button.roles') }}
-        </ElButton>
         <ElButton type="primary" link @click="editRow(row)">
           {{ $t('system.common.button.edit') }}
         </ElButton>
@@ -194,6 +136,5 @@ const deleteByIds = (row?: RowType) => {
     </Grid>
     <UserForm ref="userFormRef" :grid-api="gridApi" />
     <RecycleForm ref="recycleFormRef" :grid-api="gridApi" />
-    <LinkForm ref="linkFormRef" />
   </Page>
 </template>

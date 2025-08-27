@@ -85,6 +85,8 @@
     }
   },
   "template": {
-    "title": "Template Config"
+    "title": "Template Config",
+    "tableName": "Name",
+    "tableContent": "Content"
   }
 }
