@@ -4,7 +4,7 @@ import { ref } from 'vue';
 import { useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { ElMessage } from 'element-plus';
+import { ElInput, ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
 import { createTemplate, updateTemplate } from '#/api/gen/template/';
@@ -37,7 +37,7 @@ const [Form, formApi] = useVbenForm({
       rules: 'required',
     },
     {
-      component: 'Input',
+      component: 'textarea',
       fieldName: 'templateContent',
       label: $t('codegen.template.content'),
       componentProps: {
@@ -85,6 +85,10 @@ defineExpose({ open, close });
 
 <template>
   <Modal class="w-[40%]" :title="$t('system.common.alert.form')">
-    <Form style="width: auto" />
+    <Form style="width: auto">
+      <template #templateContent="slotProps">
+        <ElInput v-bind="slotProps" type="textarea" :rows="10" />
+      </template>
+    </Form>
   </Modal>
 </template>
