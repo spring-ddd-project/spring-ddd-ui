@@ -8,7 +8,11 @@ import { ElButton, ElMessage } from 'element-plus';
 
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getRecyclePage, restoreUser, wipeUserById } from '#/api/sys/user';
+import {
+  getTemplateRecyclePage,
+  restoreTemplate,
+  wipeTemplate,
+} from '#/api/gen/template';
 
 const props = defineProps<{
   gridApi: any;
@@ -16,12 +20,8 @@ const props = defineProps<{
 
 interface RowType {
   id: string;
-  username: string;
-  phone: string;
-  avatar: string;
-  email: string;
-  sex: boolean;
-  lockStatus: boolean;
+  templateName: string;
+  templateContent: string;
 }
 
 const gridOptions: VxeGridProps<RowType> = {
@@ -31,22 +31,14 @@ const gridOptions: VxeGridProps<RowType> = {
   columns: [
     { title: 'No.', type: 'seq', width: 50 },
     { align: 'left', title: '#', type: 'checkbox', width: 50 },
-    { field: 'username', title: $t('system.user.username') },
-    { field: 'phone', title: $t('system.user.phone') },
-    { field: 'avatar', title: $t('system.user.avatar') },
-    { field: 'email', title: $t('system.user.email') },
-    { field: 'sex', title: $t('system.user.sex'), slots: { default: 'sex' } },
-    {
-      field: 'lockStatus',
-      title: $t('system.user.lockStatus'),
-      slots: { default: 'lockStatus' },
-    },
+    { field: 'templateName', title: $t('codegen.template.name') },
+    { field: 'templateContent', title: $t('codegen.template.content') },
     {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
       title: $t('system.common.operation'),
-      width: 200,
+      width: 150,
     },
   ],
   exportConfig: {},
@@ -54,7 +46,7 @@ const gridOptions: VxeGridProps<RowType> = {
   proxyConfig: {
     ajax: {
       query: async ({ page }) => {
-        return await getRecyclePage({
+        return await getTemplateRecyclePage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
         });
@@ -97,7 +89,7 @@ const wipeUsers = (row?: RowType) => {
     content: $t('system.common.delete.confirm'),
     icon: 'error',
   }).then(async () => {
-    await wipeUserById(ids)
+    await wipeTemplate(ids)
       .then(async () => {
         await localGridApi.reload();
         ElMessage.success($t('system.common.delete.success'));
@@ -124,7 +116,7 @@ const restoreUsers = (row?: RowType) => {
     icon: 'error',
   }).then(async () => {
     try {
-      await restoreUser(ids);
+      await restoreTemplate(ids);
       await localGridApi.reload();
       await props.gridApi.reload();
       ElMessage.success($t('system.common.restore.success'));

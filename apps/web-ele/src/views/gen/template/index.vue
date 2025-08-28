@@ -19,12 +19,8 @@ const recycleFormRef = ref();
 
 interface RowType {
   id: string;
-  username: string;
-  phone: string;
-  avatar: string;
-  email: string;
-  sex: boolean;
-  lockStatus: boolean;
+  templateName: string;
+  templateContent: string;
 }
 
 const gridOptions: VxeTableGridOptions<RowType> = {
