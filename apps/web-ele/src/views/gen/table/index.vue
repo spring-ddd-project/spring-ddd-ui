@@ -151,12 +151,9 @@ const openAggregate = (row: RowType) => {
   });
 };
 
-const generate = (row: RowType) => {
-  codeGenerate(row?.tableName).then((resp: any) => {
-    if (resp) {
-      ElMessage.success($t('codegen.table.generate.result'));
-    }
-  });
+const generate = async (row: RowType) => {
+  await codeGenerate(row?.tableName);
+  ElMessage.success($t('codegen.table.button.generate.result'));
 };
 
 const sync = async () => {

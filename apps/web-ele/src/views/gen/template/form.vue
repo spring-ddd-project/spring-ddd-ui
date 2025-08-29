@@ -84,10 +84,10 @@ defineExpose({ open, close });
 </script>
 
 <template>
-  <Modal class="w-[40%]" :title="$t('system.common.alert.form')">
+  <Modal class="w-[60%]" :title="$t('system.common.alert.form')">
     <Form style="width: auto">
       <template #templateContent="slotProps">
-        <ElInput v-bind="slotProps" type="textarea" :rows="10" />
+        <ElInput v-bind="slotProps" type="textarea" :rows="20" />
       </template>
     </Form>
   </Modal>
