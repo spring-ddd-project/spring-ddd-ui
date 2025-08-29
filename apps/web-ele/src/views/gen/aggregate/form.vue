@@ -31,15 +31,6 @@ const [Form, formApi] = useVbenForm({
   submitOnChange: true,
   schema: [
     {
-      component: 'Input',
-      fieldName: 'objectName',
-      label: $t('codegen.aggregate.objectName'),
-      componentProps: {
-        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.aggregate.objectName')}`,
-      },
-      rules: 'required',
-    },
-    {
       component: 'Select',
       componentProps: {
         allowClear: true,
@@ -52,6 +43,15 @@ const [Form, formApi] = useVbenForm({
       },
       fieldName: 'objectValue',
       label: $t('codegen.aggregate.objectValue'),
+      rules: 'required',
+    },
+    {
+      component: 'Input',
+      fieldName: 'objectName',
+      label: $t('codegen.aggregate.objectName'),
+      componentProps: {
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.aggregate.objectName')}`,
+      },
       rules: 'required',
     },
     {
