@@ -117,12 +117,22 @@ const [Drawer, drawerApi] = useVbenDrawer({
 });
 
 const open = (row: any, fData: string[]) => {
-  writeForm.value = {};
   if (row?.id) {
-    writeForm.value = row;
+    const objectValueArray = (() => {
+      try {
+        return JSON.parse(row.objectValue);
+      } catch {
+        return [];
+      }
+    })();
+
+    writeForm.value = {
+      ...row,
+      objectValue: objectValueArray,
+    };
+
     infoId.value = row.infoId;
-    writeForm.value.objectValue = JSON.parse(row.objectValue) as string[];
-    formApi.setValues(row);
+    formApi.setValues(writeForm.value);
   } else {
     infoId.value = row;
     formApi.resetForm();
@@ -130,6 +140,7 @@ const open = (row: any, fData: string[]) => {
   }
   drawerApi.open();
 };
+
 const close = () => drawerApi.close();
 
 defineExpose({ open, close });
