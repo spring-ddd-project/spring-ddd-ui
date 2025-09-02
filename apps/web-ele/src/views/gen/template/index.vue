@@ -146,7 +146,12 @@ const deleteByIds = (row?: RowType) => {
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="primary" link @click="editRow(row)">
+        <ElButton
+          type="primary"
+          link
+          @click="editRow(row)"
+          v-if="hasAccessByCodes(['gen:template:update'])"
+        >
           {{ $t('system.common.button.edit') }}
         </ElButton>
         <ElButton type="danger" link @click="deleteByIds(row)">
