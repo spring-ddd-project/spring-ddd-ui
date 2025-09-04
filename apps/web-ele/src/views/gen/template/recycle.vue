@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
+import { useAccess } from '@vben/access';
 import { confirm, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
@@ -13,6 +14,8 @@ import {
   restoreTemplate,
   wipeTemplate,
 } from '#/api/gen/template';
+
+const { hasAccessByCodes } = useAccess();
 
 const props = defineProps<{
   gridApi: any;
@@ -152,7 +155,14 @@ defineExpose({ open, close });
         <Dict dict-key="common_status" :value="row.lockStatus" />
       </template>
       <template #toolbar-actions>
-        <ElButton class="mr-2" bg text type="success" @click="restoreUsers()">
+        <ElButton
+          class="mr-2"
+          bg
+          text
+          type="success"
+          @click="restoreUsers()"
+          v-if="hasAccessByCodes(['gen:template:restore'])"
+        >
           {{ $t('system.common.button.restore') }}
         </ElButton>
         <ElButton class="mr-2" bg text type="danger" @click="wipeUsers()">
