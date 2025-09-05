@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import type { VbenFormProps } from '#/adapter/form';
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
@@ -26,9 +27,38 @@ interface RowType {
   templateContent: string;
 }
 
+const formOptions: VbenFormProps = {
+  collapsed: false,
+  schema: [
+    {
+      component: 'Input',
+      componentProps: {
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.template.name')}`,
+      },
+      fieldName: 'templateName',
+      label: $t('codegen.template.name'),
+    },
+  ],
+  showCollapseButton: true,
+  submitButtonOptions: {
+    content: $t('system.common.button.search'),
+  },
+  resetButtonOptions: {
+    content: $t('system.common.button.reset'),
+  },
+  submitOnChange: false,
+  submitOnEnter: true,
+};
+
 const gridOptions: VxeTableGridOptions<RowType> = {
   checkboxConfig: {
     highlight: true,
+  },
+  columnConfig: {
+    resizable: true,
+  },
+  rowConfig: {
+    isHover: true,
   },
   columns: [
     { title: 'No.', type: 'seq', width: 50 },
@@ -47,10 +77,11 @@ const gridOptions: VxeTableGridOptions<RowType> = {
   keepSource: true,
   proxyConfig: {
     ajax: {
-      query: async ({ page }) => {
+      query: async ({ page }, formValues) => {
         return await getTemplatePage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
+          ...formValues,
         });
       },
     },
@@ -71,6 +102,7 @@ const gridOptions: VxeTableGridOptions<RowType> = {
 
 const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions,
+  formOptions,
 });
 
 const openRecycleForm = () => {
