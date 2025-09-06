@@ -15,11 +15,11 @@ import {
   wipeTemplate,
 } from '#/api/gen/template';
 
-const { hasAccessByCodes } = useAccess();
-
 const props = defineProps<{
   gridApi: any;
 }>();
+
+const { hasAccessByCodes } = useAccess();
 
 interface RowType {
   id: string;
@@ -165,7 +165,14 @@ defineExpose({ open, close });
         >
           {{ $t('system.common.button.restore') }}
         </ElButton>
-        <ElButton class="mr-2" bg text type="danger" @click="wipeUsers()">
+        <ElButton
+          class="mr-2"
+          bg
+          text
+          type="danger"
+          @click="wipeUsers()"
+          v-if="hasAccessByCodes(['gen:template:wipe'])"
+        >
           {{ $t('system.common.button.wipe') }}
         </ElButton>
       </template>
