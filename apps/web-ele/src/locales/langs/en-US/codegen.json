@@ -68,6 +68,7 @@
     "title": "Column Bind",
     "columnType": "Column Type",
     "entityType": "Entity Type",
+    "typescriptType": "Typescript Type",
     "componentType": "Component Type",
     "columnTypeLowercaseOnly": "Column Type (Lowercase Only)"
   },

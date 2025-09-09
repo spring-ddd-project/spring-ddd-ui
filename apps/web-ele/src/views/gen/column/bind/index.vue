@@ -26,6 +26,7 @@ interface RowType {
   id: string;
   columnType: string;
   entityType: string;
+  typescriptType: string;
   componentType: number;
 }
 
@@ -65,6 +66,11 @@ const gridOptions: VxeTableGridOptions<RowType> = {
       field: 'componentType',
       title: $t('codegen.bind.componentType'),
       slots: { default: 'componentType' },
+    },
+    {
+      field: 'typescriptType',
+      title: $t('codegen.bind.typescriptType'),
+      slots: { default: 'typescriptType' },
     },
     {
       field: 'action',
@@ -146,6 +152,9 @@ const deleteByIds = (row?: RowType) => {
 <template>
   <Page>
     <Grid>
+      <template #typescriptType="{ row }">
+        <Dict dict-key="typescript_type" :value="row.typescriptType" />
+      </template>
       <template #componentType="{ row }">
         <Dict dict-key="components" :value="row.componentType" />
       </template>
