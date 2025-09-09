@@ -73,6 +73,22 @@ const [Form, formApi] = useVbenForm({
       label: $t('codegen.bind.componentType'),
       rules: 'required',
     },
+    {
+      component: 'ApiSelect',
+      componentProps: {
+        allowClear: true,
+        filterOption: true,
+        api: getTypeScriptDict,
+        showSearch: true,
+        labelField: 'itemLabel',
+        valueField: 'itemValue',
+        clearable: true,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.bind.typescriptType')}`,
+      },
+      fieldName: 'typescriptType',
+      label: $t('codegen.bind.typescriptType'),
+      rules: 'required',
+    },
   ],
 });
 
@@ -112,6 +128,10 @@ defineExpose({ open, close });
 
 function getComponentDict() {
   return getItemLabelByDictCode('components');
+}
+
+function getTypeScriptDict() {
+  return getItemLabelByDictCode('typescript_type');
 }
 </script>
 
