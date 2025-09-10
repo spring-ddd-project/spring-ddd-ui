@@ -35,6 +35,7 @@ interface ComponenetItem {
 const dictData = ref<DictItem[]>([]);
 const componentData = ref<ComponenetItem[]>([]);
 const componentTypeData = ref<ComponenetItem[]>([]);
+const typescriptData = ref<ComponenetItem[]>([]);
 
 onMounted(() => {
   getComponent(true);
@@ -54,6 +55,7 @@ interface RowType {
   tableFilter: boolean;
   tableFilterComponent: number;
   tableFilterType: number;
+  typescriptType: number;
   formComponent: number;
   formVisible: boolean;
   formRequired: boolean;
@@ -149,6 +151,12 @@ const gridOptions: VxeTableGridOptions<RowType> = {
           title: $t('codegen.info.tableFilterType'),
           slots: { default: 'tableFilterType' },
           minWidth: 100,
+        },
+        {
+          field: 'typescriptType',
+          title: $t('codegen.info.typescriptType'),
+          slots: { default: 'typescriptType' },
+          minWidth: 150,
         },
       ],
     },
@@ -259,6 +267,11 @@ const getComponent = async (e: any) => {
   componentData.value = await getItemLabelByDictCode('components');
 };
 
+const getTypeScript = async (e: any) => {
+  if (!e) return;
+  typescriptData.value = await getItemLabelByDictCode('typescript_type');
+};
+
 const getComponentType = async (e: any) => {
   if (!e) return;
   componentTypeData.value = await getItemLabelByDictCode('component_type');
@@ -299,6 +312,21 @@ const getComponentType = async (e: any) => {
             :key="item.id"
             :label="item.dictName"
             :value="item.id"
+          />
+        </ElSelect>
+      </template>
+      <template #typescriptType="{ row }">
+        <ElSelect
+          v-model="row.typescriptType"
+          clearable
+          filterable
+          @visible-change="getTypeScript"
+        >
+          <ElOption
+            v-for="item in typescriptData"
+            :key="item.id"
+            :label="item.itemLabel"
+            :value="item.itemValue"
           />
         </ElSelect>
       </template>

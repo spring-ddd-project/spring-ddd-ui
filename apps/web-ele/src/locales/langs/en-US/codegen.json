@@ -44,6 +44,7 @@
     "tableFilter": "Query",
     "tableFilterComponent": "Component",
     "tableFilterType": "Type",
+    "typescriptType": "TypeScript",
     "formComponent": "Component",
     "formVisible": "Visible",
     "formRequired": "Required",
