@@ -135,6 +135,7 @@ const open = (row: any, fData: string[]) => {
     formApi.setValues(writeForm.value);
   } else {
     infoId.value = row;
+    writeForm.value = {};
     formApi.resetForm();
     getEntityInfo(infoId.value, fData);
   }
