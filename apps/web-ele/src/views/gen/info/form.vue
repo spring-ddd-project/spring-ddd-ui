@@ -233,7 +233,6 @@ const [Drawer, drawerApi] = useVbenDrawer({
     await drawerApi.setState({ loading: false }).close();
   },
   onCancel: () => {
-    writeForm.value = {};
     drawerApi.setState({ loading: false }).close();
   },
   confirmText: $t('system.common.button.confirm'),
@@ -241,7 +240,6 @@ const [Drawer, drawerApi] = useVbenDrawer({
 });
 
 const open = (row: any, iId: string) => {
-  writeForm.value = {};
   if (row?.tableName) {
     writeForm.value = row;
     infoId.value = iId;
@@ -249,7 +247,16 @@ const open = (row: any, iId: string) => {
   }
   drawerApi.open();
 };
-const close = () => drawerApi.close();
+const close = () => {
+  writeForm.value = {};
+  infoId.value = null;
+  databaseName.value = null;
+  dictData.value = [];
+  componentData.value = [];
+  componentTypeData.value = [];
+  typescriptData.value = [];
+  drawerApi.close();
+};
 
 defineExpose({ open, close });
 
