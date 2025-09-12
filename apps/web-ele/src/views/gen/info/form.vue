@@ -39,6 +39,8 @@ const typescriptData = ref<ComponenetItem[]>([]);
 
 onMounted(() => {
   getComponent(true);
+  getComponentType(true);
+  getTypeScript(true);
 });
 
 interface RowType {
