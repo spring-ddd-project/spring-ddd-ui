@@ -48,6 +48,8 @@
     "formComponent": "Component",
     "formVisible": "Visible",
     "formRequired": "Required",
+    "en": "English",
+    "locale": "Locale",
     "tableInfoConfig": "Please configure the table information before proceeding.",
     "tag": {
       "title": "Advance Configuration",
@@ -59,7 +61,8 @@
       "column": {
         "title": "Column Mapping",
         "database": "Database Column",
-        "java": "Java Entity"
+        "java": "Java Entity",
+        "i18n": "i18n"
       },
       "table": "Table Page",
       "form": "Form Page"

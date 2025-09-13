@@ -62,6 +62,8 @@ interface RowType {
   formVisible: boolean;
   formRequired: boolean;
   propDictId: string;
+  en: string;
+  locale: string;
 }
 
 const gridOptions: VxeTableGridOptions<RowType> = {
@@ -181,6 +183,23 @@ const gridOptions: VxeTableGridOptions<RowType> = {
           field: 'formRequired',
           title: $t('codegen.info.formRequired'),
           slots: { default: 'formRequired' },
+          minWidth: 100,
+        },
+      ],
+    },
+    {
+      title: $t('codegen.info.group.column.i18n'),
+      children: [
+        {
+          editRender: { name: 'input' },
+          field: 'en',
+          title: $t('codegen.info.en'),
+          minWidth: 100,
+        },
+        {
+          editRender: { name: 'input' },
+          field: 'locale',
+          title: $t('codegen.info.locale'),
           minWidth: 100,
         },
       ],
