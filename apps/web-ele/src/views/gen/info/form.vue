@@ -75,7 +75,6 @@ const gridOptions: VxeTableGridOptions<RowType> = {
   },
   columns: [
     { title: 'No.', type: 'seq', width: 50, fixed: 'left' },
-    { align: 'left', title: '#', type: 'checkbox', width: 50, fixed: 'left' },
     {
       title: $t('codegen.info.group.column.title'),
       children: [
@@ -194,13 +193,13 @@ const gridOptions: VxeTableGridOptions<RowType> = {
           editRender: { name: 'input' },
           field: 'en',
           title: $t('codegen.info.en'),
-          minWidth: 100,
+          minWidth: 150,
         },
         {
           editRender: { name: 'input' },
           field: 'locale',
           title: $t('codegen.info.locale'),
-          minWidth: 100,
+          minWidth: 150,
         },
       ],
     },
