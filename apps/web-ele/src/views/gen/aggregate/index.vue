@@ -3,6 +3,7 @@ import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
 
+import { useAccess } from '@vben/access';
 import { confirm, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
@@ -13,6 +14,8 @@ import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getAggregatePage, wipeAggregate } from '#/api/gen/aggregate';
 
 import AggregateForm from './form.vue';
+
+const { hasAccessByCodes } = useAccess();
 
 const infoId = ref();
 const fullData = ref<string[]>([]);
@@ -156,7 +159,14 @@ defineExpose({ open, close });
         <Dict dict-key="create_skip" :value="row.hasCreated" />
       </template>
       <template #toolbar-actions>
-        <ElButton class="mr-2" bg text type="primary" @click="openForm">
+        <ElButton
+          class="mr-2"
+          bg
+          text
+          type="primary"
+          @click="openForm"
+          v-if="hasAccessByCodes(['gen:aggregate:create'])"
+        >
           {{ $t('system.common.button.add') }}
         </ElButton>
         <ElButton class="mr-2" bg text type="danger" @click="deleteByIds()">
