@@ -41,6 +41,7 @@ onMounted(() => {
   getComponent(true);
   getComponentType(true);
   getTypeScript(true);
+  getDict(true);
 });
 
 interface RowType {

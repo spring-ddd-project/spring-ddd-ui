@@ -6,7 +6,7 @@ import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import { ref } from 'vue';
 
 import { useAccess } from '@vben/access';
-import { Page } from '@vben/common-ui';
+import { Page, prompt } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage } from 'element-plus';
@@ -152,8 +152,14 @@ const openAggregate = (row: RowType) => {
 };
 
 const generate = async (row: RowType) => {
-  await codeGenerate(row?.tableName);
-  ElMessage.success($t('codegen.table.button.generate.result'));
+  prompt({
+    content: $t('codegen.table.button.generate.projectName'),
+  })
+    .then(async (val) => {
+      await codeGenerate(row?.tableName, val);
+      ElMessage.success($t('codegen.table.button.generate.result'));
+    })
+    .catch(() => {});
 };
 
 const sync = async () => {

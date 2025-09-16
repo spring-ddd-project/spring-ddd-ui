@@ -14,7 +14,8 @@
       "aggregateConfig": "Aggregate Config",
       "generate": {
         "title": "Generate",
-        "result": "Generate Success"
+        "result": "Generate Success",
+        "projectName": "Please enter the project name"
       }
     },
     "form": "Basic Information Data Processing via Code Generation",
