@@ -9,11 +9,11 @@
     "createTime": "Create Time",
     "tableCollation": "Table Collation",
     "button": {
-      "projectConfig": "Project Config",
-      "columnConfig": "Column Config",
-      "aggregateConfig": "Aggregate Config",
+      "projectConfig": "Step1: Project Config",
+      "columnConfig": "Step2: Column Config",
+      "aggregateConfig": "Step3: Aggregate Config",
       "generate": {
-        "title": "Generate",
+        "title": "Step4: Generate",
         "result": "Generate Success",
         "projectName": "Please enter the project name"
       }

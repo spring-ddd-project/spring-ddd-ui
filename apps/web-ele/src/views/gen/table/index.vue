@@ -85,14 +85,14 @@ const gridOptions: VxeTableGridOptions<RowType> = {
       title: $t('codegen.table.tableName'),
     },
     { field: 'tableComment', title: $t('codegen.table.tableComment') },
-    { field: 'createTime', title: $t('codegen.table.createTime') },
+    // { field: 'createTime', title: $t('codegen.table.createTime') },
     { field: 'tableCollation', title: $t('codegen.table.tableCollation') },
     {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
       title: $t('system.common.operation'),
-      width: 450,
+      width: 600,
     },
   ],
   exportConfig: {},
@@ -127,11 +127,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
   formOptions,
 });
 
-const config = (row: RowType) => {
+const projectConfig = (row: RowType) => {
   configFormRef.value?.open(row);
 };
 
-const codegen = (row: RowType) => {
+const columnConfig = (row: RowType) => {
   getTableInfo(row?.tableName).then((resp: any) => {
     if (!resp) {
       ElMessage.warning($t('codegen.info.tableInfoConfig'));
@@ -141,7 +141,7 @@ const codegen = (row: RowType) => {
   });
 };
 
-const openAggregate = (row: RowType) => {
+const aggregateConfig = (row: RowType) => {
   getTableInfo(row?.tableName).then((resp: any) => {
     if (!resp) {
       ElMessage.warning($t('codegen.info.tableInfoConfig'));
@@ -189,7 +189,7 @@ const sync = async () => {
         <ElButton
           type="warning"
           link
-          @click="config(row)"
+          @click="projectConfig(row)"
           v-if="hasAccessByCodes(['gen:projectInfo:index'])"
         >
           {{ $t('codegen.table.button.projectConfig') }}
@@ -197,7 +197,7 @@ const sync = async () => {
         <ElButton
           type="primary"
           link
-          @click="codegen(row)"
+          @click="columnConfig(row)"
           v-if="hasAccessByCodes(['gen:columns:queryByInfoId'])"
         >
           {{ $t('codegen.table.button.columnConfig') }}
@@ -205,7 +205,7 @@ const sync = async () => {
         <ElButton
           type="danger"
           link
-          @click="openAggregate(row)"
+          @click="aggregateConfig(row)"
           v-if="hasAccessByCodes(['gen:aggregate:index'])"
         >
           {{ $t('codegen.table.button.aggregateConfig') }}
