@@ -31,6 +31,8 @@
     "tableName": "Table Name",
     "packageName": "Package Name",
     "className": "Class Name",
+    "module": "Module Name",
+    "project": "Project Name",
     "requestName": "Request Name",
     "propValueObject": "Value Object",
     "propColumnKey": "Key",
