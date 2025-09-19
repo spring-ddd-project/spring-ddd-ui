@@ -152,14 +152,8 @@ const aggregateConfig = (row: RowType) => {
 };
 
 const generate = async (row: RowType) => {
-  prompt({
-    content: $t('codegen.table.button.generate.projectName'),
-  })
-    .then(async (val) => {
-      await codeGenerate(row?.tableName, val);
-      ElMessage.success($t('codegen.table.button.generate.result'));
-    })
-    .catch(() => {});
+  await codeGenerate(row?.tableName);
+  ElMessage.success($t('codegen.table.button.generate.result'));
 };
 
 const sync = async () => {

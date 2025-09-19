@@ -18,6 +18,13 @@ const writeForm = ref<Record<string, any>>({});
 const infoId = ref();
 const entityList = ref([]);
 
+const clear = () => {
+  writeForm.value = {};
+  infoId.value = '';
+  entityList.value = [];
+  formApi.resetForm();
+};
+
 const [Form, formApi] = useVbenForm({
   showDefaultActions: false,
   layout: 'horizontal',
@@ -135,14 +142,15 @@ const open = (row: any, fData: string[]) => {
     formApi.setValues(writeForm.value);
   } else {
     infoId.value = row;
-    writeForm.value = {};
-    formApi.resetForm();
     getEntityInfo(infoId.value, fData);
   }
   drawerApi.open();
 };
 
-const close = () => drawerApi.close();
+const close = () => {
+  clear();
+  drawerApi.close();
+};
 
 defineExpose({ open, close });
 
