@@ -8,11 +8,10 @@ export async function wipeTableData() {
   return requestClient.delete('/gen/table/wipe');
 }
 
-export async function codeGenerate(data: any, val: string) {
+export async function codeGenerate(data: any) {
   return requestClient.post('/gen/table/generate', null, {
     params: {
       tableName: data,
-      projectName: val,
     },
   });
 }
