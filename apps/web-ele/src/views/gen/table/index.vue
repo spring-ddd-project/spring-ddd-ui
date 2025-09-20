@@ -6,7 +6,7 @@ import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import { ref } from 'vue';
 
 import { useAccess } from '@vben/access';
-import { Page, prompt } from '@vben/common-ui';
+import { Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage } from 'element-plus';
