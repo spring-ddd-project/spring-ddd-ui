@@ -16,6 +16,10 @@ export async function codeGenerate(data: any) {
   });
 }
 
+export async function codePreview() {
+  return requestClient.post('/gen/table/preview', null, {});
+}
+
 export async function getTableInfoPage(data: any) {
   return requestClient.post('/gen/projectInfo/index', data);
 }
