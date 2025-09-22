@@ -14,6 +14,7 @@ import { ElButton, ElMessage } from 'element-plus';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
   codeGenerate,
+  codePreview,
   getTableInfo,
   getTablePage,
   wipeTableData,
@@ -153,6 +154,7 @@ const aggregateConfig = (row: RowType) => {
 
 const generate = async (row: RowType) => {
   await codeGenerate(row?.tableName);
+  await codePreview();
   ElMessage.success($t('codegen.table.button.generate.result'));
 };
 
