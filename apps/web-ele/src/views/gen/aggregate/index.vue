@@ -184,7 +184,12 @@ defineExpose({ open, close });
         <ElButton type="primary" link @click="editRow(row)">
           {{ $t('system.common.button.edit') }}
         </ElButton>
-        <ElButton type="danger" link @click="deleteByIds(row)">
+        <ElButton
+          type="danger"
+          link
+          @click="deleteByIds(row)"
+          v-if="hasAccessByCodes(['gen:aggregate:wipe'])"
+        >
           {{ $t('system.common.button.delete') }}
         </ElButton>
       </template>
