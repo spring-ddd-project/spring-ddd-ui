@@ -4,6 +4,7 @@ import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
 
+import { useAccess } from '@vben/access';
 import { confirm, Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
@@ -16,6 +17,8 @@ import { delUserById, getUserPage } from '#/api/sys/user';
 import UserForm from './form.vue';
 import LinkForm from './link.vue';
 import RecycleForm from './recycle.vue';
+
+const { hasAccessByCodes } = useAccess();
 
 const userFormRef = ref();
 const recycleFormRef = ref();
@@ -170,7 +173,14 @@ const deleteByIds = (row?: RowType) => {
         <Dict dict-key="common_status" :value="row.lockStatus" />
       </template>
       <template #toolbar-actions>
-        <ElButton class="mr-2" bg text type="primary" @click="openForm">
+        <ElButton
+          class="mr-2"
+          bg
+          text
+          type="primary"
+          @click="openForm"
+          v-if="hasAccessByCodes(['sys:user:create'])"
+        >
           {{ $t('system.common.button.add') }}
         </ElButton>
         <ElButton class="mr-2" bg text type="danger" @click="deleteByIds()">
