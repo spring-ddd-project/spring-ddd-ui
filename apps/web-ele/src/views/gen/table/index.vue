@@ -23,12 +23,14 @@ import {
 import AggregateIndex from '../aggregate/index.vue';
 import GenInfoForm from '../info/form.vue';
 import ConfigForm from './config.vue';
+import PreviewModal from './preview.vue';
 
 const { hasAccessByCodes } = useAccess();
 
 const genInfoFormRef = ref();
 const configFormRef = ref();
 const aggregateIndexRef = ref();
+const previewModalRef = ref();
 
 interface RowType {
   id: string;
@@ -154,7 +156,9 @@ const aggregateConfig = (row: RowType) => {
 
 const generate = async (row: RowType) => {
   await codeGenerate(row?.tableName);
-  await codePreview();
+  await codePreview().then((resp: any) => {
+    previewModalRef.value?.open(resp);
+  });
   ElMessage.success($t('codegen.table.button.generate.result'));
 };
 
@@ -219,5 +223,6 @@ const sync = async () => {
     <GenInfoForm ref="genInfoFormRef" />
     <ConfigForm ref="configFormRef" />
     <AggregateIndex ref="aggregateIndexRef" :grid-api="gridApi" />
+    <PreviewModal ref="previewModalRef" />
   </Page>
 </template>
