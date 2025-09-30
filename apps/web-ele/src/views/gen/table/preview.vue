@@ -1,8 +1,10 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue';
 
-import { ColPage, useVbenForm, useVbenModal, VbenTree } from '@vben/common-ui';
+import { ColPage, useVbenForm, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
+
+import { ElCard, ElTreeV2 as ElTree } from 'element-plus';
 
 const writeForm = ref<Record<string, any>>({});
 
@@ -25,13 +27,6 @@ interface Tree {
 
 const [Form, formApi] = useVbenForm({
   showDefaultActions: false,
-  schema: [
-    {
-      component: 'Input',
-      fieldName: 'permissions',
-      label: $t('system.role.permissions'),
-    },
-  ],
 });
 
 const [Modal, modalApi] = useVbenModal({
@@ -50,10 +45,7 @@ const [Modal, modalApi] = useVbenModal({
 const defaultProps = {
   children: 'children',
   label: 'label',
-};
-
-const handleNodeClick = (data: Tree) => {
-  console.log(data);
+  id: 'id',
 };
 
 /**
@@ -95,16 +87,12 @@ defineExpose({ open, close });
           :style="{ minWidth: '200px' }"
           class="border-border bg-card mr-2 rounded-[var(--radius)] border p-2"
         >
-          <Form>
-            <template #permissions="slotProps">
-              <ElTree
-                style="max-width: 600px"
-                :data="writeForm"
-                :props="defaultProps"
-                @node-click="handleNodeClick"
-              />
-            </template>
-          </Form>
+          <ElTree
+            style="max-width: 600px"
+            :data="writeForm"
+            :props="defaultProps"
+          />
+          <Form />
         </div>
       </template>
 
