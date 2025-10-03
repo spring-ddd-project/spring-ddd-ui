@@ -181,7 +181,12 @@ defineExpose({ open, close });
         <ElButton type="success" link @click="restoreUsers(row)">
           {{ $t('system.common.button.restore') }}
         </ElButton>
-        <ElButton type="danger" link @click="wipeUsers(row)">
+        <ElButton
+          type="danger"
+          link
+          @click="wipeUsers(row)"
+          v-if="hasAccessByCodes(['sys:user:wipe'])"
+        >
           {{ $t('system.common.button.wipe') }}
         </ElButton>
       </template>
