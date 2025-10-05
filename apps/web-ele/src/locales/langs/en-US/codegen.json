@@ -96,5 +96,9 @@
     "title": "Template Config",
     "name": "Name",
     "content": "Content"
+  },
+  "preview": {
+    "title": "How to use?",
+    "value": "Please refer to the short help document in the README directory."
   }
 }
