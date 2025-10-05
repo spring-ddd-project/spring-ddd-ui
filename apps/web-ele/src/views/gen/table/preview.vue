@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { TreeNodeData } from 'element-plus';
+import { ElMessage, type TreeNodeData } from "element-plus";
 
 import { reactive, ref } from 'vue';
 
@@ -31,12 +31,15 @@ const [Modal, modalApi] = useVbenModal({
   onOpenChange: async (open) => {
     if (!open) modalApi.setState({ loading: false });
   },
-  onConfirm: () => {},
+  onConfirm: () => {
+    ElMessage.success($t('codegen.table.button.generate.result'));
+    modalApi.setState({ loading: false }).close();
+  },
   onCancel: () => {
     writeForm.value = {};
     modalApi.setState({ loading: false }).close();
   },
-  confirmText: $t('system.common.button.confirm'),
+  confirmText: $t('system.common.button.download'),
   cancelText: $t('system.common.button.cancel'),
 });
 
@@ -60,6 +63,8 @@ const open = (row?: any) => {
 const close = () => {
   formApi.resetForm();
   modalApi.close();
+  writeForm.value = {};
+  rightLabel.value = '';
 };
 
 defineExpose({ open, close });
