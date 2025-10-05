@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { ElMessage, type TreeNodeData } from "element-plus";
+import type { TreeNodeData } from 'element-plus';
 
 import { reactive, ref } from 'vue';
 
 import { ColPage, useVbenForm, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { ElCard, ElTreeV2 as ElTree } from 'element-plus';
+import { ElCard, ElMessage, ElTreeV2 as ElTree } from 'element-plus';
 
 const writeForm = ref();
 const rightLabel = ref();
