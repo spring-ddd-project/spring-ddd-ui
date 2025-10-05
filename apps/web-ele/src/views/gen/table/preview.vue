@@ -1,12 +1,15 @@
 <script lang="ts" setup>
+import type { TreeNodeData } from 'element-plus';
+
 import { reactive, ref } from 'vue';
 
 import { ColPage, useVbenForm, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { ElCard, ElTreeV2 as ElTree } from 'element-plus';
+import { ElCard, ElMessage, ElTreeV2 as ElTree } from 'element-plus';
 
-const writeForm = ref<Record<string, any>>({});
+const writeForm = ref();
+const rightLabel = ref();
 
 const props = reactive({
   leftCollapsedWidth: 5,
@@ -20,11 +23,6 @@ const props = reactive({
   splitLine: true,
 });
 
-interface Tree {
-  label: string;
-  children?: Tree[];
-}
-
 const [Form, formApi] = useVbenForm({
   showDefaultActions: false,
 });
@@ -33,29 +31,31 @@ const [Modal, modalApi] = useVbenModal({
   onOpenChange: async (open) => {
     if (!open) modalApi.setState({ loading: false });
   },
-  onConfirm: () => {},
+  onConfirm: () => {
+    ElMessage.success($t('codegen.table.button.generate.result'));
+    modalApi.setState({ loading: false }).close();
+  },
   onCancel: () => {
     writeForm.value = {};
     modalApi.setState({ loading: false }).close();
   },
-  confirmText: $t('system.common.button.confirm'),
+  confirmText: $t('system.common.button.download'),
   cancelText: $t('system.common.button.cancel'),
 });
 
 const defaultProps = {
   children: 'children',
   label: 'label',
-  id: 'id',
 };
 
-/**
- * 打开弹窗时填充树数据
- */
+const nodeClick = (data: TreeNodeData) => {
+  rightLabel.value = data.value;
+};
+
 const open = (row?: any) => {
   writeForm.value = {};
   if (row) {
     writeForm.value = row;
-    console.log('tree data:', JSON.stringify(writeForm.value));
   }
   modalApi.open();
 };
@@ -63,6 +63,8 @@ const open = (row?: any) => {
 const close = () => {
   formApi.resetForm();
   modalApi.close();
+  writeForm.value = {};
+  rightLabel.value = '';
 };
 
 defineExpose({ open, close });
@@ -77,30 +79,29 @@ defineExpose({ open, close });
   >
     <ColPage
       auto-content-height
-      description="ColPage 是一个双列布局组件，支持左侧折叠、拖拽调整宽度等功能。"
+      :description="$t('codegen.preview.value')"
       v-bind="props"
-      title="ColPage 双列布局组件"
+      :title="$t('codegen.preview.title')"
     >
-      <!-- 左侧树 -->
+      <!-- left -->
       <template #left="">
-        <div
-          :style="{ minWidth: '200px' }"
-          class="border-border bg-card mr-2 rounded-[var(--radius)] border p-2"
-        >
+        <div>
           <ElTree
-            style="max-width: 600px"
             :data="writeForm"
+            :height="500"
             :props="defaultProps"
+            :expand-on-click-node="false"
+            @node-click="nodeClick"
           />
           <Form />
         </div>
       </template>
 
-      <!-- 右侧内容（示例） -->
-      <ElCard class="ml-2" title="基本使用">
+      <!-- right -->
+      <ElCard class="ml-2">
         <div class="flex flex-col gap-2">
-          <p class="font-bold text-red-600">
-            这是一个实验性的组件，用法可能会发生变动，也可能最终不会被采用。在其用法正式出现在文档中之前，不建议在生产环境中使用。
+          <p>
+            {{ rightLabel }}
           </p>
         </div>
       </ElCard>

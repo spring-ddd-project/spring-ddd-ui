@@ -118,7 +118,8 @@
       "item": "Item",
       "search": "Search",
       "reset": "Reset",
-      "refresh": "Refresh"
+      "refresh": "Refresh",
+      "download": "Download"
     },
     "alert": {
       "form": "Data handling",

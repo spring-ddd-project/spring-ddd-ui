@@ -159,7 +159,6 @@ const generate = async (row: RowType) => {
   await codePreview().then((resp: any) => {
     previewModalRef.value?.open(resp);
   });
-  ElMessage.success($t('codegen.table.button.generate.result'));
 };
 
 const sync = async () => {
