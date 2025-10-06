@@ -8,6 +8,10 @@ import { $t } from '@vben/locales';
 
 import { ElCard, ElMessage, ElTreeV2 as ElTree } from 'element-plus';
 
+import {
+  codeDownload
+} from '#/api/gen/table';
+
 const writeForm = ref();
 const rightLabel = ref();
 
@@ -32,7 +36,9 @@ const [Modal, modalApi] = useVbenModal({
     if (!open) modalApi.setState({ loading: false });
   },
   onConfirm: () => {
-    ElMessage.success($t('codegen.table.button.generate.result'));
+    codeDownload().then((resp: any) => {
+      ElMessage.success($t('codegen.table.button.generate.result'));
+    });
     modalApi.setState({ loading: false }).close();
   },
   onCancel: () => {
