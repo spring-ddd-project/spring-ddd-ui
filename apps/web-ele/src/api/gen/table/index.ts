@@ -1,3 +1,5 @@
+import { downloadFileFromBlobPart } from '@vben/utils';
+
 import { requestClient } from '#/api/request';
 
 export async function getTablePage(data: any) {
@@ -21,7 +23,12 @@ export async function codePreview() {
 }
 
 export async function codeDownload() {
-  return requestClient.download<Blob>('/gen/table/download');
+  return requestClient.download<Blob>('/gen/table/download').then((blob) => {
+    downloadFileFromBlobPart({
+      source: blob,
+      fileName: 'ddd_files.zip',
+    });
+  });
 }
 
 export async function getTableInfoPage(data: any) {
