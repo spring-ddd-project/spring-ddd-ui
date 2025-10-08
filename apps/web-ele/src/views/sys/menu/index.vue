@@ -39,9 +39,10 @@ const gridOptions: VxeGridProps<RowType> = {
       treeNode: true,
       slots: { default: 'menuName' },
     },
+    { field: 'path', title: $t('system.menu.path.label') },
     { field: 'component', title: $t('system.menu.component.label') },
+    { field: 'api', title: $t('system.menu.api.label') },
     { field: 'permission', title: $t('system.menu.permission.label') },
-    { field: 'path', title: $t('system.menu.path') },
     {
       field: 'menuType',
       title: $t('system.menu.menuType.label'),
