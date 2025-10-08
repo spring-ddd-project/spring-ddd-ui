@@ -15,15 +15,22 @@
     },
     "globalTitle": "Global Title",
     "name": "Menu Name",
-    "path": "Path",
+    "path": {
+      "label": "Path",
+      "help": "This property displays in the browser's address bar."
+    },
     "component": {
       "label": "Component",
-      "help": "This corresponds to the index.vue path and also serves as the backend API endpoint. If it's a button, it purely represents a backend endpoint."
+      "help": "This property specifies the path of the Vue file in the views directory."
+    },
+    "api": {
+      "label": "API",
+      "help": "This property is used for accessing the backend API."
     },
     "redirect": "Redirect",
     "permission": {
       "label": "Permission",
-      "help": "Permission keys must be assigned to both the menu index page and any associated buttons."
+      "help": "This property declares and binds API access permissions."
     },
     "icon": "Icon",
     "order": "Order",

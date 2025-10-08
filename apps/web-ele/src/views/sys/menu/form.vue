@@ -90,7 +90,7 @@ const [Form, formApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'path',
-      label: $t('system.menu.path'),
+      label: $t('system.menu.path.label'),
       rules: 'required',
       dependencies: {
         if(values) {
@@ -98,6 +98,7 @@ const [Form, formApi] = useVbenForm({
         },
         triggerFields: ['menuType'],
       },
+      help: $t('system.menu.path.help'),
     },
     {
       component: 'Input',
@@ -105,7 +106,19 @@ const [Form, formApi] = useVbenForm({
       label: $t('system.menu.component.label'),
       dependencies: {
         if(values) {
-          return values.menuType !== 1;
+          return values.menuType === 2;
+        },
+        triggerFields: ['menuType'],
+      },
+      help: $t('system.menu.component.help'),
+    },
+    {
+      component: 'Input',
+      fieldName: 'api',
+      label: $t('system.menu.api.label'),
+      dependencies: {
+        if(values) {
+          return values.menuType === 3;
         },
         triggerFields: ['menuType'],
       },
@@ -128,7 +141,7 @@ const [Form, formApi] = useVbenForm({
       label: $t('system.menu.permission.label'),
       dependencies: {
         if(values) {
-          return values.menuType !== 1;
+          return values.menuType === 3;
         },
         triggerFields: ['menuType'],
       },
