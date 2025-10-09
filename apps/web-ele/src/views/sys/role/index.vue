@@ -5,6 +5,7 @@ import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
 
+import { useAccess } from '@vben/access';
 import { confirm, Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
@@ -18,6 +19,7 @@ import RoleForm from './form.vue';
 import GrantingPermissionsForm from './link.vue';
 import RoleRecycleForm from './recycle.vue';
 
+const { hasAccessByCodes } = useAccess();
 const roleFormRef = ref();
 const grantingPermissionsRef = ref();
 const roleRecycleRef = ref();
@@ -180,7 +182,14 @@ const deleteByIds = (row?: RowType) => {
         <Dict dict-key="common_status" :value="row.roleStatus" />
       </template>
       <template #toolbar-actions>
-        <ElButton class="mr-2" bg text type="primary" @click="openForm">
+        <ElButton
+          class="mr-2"
+          bg
+          text
+          type="primary"
+          @click="openForm"
+          v-if="hasAccessByCodes(['sys:role:create'])"
+        >
           {{ $t('system.common.button.add') }}
         </ElButton>
         <ElButton class="mr-2" bg text type="danger" @click="deleteByIds()">
