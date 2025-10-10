@@ -37,6 +37,7 @@ const gridOptions: VxeGridProps<RowType> = {
       title: $t('system.menu.name'),
       align: 'left',
       treeNode: true,
+      minWidth: 200,
       slots: { default: 'menuName' },
     },
     { field: 'path', title: $t('system.menu.path.label') },
