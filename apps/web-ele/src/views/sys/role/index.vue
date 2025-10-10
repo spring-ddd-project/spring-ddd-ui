@@ -192,7 +192,14 @@ const deleteByIds = (row?: RowType) => {
         >
           {{ $t('system.common.button.add') }}
         </ElButton>
-        <ElButton class="mr-2" bg text type="danger" @click="deleteByIds()">
+        <ElButton
+          class="mr-2"
+          bg
+          text
+          type="danger"
+          @click="deleteByIds()"
+          v-if="hasAccessByCodes(['sys:role:delete'])"
+        >
           {{ $t('system.common.button.delete') }}
         </ElButton>
         <ElButton class="mr-2" bg text type="info" @click="openRecycleForm">
