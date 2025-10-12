@@ -152,7 +152,7 @@ const [Form, formApi] = useVbenForm({
       fieldName: 'meta.icon',
       label: $t('system.menu.icon'),
       componentProps: {
-        placeholder: `${$t('system.common.placeholder')} ${$t('system.menu.icon')}`,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.menu.icon')}`,
         allowClear: true,
       },
       rules: 'required',
@@ -241,7 +241,6 @@ const [Form, formApi] = useVbenForm({
 const [Modal, modalApi] = useVbenModal({
   onConfirm: () => {
     formApi.validate().then(async (e) => {
-      modalApi.setState({ loading: true });
       if (e.valid) {
         Object.assign(writeForm.value, await formApi.getValues());
         writeForm.value.order = writeForm.value.meta?.order;
