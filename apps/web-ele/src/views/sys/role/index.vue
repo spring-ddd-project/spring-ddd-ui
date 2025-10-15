@@ -214,7 +214,12 @@ const deleteByIds = (row?: RowType) => {
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="success" link @click="linkForm(row)">
+        <ElButton
+          type="success"
+          link
+          @click="linkForm(row)"
+          v-if="hasAccessByCodes(['sys:role:linkRoleAndMenus'])"
+        >
           {{ $t('system.common.button.permissions') }}
         </ElButton>
         <ElButton
