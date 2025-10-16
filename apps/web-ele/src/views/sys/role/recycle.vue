@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
+import { useAccess } from '@vben/access';
 import { confirm, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
@@ -13,6 +14,8 @@ import {
   restoreRoleById,
   wipeRoleById,
 } from '#/api/sys/role';
+
+const { hasAccessByCodes } = useAccess();
 
 const props = defineProps<{
   gridApi: any;
@@ -172,6 +175,7 @@ defineExpose({ open, close });
           text
           type="success"
           @click="restoreRoleByIds()"
+          v-if="hasAccessByCodes(['sys:role:restore'])"
         >
           {{ $t('system.common.button.restore') }}
         </ElButton>
