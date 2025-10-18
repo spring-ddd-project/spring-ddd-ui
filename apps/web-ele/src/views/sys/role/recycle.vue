@@ -15,11 +15,11 @@ import {
   wipeRoleById,
 } from '#/api/sys/role';
 
-const { hasAccessByCodes } = useAccess();
-
 const props = defineProps<{
   gridApi: any;
 }>();
+
+const { hasAccessByCodes } = useAccess();
 
 interface RowType {
   id: string;
