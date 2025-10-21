@@ -180,7 +180,12 @@ const deleteById = (row?: RowType) => {
         >
           {{ $t('system.common.button.edit') }}
         </ElButton>
-        <ElButton type="danger" link @click="deleteById(row)">
+        <ElButton
+          type="danger"
+          link
+          @click="deleteById(row)"
+          v-if="hasAccessByCodes(['sys:dept:delete'])"
+        >
           {{ $t('system.common.button.delete') }}
         </ElButton>
       </template>
