@@ -176,7 +176,14 @@ defineExpose({ open, close });
         >
           {{ $t('system.common.button.restore') }}
         </ElButton>
-        <ElButton class="mr-2" bg text type="danger" @click="deleteById()">
+        <ElButton
+          class="mr-2"
+          bg
+          text
+          type="danger"
+          @click="deleteById()"
+          v-if="hasAccessByCodes(['sys:dept:wipe'])"
+        >
           {{ $t('system.common.button.wipe') }}
         </ElButton>
       </template>
