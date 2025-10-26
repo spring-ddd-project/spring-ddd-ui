@@ -23,10 +23,6 @@
       "label": "Component",
       "help": "This property specifies the path of the Vue file in the views directory."
     },
-    "api": {
-      "label": "API",
-      "help": "This property is used for accessing the backend API."
-    },
     "redirect": "Redirect",
     "permission": {
       "label": "Permission",
