@@ -20,8 +20,8 @@
       "help": "This property displays in the browser's address bar."
     },
     "component": {
-      "label": "Component",
-      "help": "This property specifies the path of the Vue file in the views directory."
+      "label": "Component/API",
+      "help": "This field is used for both frontend component paths and API endpoints: Vue file path for menus, API endpoint for button permissions."
     },
     "redirect": "Redirect",
     "permission": {
