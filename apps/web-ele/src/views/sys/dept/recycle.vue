@@ -188,7 +188,12 @@ defineExpose({ open, close });
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="success" link @click="restoreDeptByIds(row)">
+        <ElButton
+          type="success"
+          link
+          @click="restoreDeptByIds(row)"
+          v-if="hasAccessByCodes(['sys:dept:restore'])"
+        >
           {{ $t('system.common.button.restore') }}
         </ElButton>
         <ElButton
