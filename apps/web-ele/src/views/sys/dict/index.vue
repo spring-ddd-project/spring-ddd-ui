@@ -5,6 +5,7 @@ import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
 
+import { useAccess } from '@vben/access';
 import { confirm, Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
@@ -21,6 +22,8 @@ import RecycleForm from './recycle.vue';
 const dictFormRef = ref();
 const itemIndexRef = ref();
 const recycleFormRef = ref();
+
+const { hasAccessByCodes } = useAccess();
 
 interface RowType {
   id: string;
@@ -172,7 +175,14 @@ const deleteByIds = (row?: RowType) => {
         <Dict dict-key="common_status" :value="row.dictStatus" />
       </template>
       <template #toolbar-actions>
-        <ElButton class="mr-2" bg text type="primary" @click="openForm">
+        <ElButton
+          class="mr-2"
+          bg
+          text
+          type="primary"
+          @click="openForm"
+          v-if="hasAccessByCodes(['sys:dict:create'])"
+        >
           {{ $t('system.common.button.add') }}
         </ElButton>
         <ElButton class="mr-2" bg text type="danger" @click="deleteByIds()">
