@@ -210,7 +210,12 @@ const deleteByIds = (row?: RowType) => {
         <ElButton type="success" link @click="openItemRow(row)">
           {{ $t('system.common.button.item') }}
         </ElButton>
-        <ElButton type="primary" link @click="editRow(row)">
+        <ElButton
+          type="primary"
+          link
+          @click="editRow(row)"
+          v-if="hasAccessByCodes(['sys:dict:update'])"
+        >
           {{ $t('system.common.button.edit') }}
         </ElButton>
         <ElButton type="danger" link @click="deleteByIds(row)">
