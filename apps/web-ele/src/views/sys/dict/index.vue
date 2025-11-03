@@ -207,7 +207,12 @@ const deleteByIds = (row?: RowType) => {
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="success" link @click="openItemRow(row)">
+        <ElButton
+          type="success"
+          link
+          @click="openItemRow(row)"
+          v-if="hasAccessByCodes(['sys:dict:item:index'])"
+        >
           {{ $t('system.common.button.item') }}
         </ElButton>
         <ElButton
