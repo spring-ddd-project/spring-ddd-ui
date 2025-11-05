@@ -3,6 +3,7 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
 
+import { useAccess } from '@vben/access';
 import { confirm, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
@@ -22,6 +23,9 @@ import ItemIndex from './item/index.vue';
 const props = defineProps<{
   gridApi: any;
 }>();
+
+const { hasAccessByCodes } = useAccess();
+
 const dictFormRef = ref();
 const itemIndexRef = ref();
 
@@ -169,6 +173,7 @@ defineExpose({ open, close });
           text
           type="success"
           @click="restoreDictByIds()"
+          v-if="hasAccessByCodes(['sys:dict:restore'])"
         >
           {{ $t('system.common.button.restore') }}
         </ElButton>
