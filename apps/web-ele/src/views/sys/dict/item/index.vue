@@ -3,6 +3,7 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 
 import { ref } from 'vue';
 
+import { useAccess } from '@vben/access';
 import { confirm, Page, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
@@ -19,6 +20,8 @@ const itemFormRef = ref();
 const itemRecycleFormRef = ref();
 
 const writeForm = ref<Record<string, any>>({});
+
+const { hasAccessByCodes } = useAccess();
 
 interface RowType {
   id: string;
@@ -152,7 +155,14 @@ defineExpose({ open, close });
           <Dict dict-key="common_status" :value="row.itemStatus" />
         </template>
         <template #toolbar-actions>
-          <ElButton class="mr-2" bg text type="primary" @click="openForm">
+          <ElButton
+            class="mr-2"
+            bg
+            text
+            type="primary"
+            @click="openForm"
+            v-if="hasAccessByCodes(['sys:dict:item:create'])"
+          >
             {{ $t('system.common.button.add') }}
           </ElButton>
           <ElButton class="mr-2" bg text type="danger" @click="deleteByIds()">
