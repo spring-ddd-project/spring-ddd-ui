@@ -1,0 +1,104 @@
+{
+  "title": "Code Generation",
+  "table": {
+    "title": "Table Management",
+    "tableSchema": "Database Name",
+    "tableName": "Table Name",
+    "tableComment": "Table Comment",
+    "className": "Class Name",
+    "createTime": "Create Time",
+    "tableCollation": "Table Collation",
+    "button": {
+      "projectConfig": "Step1: Project Config",
+      "columnConfig": "Step2: Column Config",
+      "aggregateConfig": "Step3: Aggregate Config",
+      "generate": {
+        "title": "Step4: Generate",
+        "result": "Generate Success",
+        "projectName": "Please enter the project name"
+      }
+    },
+    "form": "Basic Information Data Processing via Code Generation",
+    "sync": {
+      "title": "Sync Database",
+      "result": "Sync Success"
+    }
+  },
+  "info": {
+    "valueObject": "Value Object Config",
+    "columnConfig": "Column Config",
+    "databaseName": "Database Name",
+    "tableName": "Table Name",
+    "packageName": "Package Name",
+    "className": "Class Name",
+    "module": "Module Name",
+    "project": "Project Name",
+    "requestName": "Request Name",
+    "propValueObject": "Value Object",
+    "propColumnKey": "Key",
+    "propColumnName": "Name",
+    "propColumnType": "Type",
+    "propColumnComment": "Comment",
+    "propJavaEntity": "Entity",
+    "propJavaType": "Type",
+    "propDictId": "Dictionary",
+    "tableVisible": "Visible",
+    "tableOrder": "Order",
+    "tableFilter": "Query",
+    "tableFilterComponent": "Component",
+    "tableFilterType": "Type",
+    "typescriptType": "TypeScript",
+    "formComponent": "Component",
+    "formVisible": "Visible",
+    "formRequired": "Required",
+    "en": "English",
+    "locale": "Locale",
+    "tableInfoConfig": "Please configure the table information before proceeding.",
+    "tag": {
+      "title": "Advance Configuration",
+      "attribute": "Attribute Configuration",
+      "table": "Table Page",
+      "form": "Form Page"
+    },
+    "group": {
+      "column": {
+        "title": "Column Mapping",
+        "database": "Database Column",
+        "java": "Java Entity",
+        "i18n": "i18n"
+      },
+      "table": "Table Page",
+      "form": "Form Page"
+    }
+  },
+  "bind": {
+    "title": "Column Bind",
+    "columnType": "Column Type",
+    "entityType": "Entity Type",
+    "typescriptType": "Typescript Type",
+    "componentType": "Component Type",
+    "columnTypeLowercaseOnly": "Column Type (Lowercase Only)"
+  },
+  "aggregate": {
+    "objectName": "Object Name",
+    "objectValue": "Object Value",
+    "objectType": "Object Type",
+    "hasCreated": "Is Created",
+    "title": "Aggregate Config",
+    "radio": {
+      "root": "Aggregate Root Id",
+      "valueObject": "Value Object",
+      "extend": "Extend Info",
+      "mask": "Domain Mask"
+    }
+  },
+  "template": {
+    "title": "Template Config",
+    "name": "Name",
+    "content": "Content"
+  },
+  "preview": {
+    "title": "How to use?",
+    "value": "Please refer to the short help document in the README directory."
+  }
+}

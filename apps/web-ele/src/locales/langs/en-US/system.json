@@ -1,0 +1,136 @@
+{
+  "title": "System Management",
+  "menu": {
+    "title": "Menu Management",
+    "menuType": {
+      "label": "Menu Type",
+      "catalog": "Catalog",
+      "menu": "Menu",
+      "button": "Button"
+    },
+    "parent": {
+      "placeholder": "If left blank, this will be set as the root menu.",
+      "label": "Parent Menu",
+      "help": "Leave blank to make this a root menu."
+    },
+    "globalTitle": "Global Title",
+    "name": "Menu Name",
+    "path": {
+      "label": "Path",
+      "help": "This property displays in the browser's address bar."
+    },
+    "component": {
+      "label": "Component/API",
+      "help": "This field is used for both frontend component paths and API endpoints: Vue file path for menus, API endpoint for button permissions."
+    },
+    "redirect": "Redirect",
+    "permission": {
+      "label": "Permission",
+      "help": "This property declares and binds API access permissions."
+    },
+    "icon": "Icon",
+    "order": "Order",
+    "affix": "Affix Tab",
+    "basicLayout": "No Basic Layout",
+    "visible": "Visible",
+    "embedded": "Embedded",
+    "status": "Status"
+  },
+  "role": {
+    "title": "Role Management",
+    "roleId": "Role",
+    "assign": "Assign Role",
+    "label": "Role Name",
+    "code": "Role Code",
+    "desc": "Role Description",
+    "scope": "Data Scope",
+    "owner": "Is Owner",
+    "status": "Status",
+    "permissions": "Permissions"
+  },
+  "user": {
+    "title": "User Management",
+    "userInfo": "User Info",
+    "username": "Username",
+    "password": "Password",
+    "phone": "Phone",
+    "avatar": "Avatar",
+    "email": "Email",
+    "sex": "Sex",
+    "lockStatus": "Lock Status"
+  },
+  "dept": {
+    "title": "Department Management",
+    "deptName": "Department Name",
+    "deptId": "Department",
+    "parent": {
+      "label": "Parent Department",
+      "placeholder": "If left blank, this will be set as the root department.",
+      "help": "Leave blank to make this a root department."
+    },
+    "order": "Order",
+    "status": "Status"
+  },
+  "dict": {
+    "title": "Dictionary Management",
+    "label": "Dictionary Name",
+    "code": "Dictionary Code",
+    "order": "Order",
+    "status": "Status",
+    "item": {
+      "title": "Item Management",
+      "form": "Dictionary Item Data handling",
+      "label": "Item Label",
+      "value": "Item Value"
+    }
+  },
+  "common": {
+    "delete": {
+      "warning": "Please select at least one item to delete",
+      "confirm": "Are you sure you want to delete?",
+      "success": "Deleted successfully",
+      "error": "Failed to delete"
+    },
+    "restore": {
+      "warning": "Please select at least one item to restore",
+      "confirm": "Are you sure you want to restore?",
+      "success": "Restored successfully",
+      "error": "Failed to restore"
+    },
+    "save": {
+      "success": "Saved successfully",
+      "error": "Failed to save"
+    },
+    "validation": {
+      "error": "Validation failed"
+    },
+    "operation": "Operation",
+    "button": {
+      "add": "Add",
+      "edit": "Edit",
+      "delete": "Delete",
+      "restore": "Restore",
+      "wipe": "Wipe",
+      "recycle": "Recycle",
+      "permissions": "Permissions",
+      "roles": "Roles",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "expand": "Expand All",
+      "collapse": "Collapse All",
+      "item": "Item",
+      "search": "Search",
+      "reset": "Reset",
+      "refresh": "Refresh",
+      "download": "Download"
+    },
+    "alert": {
+      "form": "Data handling",
+      "permissions": "Granting Permission",
+      "recycle": "Data Recycle"
+    },
+    "placeholder": {
+      "input": "Please enter"
+    }
+  }
+}
