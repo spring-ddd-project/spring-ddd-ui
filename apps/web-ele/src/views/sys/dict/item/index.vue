@@ -175,7 +175,14 @@ defineExpose({ open, close });
           >
             {{ $t('system.common.button.delete') }}
           </ElButton>
-          <ElButton class="mr-2" bg text type="info" @click="openRecycleForm()">
+          <ElButton
+            class="mr-2"
+            bg
+            text
+            type="info"
+            @click="openRecycleForm()"
+            v-if="hasAccessByCodes(['sys:dict:item:recycle'])"
+          >
             {{ $t('system.common.button.recycle') }}
           </ElButton>
         </template>
