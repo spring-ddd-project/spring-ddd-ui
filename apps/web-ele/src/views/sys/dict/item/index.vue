@@ -187,7 +187,12 @@ defineExpose({ open, close });
           </ElButton>
         </template>
         <template #action="{ row }">
-          <ElButton type="primary" link @click="editRow(row)">
+          <ElButton
+            type="primary"
+            link
+            @click="editRow(row)"
+            v-if="hasAccessByCodes(['sys:dict:item:update'])"
+          >
             {{ $t('system.common.button.edit') }}
           </ElButton>
           <ElButton
