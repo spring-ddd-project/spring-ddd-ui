@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
+import { useAccess } from '@vben/access';
 import { confirm, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
@@ -17,6 +18,8 @@ import {
 const props = defineProps<{
   gridApi: any;
 }>();
+
+const { hasAccessByCodes } = useAccess();
 
 interface RowType {
   id: string;
@@ -162,6 +165,7 @@ defineExpose({ open, close });
           text
           type="success"
           @click="restoreItemByIds()"
+          v-if="hasAccessByCodes(['sys:dict:item:restore'])"
         >
           {{ $t('system.common.button.restore') }}
         </ElButton>
