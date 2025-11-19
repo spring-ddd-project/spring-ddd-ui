@@ -20,8 +20,12 @@
       "help": "This property displays in the browser's address bar."
     },
     "component": {
-      "label": "Component/API",
-      "help": "This field is used for both frontend component paths and API endpoints: Vue file path for menus, API endpoint for button permissions."
+      "label": "Component",
+      "help": "Vue file path"
+    },
+    "api": {
+      "label": "API",
+      "help": "API"
     },
     "redirect": "Redirect",
     "permission": {
