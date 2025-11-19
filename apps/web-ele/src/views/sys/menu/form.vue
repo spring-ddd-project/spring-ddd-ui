@@ -125,6 +125,18 @@ const [Form, formApi] = useVbenForm({
     },
     {
       component: 'Input',
+      fieldName: 'api',
+      label: $t('system.menu.api.label'),
+      dependencies: {
+        if(values) {
+          return values.menuType === 3;
+        },
+        triggerFields: ['menuType'],
+      },
+      help: $t('system.menu.api.help'),
+    },
+    {
+      component: 'Input',
       fieldName: 'permission',
       label: $t('system.menu.permission.label'),
       dependencies: {
