@@ -6,11 +6,9 @@ import { reactive, ref } from 'vue';
 import { ColPage, useVbenForm, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { ElCard, ElMessage, ElTreeV2 as ElTree } from 'element-plus';
+import { ElCard, ElMessage, ElTree } from 'element-plus';
 
-import {
-  codeDownload
-} from '#/api/gen/table';
+import { codeDownload } from '#/api/gen/table';
 
 const writeForm = ref();
 const rightLabel = ref();
@@ -36,7 +34,7 @@ const [Modal, modalApi] = useVbenModal({
     if (!open) modalApi.setState({ loading: false });
   },
   onConfirm: () => {
-    codeDownload().then((resp: any) => {
+    codeDownload().then(() => {
       ElMessage.success($t('codegen.table.button.generate.result'));
     });
     modalApi.setState({ loading: false }).close();
@@ -94,9 +92,10 @@ defineExpose({ open, close });
         <div>
           <ElTree
             :data="writeForm"
-            :height="500"
             :props="defaultProps"
-            :expand-on-click-node="false"
+            :expand-on-click-node="true"
+            accordion
+            node-key="label"
             @node-click="nodeClick"
           />
           <Form />
