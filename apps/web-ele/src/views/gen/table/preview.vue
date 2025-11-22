@@ -110,9 +110,7 @@ defineExpose({ open, close });
         body-class="flex-1 overflow-auto p-4"
       >
         <div class="font-mono text-sm">
-          <pre class="whitespace-pre-wrap">
-            {{ rightLabel }}
-          </pre>
+          <pre class="whitespace-pre-wrap">{{ rightLabel }}</pre>
         </div>
       </ElCard>
     </ColPage>
