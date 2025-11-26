@@ -1,0 +1,12 @@
+{
+  "name": "@vben/web-ele-e2e",
+  "version": "5.5.7",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "catalog:"
+  }
+}
