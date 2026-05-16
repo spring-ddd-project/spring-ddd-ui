@@ -1,3 +1,141 @@
 {
-  "title": "System Management"
+  "title": "系统管理",
+  "menu": {
+    "title": "菜单管理",
+    "menuType": {
+      "label": "菜单类型",
+      "catalog": "目录",
+      "menu": "菜单",
+      "button": "按钮"
+    },
+    "parent": {
+      "placeholder": "留空则设为根菜单",
+      "label": "上级菜单",
+      "help": "留空则设为根菜单"
+    },
+    "globalTitle": "全局标题",
+    "name": "菜单名称",
+    "path": {
+      "label": "路径",
+      "help": "此属性显示在浏览器地址栏中"
+    },
+    "component": {
+      "label": "组件",
+      "help": "Vue 文件路径"
+    },
+    "api": {
+      "label": "接口",
+      "help": "API"
+    },
+    "redirect": "重定向",
+    "permission": {
+      "label": "权限标识",
+      "help": "此属性声明并绑定 API 访问权限"
+    },
+    "icon": "图标",
+    "order": "排序",
+    "affix": "固定标签页",
+    "basicLayout": "无基础布局",
+    "visible": "可见",
+    "embedded": "嵌入式",
+    "status": "状态"
+  },
+  "role": {
+    "title": "角色管理",
+    "roleId": "角色",
+    "assign": "分配角色",
+    "label": "角色名称",
+    "code": "角色编码",
+    "desc": "角色描述",
+    "scope": "数据范围",
+    "owner": "是否负责人",
+    "status": "状态",
+    "permissions": "权限",
+    "grantingPermissions": "分配权限"
+  },
+  "user": {
+    "title": "用户管理",
+    "userInfo": "用户信息",
+    "username": "用户名",
+    "password": "密码",
+    "phone": "手机号",
+    "avatar": "头像",
+    "email": "邮箱",
+    "sex": "性别",
+    "lockStatus": "锁定状态"
+  },
+  "dept": {
+    "title": "部门管理",
+    "deptName": "部门名称",
+    "deptId": "部门",
+    "parent": {
+      "label": "上级部门",
+      "placeholder": "留空则设为根部门",
+      "help": "留空则设为根部门"
+    },
+    "order": "排序",
+    "status": "状态"
+  },
+  "dict": {
+    "title": "字典管理",
+    "label": "字典名称",
+    "code": "字典编码",
+    "order": "排序",
+    "status": "状态",
+    "item": {
+      "title": "字典项管理",
+      "form": "字典项数据处理",
+      "label": "项标签",
+      "value": "项值"
+    }
+  },
+  "common": {
+    "delete": {
+      "warning": "请至少选择一项删除",
+      "confirm": "确定要删除吗？",
+      "success": "删除成功",
+      "error": "删除失败"
+    },
+    "restore": {
+      "warning": "请至少选择一项恢复",
+      "confirm": "确定要恢复吗？",
+      "success": "恢复成功",
+      "error": "恢复失败"
+    },
+    "save": {
+      "success": "保存成功",
+      "error": "保存失败"
+    },
+    "validation": {
+      "error": "验证失败"
+    },
+    "operation": "操作",
+    "button": {
+      "add": "新增",
+      "edit": "编辑",
+      "delete": "删除",
+      "restore": "恢复",
+      "wipe": "清除",
+      "recycle": "回收站",
+      "permissions": "权限",
+      "roles": "角色",
+      "confirm": "确认",
+      "cancel": "取消",
+      "expand": "全部展开",
+      "collapse": "全部折叠",
+      "item": "项",
+      "search": "搜索",
+      "reset": "重置",
+      "refresh": "刷新",
+      "download": "下载"
+    },
+    "alert": {
+      "form": "数据处理",
+      "permissions": "分配权限",
+      "recycle": "数据回收"
+    },
+    "placeholder": {
+      "input": "请输入"
+    }
+  }
 }
