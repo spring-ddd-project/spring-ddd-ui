@@ -6,11 +6,9 @@ import { reactive, ref } from 'vue';
 import { ColPage, useVbenForm, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { ElCard, ElMessage, ElTreeV2 as ElTree } from 'element-plus';
+import { ElCard, ElMessage, ElTree } from 'element-plus';
 
-import {
-  codeDownload
-} from '#/api/gen/table';
+import { codeDownload } from '#/api/gen/table';
 
 const writeForm = ref();
 const rightLabel = ref();
@@ -36,7 +34,7 @@ const [Modal, modalApi] = useVbenModal({
     if (!open) modalApi.setState({ loading: false });
   },
   onConfirm: () => {
-    codeDownload().then((resp: any) => {
+    codeDownload().then(() => {
       ElMessage.success($t('codegen.table.button.generate.result'));
     });
     modalApi.setState({ loading: false }).close();
@@ -91,24 +89,28 @@ defineExpose({ open, close });
     >
       <!-- left -->
       <template #left="">
-        <div>
-          <ElTree
-            :data="writeForm"
-            :height="500"
-            :props="defaultProps"
-            :expand-on-click-node="false"
-            @node-click="nodeClick"
-          />
+        <div class="flex h-full flex-col overflow-hidden">
+          <div class="flex-1 overflow-auto">
+            <ElTree
+              :data="writeForm"
+              :props="defaultProps"
+              :expand-on-click-node="true"
+              accordion
+              node-key="value"
+              @node-click="nodeClick"
+            />
+          </div>
           <Form />
         </div>
       </template>
 
       <!-- right -->
-      <ElCard class="ml-2">
-        <div class="flex flex-col gap-2">
-          <p>
-            {{ rightLabel }}
-          </p>
+      <ElCard
+        class="ml-2 flex h-full flex-col"
+        body-class="flex-1 overflow-auto p-4"
+      >
+        <div class="font-mono text-sm">
+          <pre class="whitespace-pre-wrap">{{ rightLabel }}</pre>
         </div>
       </ElCard>
     </ColPage>

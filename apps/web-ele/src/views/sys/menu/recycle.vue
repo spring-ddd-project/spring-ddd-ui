@@ -42,7 +42,7 @@ const gridOptions: VxeGridProps<RowType> = {
     },
     { field: 'component', title: $t('system.menu.component.label') },
     { field: 'permission', title: $t('system.menu.permission.label') },
-    { field: 'path', title: $t('system.menu.path') },
+    { field: 'path', title: $t('system.menu.path.label') },
     {
       field: 'menuType',
       title: $t('system.menu.menuType.label'),
