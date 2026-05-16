@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import { useAccess } from '@vben/access';
 import { confirm, Page } from '@vben/common-ui';
@@ -12,6 +12,7 @@ import { ElButton, ElMessage } from 'element-plus';
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { delDeptById, getDeptPage } from '#/api/sys/dept';
+import { useColumnPermission } from '#/composables/useColumnPermission';
 
 import DeptForm from './form.vue';
 import DeptRecycleForm from './recycle.vue';
@@ -21,6 +22,8 @@ const deptRecycleFormRef = ref();
 
 const { hasAccessByCodes } = useAccess();
 
+const { applyColumnPermission, loadMetadata } = useColumnPermission('sys_dept');
+
 interface RowType {
   id: string;
   parentId: null | number;
@@ -28,30 +31,32 @@ interface RowType {
   deptStatus: string;
 }
 
+const allColumns = [
+  { title: 'No.', type: 'seq', width: 50 },
+  { align: 'left', title: '#', type: 'checkbox', width: 50 },
+  {
+    field: 'deptName',
+    title: $t('system.dept.deptName'),
+    align: 'left',
+    treeNode: true,
+  },
+  {
+    field: 'deptStatus',
+    title: $t('system.dept.status'),
+    slots: { default: 'status' },
+  },
+  { field: 'sortOrder', title: $t('system.dept.order'), sortable: true },
+  {
+    field: 'action',
+    fixed: 'right',
+    slots: { default: 'action' },
+    title: $t('system.common.operation'),
+    width: 120,
+  },
+];
+
 const gridOptions: VxeGridProps<RowType> = {
-  columns: [
-    { title: 'No.', type: 'seq', width: 50 },
-    { align: 'left', title: '#', type: 'checkbox', width: 50 },
-    {
-      field: 'deptName',
-      title: $t('system.dept.deptName'),
-      align: 'left',
-      treeNode: true,
-    },
-    {
-      field: 'deptStatus',
-      title: $t('system.dept.status'),
-      slots: { default: 'status' },
-    },
-    { field: 'sortOrder', title: $t('system.dept.order'), sortable: true },
-    {
-      field: 'action',
-      fixed: 'right',
-      slots: { default: 'action' },
-      title: $t('system.common.operation'),
-      width: 120,
-    },
-  ],
+  columns: allColumns,
   exportConfig: {},
   keepSource: true,
   proxyConfig: {
@@ -84,7 +89,6 @@ const gridOptions: VxeGridProps<RowType> = {
   toolbarConfig: {
     custom: true,
     export: true,
-    // import: true,
     refresh: true,
     zoom: true,
   },
@@ -92,6 +96,12 @@ const gridOptions: VxeGridProps<RowType> = {
 
 const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions,
+});
+
+onMounted(async () => {
+  await loadMetadata();
+  const filtered = applyColumnPermission(allColumns);
+  gridApi.setState({ columns: filtered });
 });
 
 const openForm = () => {
