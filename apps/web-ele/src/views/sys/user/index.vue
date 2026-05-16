@@ -2,7 +2,7 @@
 import type { VbenFormProps } from '#/adapter/form';
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import { useAccess } from '@vben/access';
 import { confirm, Page } from '@vben/common-ui';
@@ -13,6 +13,7 @@ import { ElButton, ElMessage } from 'element-plus';
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { delUserById, getUserPage } from '#/api/sys/user';
+import { useColumnPermission } from '#/composables/useColumnPermission';
 
 import UserForm from './form.vue';
 import LinkForm from './link.vue';
@@ -23,6 +24,8 @@ const { hasAccessByCodes } = useAccess();
 const userFormRef = ref();
 const recycleFormRef = ref();
 const linkFormRef = ref();
+
+const { applyColumnPermission, loadMetadata } = useColumnPermission('sys_user');
 
 interface RowType {
   id: string;
@@ -65,31 +68,33 @@ const formOptions: VbenFormProps = {
   submitOnEnter: true,
 };
 
+const allColumns = [
+  { title: 'No.', type: 'seq', width: 50 },
+  { align: 'left', title: '#', type: 'checkbox', width: 50 },
+  { field: 'username', title: $t('system.user.username') },
+  { field: 'phone', title: $t('system.user.phone') },
+  { field: 'avatar', title: $t('system.user.avatar') },
+  { field: 'email', title: $t('system.user.email') },
+  { field: 'sex', title: $t('system.user.sex'), slots: { default: 'sex' } },
+  {
+    field: 'lockStatus',
+    title: $t('system.user.lockStatus'),
+    slots: { default: 'lockStatus' },
+  },
+  {
+    field: 'action',
+    fixed: 'right',
+    slots: { default: 'action' },
+    title: $t('system.common.operation'),
+    width: 200,
+  },
+];
+
 const gridOptions: VxeTableGridOptions<RowType> = {
   checkboxConfig: {
     highlight: true,
   },
-  columns: [
-    { title: 'No.', type: 'seq', width: 50 },
-    { align: 'left', title: '#', type: 'checkbox', width: 50 },
-    { field: 'username', title: $t('system.user.username') },
-    { field: 'phone', title: $t('system.user.phone') },
-    { field: 'avatar', title: $t('system.user.avatar') },
-    { field: 'email', title: $t('system.user.email') },
-    { field: 'sex', title: $t('system.user.sex'), slots: { default: 'sex' } },
-    {
-      field: 'lockStatus',
-      title: $t('system.user.lockStatus'),
-      slots: { default: 'lockStatus' },
-    },
-    {
-      field: 'action',
-      fixed: 'right',
-      slots: { default: 'action' },
-      title: $t('system.common.operation'),
-      width: 200,
-    },
-  ],
+  columns: allColumns,
   exportConfig: {},
   keepSource: true,
   proxyConfig: {
@@ -110,7 +115,6 @@ const gridOptions: VxeTableGridOptions<RowType> = {
   toolbarConfig: {
     custom: true,
     export: true,
-    // import: true,
     refresh: true,
     zoom: true,
     search: true,
@@ -120,6 +124,12 @@ const gridOptions: VxeTableGridOptions<RowType> = {
 const [Grid, gridApi] = useVbenVxeGrid({
   gridOptions,
   formOptions,
+});
+
+onMounted(async () => {
+  await loadMetadata();
+  const filtered = applyColumnPermission(allColumns);
+  gridApi.setState({ columns: filtered });
 });
 
 const openRecycleForm = () => {
