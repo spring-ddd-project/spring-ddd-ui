@@ -65,7 +65,10 @@ const [Form, formApi] = useVbenForm({
     {
       component: 'ApiTreeSelect',
       componentProps: {
-        api: () => Promise.resolve([]), // Should be replaced with real dept api
+        api: async () => {
+          const { getDeptTreeApi } = await import('#/api/sys/dept');
+          return getDeptTreeApi();
+        },
         multiple: true,
         placeholder: '请选择部门',
       },
@@ -80,7 +83,7 @@ const [Form, formApi] = useVbenForm({
       component: 'Select',
       componentProps: {
         multiple: true,
-        options: [], // Should be replaced with post options
+        options: [],
         placeholder: '请选择岗位',
       },
       fieldName: 'postIds',
@@ -94,7 +97,7 @@ const [Form, formApi] = useVbenForm({
       component: 'Select',
       componentProps: {
         multiple: true,
-        options: [], // Should be replaced with user options
+        options: [],
         placeholder: '请选择用户',
       },
       fieldName: 'userIds',
@@ -209,15 +212,15 @@ defineExpose({ open, close });
 <template>
   <Modal class="w-[40%]" :title="$t('system.common.alert.form')">
     <Form style="width: auto" />
-    <div style="margin-left: 130px; margin-bottom: 20px">
+    <div style="margin-bottom: 20px; margin-left: 130px">
       <ElButton type="primary" @click="openColumnPermission">
         配置列级具体权限
       </ElButton>
       <span
-        v-if="writeForm.dataPermission && writeForm.dataPermission.length > 0"
+        v-if="writeForm.columnRules && writeForm.columnRules.length > 0"
         class="ml-4 text-gray-500"
       >
-        (已配置 {{ writeForm.dataPermission.length }} 个业务表限制)
+        (已配置 {{ writeForm.columnRules.length }} 个业务表限制)
       </span>
       <span v-else class="ml-4 text-sm text-gray-400">
         (默认对所有列拥有完全访问权限)
