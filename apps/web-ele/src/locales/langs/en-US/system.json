@@ -136,5 +136,15 @@
     "placeholder": {
       "input": "Please enter"
     }
+  },
+  "columnPermission": {
+    "modalTitle": "Configure Column-level Data Permission",
+    "configButton": "Configure Column-level Permission",
+    "configuredCount": "Configured {count} table restrictions",
+    "defaultAccess": "Default full access to all columns",
+    "entityName": "Business Entity",
+    "entityCode": "Entity Code",
+    "columns": "Restricted Columns",
+    "placeholder": "Please select restricted fields"
   }
 }

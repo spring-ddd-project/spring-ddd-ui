@@ -137,5 +137,15 @@
     "placeholder": {
       "input": "请输入"
     }
+  },
+  "columnPermission": {
+    "modalTitle": "配置列级数据权限",
+    "configButton": "配置列级具体权限",
+    "configuredCount": "已配置 {count} 个业务表限制",
+    "defaultAccess": "默认对所有列拥有完全访问权限",
+    "entityName": "业务实体",
+    "entityCode": "实体编码",
+    "columns": "受限列配置",
+    "placeholder": "请选择受限字段"
   }
 }

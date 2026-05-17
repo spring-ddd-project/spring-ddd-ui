@@ -214,16 +214,16 @@ defineExpose({ open, close });
     <Form style="width: auto" />
     <div style="margin-bottom: 20px; margin-left: 130px">
       <ElButton type="primary" @click="openColumnPermission">
-        配置列级具体权限
+        {{ $t('system.columnPermission.configButton') }}
       </ElButton>
       <span
         v-if="writeForm.columnRules && writeForm.columnRules.length > 0"
         class="ml-4 text-gray-500"
       >
-        (已配置 {{ writeForm.columnRules.length }} 个业务表限制)
+        ({{ $t('system.columnPermission.configuredCount', { count: writeForm.columnRules.length }) }})
       </span>
       <span v-else class="ml-4 text-sm text-gray-400">
-        (默认对所有列拥有完全访问权限)
+        ({{ $t('system.columnPermission.defaultAccess') }})
       </span>
     </div>
   </Modal>
