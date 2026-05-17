@@ -1,27 +1,37 @@
 <script lang="ts" setup>
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import { getAllEntitiesApi } from '#/api/sys/column-permission';
 
 const emit = defineEmits<{
   (e: 'change', data: any[]): void;
 }>();
 
 const rowData = ref<any[]>([]);
+const loading = ref(false);
+
+interface EntityMeta {
+  entityCode: string;
+  entityName: string;
+  columns: Array<{ field: string; label: string }>;
+}
+
+const allEntities = ref<EntityMeta[]>([]);
 
 const gridOptions: VxeTableGridOptions<any> = {
   columns: [
     { title: 'No.', type: 'seq', width: 50 },
-    { field: 'entityName', title: '业务实体', width: 150 },
-    { field: 'entityCode', title: '实体编码', width: 150 },
+    { field: 'entityName', title: $t('system.columnPermission.entityName'), width: 150 },
+    { field: 'entityCode', title: $t('system.columnPermission.entityCode'), width: 150 },
     {
       field: 'columns',
-      title: '受限列配置',
+      title: $t('system.columnPermission.columns'),
       slots: { default: 'columns' },
     },
   ],
@@ -42,61 +52,24 @@ const gridOptions: VxeTableGridOptions<any> = {
 
 const [Grid, gridApi] = useVbenVxeGrid({ gridOptions });
 
-// A mockup of available entities
-const availableEntities = [
-  {
-    entityCode: 'sys_user',
-    entityName: '用户管理',
-    availableColumns: [
-      { label: '手机号 (phone)', value: 'phone' },
-      { label: '邮箱 (email)', value: 'email' },
-      { label: '性别 (sex)', value: 'sex' },
-      { label: '入职日期 (joinDate)', value: 'joinDate' },
-    ],
-  },
-  {
-    entityCode: 'sys_role',
-    entityName: '角色管理',
-    availableColumns: [
-      { label: '角色名 (roleName)', value: 'roleName' },
-      { label: '角色编码 (roleCode)', value: 'roleCode' },
-      { label: '描述 (roleDesc)', value: 'roleDesc' },
-    ],
-  },
-  {
-    entityCode: 'sys_dept',
-    entityName: '部门管理',
-    availableColumns: [
-      { label: '部门名称 (deptName)', value: 'deptName' },
-      { label: '联系人 (leader)', value: 'leader' },
-      { label: '电话 (phone)', value: 'phone' },
-    ],
-  },
-  {
-    entityCode: 'sys_post',
-    entityName: '岗位管理',
-    availableColumns: [
-      { label: '岗位名称 (postName)', value: 'postName' },
-      { label: '岗位编码 (postCode)', value: 'postCode' },
-    ],
-  },
-  {
-    entityCode: 'sys_menu',
-    entityName: '菜单管理',
-    availableColumns: [
-      { label: '路径 (path)', value: 'path' },
-      { label: '图标 (icon)', value: 'icon' },
-    ],
-  },
-];
+onMounted(async () => {
+  try {
+    loading.value = true;
+    const res = await getAllEntitiesApi();
+    if (res && Array.isArray(res)) {
+      allEntities.value = res;
+    }
+  } finally {
+    loading.value = false;
+  }
+});
 
 const [Modal, modalApi] = useVbenModal({
   onConfirm: () => {
-    // Collect customized data
     const records = gridApi.grid.getTableData().fullData;
     const finalData = records
-      .filter((r) => r.columns && r.columns.length > 0)
-      .map((r) => ({
+      .filter((r: any) => r.columns && r.columns.length > 0)
+      .map((r: any) => ({
         entityCode: r.entityCode,
         entityName: r.entityName,
         columns: r.columns,
@@ -104,7 +77,7 @@ const [Modal, modalApi] = useVbenModal({
     emit('change', finalData);
     modalApi.close();
   },
-  onOpenChange: (isOpen) => {
+  onOpenChange: (isOpen: boolean) => {
     if (isOpen) {
       gridApi.grid.loadData(rowData.value);
     }
@@ -114,16 +87,19 @@ const [Modal, modalApi] = useVbenModal({
 });
 
 const open = (currentData: any[]) => {
-  // Merge currentData with availableEntities
-  const existingMap = new Map();
+  const existingMap = new Map<string, string[]>();
   if (currentData && Array.isArray(currentData)) {
-    currentData.forEach((item) =>
+    currentData.forEach((item: any) =>
       existingMap.set(item.entityCode, item.columns),
     );
   }
 
-  rowData.value = availableEntities.map((entity) => ({
+  rowData.value = allEntities.value.map((entity) => ({
     ...entity,
+    availableColumns: entity.columns.map((c) => ({
+      label: `${c.label} (${c.field})`,
+      value: c.field,
+    })),
     columns: existingMap.get(entity.entityCode) || [],
   }));
 
@@ -136,14 +112,17 @@ defineExpose({ open, close });
 </script>
 
 <template>
-  <Modal class="w-[60%]" title="配置列级数据权限">
+  <Modal
+    class="w-[60%]"
+    :title="$t('system.columnPermission.modalTitle')"
+  >
     <div class="h-[400px]">
       <Grid>
         <template #columns="{ row }">
           <el-select
             v-model="row.columns"
             multiple
-            placeholder="请选择受限字段"
+            :placeholder="$t('system.columnPermission.placeholder')"
             style="width: 100%"
           >
             <el-option
