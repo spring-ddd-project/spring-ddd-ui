@@ -50,7 +50,22 @@
     "scope": "Data Scope",
     "owner": "Is Owner",
     "status": "Status",
-    "permissions": "Permissions"
+    "permissions": "Permissions",
+    "dataPermission": "Data Permission",
+    "dataPermissionDrawerTitle": "Data Permission Config",
+    "rowScope": "Row-level Data Scope",
+    "columnRules": "Column-level Permission Rules",
+    "dimensionType": "Dimension Type",
+    "dimensionValue": "Dimension Value",
+    "visibleColumns": "Visible Columns",
+    "allData": "All Data",
+    "deptData": "Current Dept",
+    "deptAndSubData": "Current Dept & Sub",
+    "selfData": "Self Only",
+    "customData": "Custom",
+    "specifyDept": "Specify Dept",
+    "specifyUser": "Specify User",
+    "ruleTitle": "Column Permission Rule"
   },
   "user": {
     "title": "User Management",

@@ -51,7 +51,22 @@
     "owner": "是否负责人",
     "status": "状态",
     "permissions": "权限",
-    "grantingPermissions": "分配权限"
+    "grantingPermissions": "分配权限",
+    "dataPermission": "数据权限",
+    "dataPermissionDrawerTitle": "数据权限配置",
+    "rowScope": "行级数据范围",
+    "columnRules": "列级权限规则",
+    "dimensionType": "维度类型",
+    "dimensionValue": "维度值",
+    "visibleColumns": "可见列",
+    "allData": "全部数据",
+    "deptData": "本部门数据",
+    "deptAndSubData": "本部门及以下数据",
+    "selfData": "仅本人数据",
+    "customData": "自定义",
+    "specifyDept": "指定部门",
+    "specifyUser": "指定用户",
+    "ruleTitle": "列权限规则"
   },
   "user": {
     "title": "用户管理",
