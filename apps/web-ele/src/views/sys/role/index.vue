@@ -17,11 +17,13 @@ import { delRoleById, getRolePage } from '#/api/sys/role';
 import { useColumnPermission } from '#/composables/useColumnPermission';
 
 import RoleForm from './form.vue';
+import DataPermissionDrawer from './data-permission.vue';
 import GrantingPermissionsForm from './link.vue';
 import RoleRecycleForm from './recycle.vue';
 
 const { hasAccessByCodes } = useAccess();
 const roleFormRef = ref();
+const dataPermissionRef = ref();
 const grantingPermissionsRef = ref();
 const roleRecycleRef = ref();
 
@@ -68,7 +70,7 @@ const formOptions: VbenFormProps = {
   submitOnEnter: true,
 };
 
-const allColumns = [
+const allColumns: VxeTableGridOptions<RowType>['columns'] = [
   { title: 'No.', type: 'seq', width: 50 },
   { align: 'left', title: '#', type: 'checkbox', width: 50 },
   {
@@ -93,7 +95,7 @@ const allColumns = [
     fixed: 'right',
     slots: { default: 'action' },
     title: $t('system.common.operation'),
-    width: 300,
+    width: 380,
   },
 ];
 
@@ -133,7 +135,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
 onMounted(async () => {
   await loadMetadata();
   const filtered = applyColumnPermission(allColumns);
-  gridApi.setState({ columns: filtered });
+  gridApi.setState({ gridOptions: { columns: filtered } });
 });
 
 const openRecycleForm = () => {
@@ -146,6 +148,10 @@ const openForm = () => {
 
 const editRow = (row: RowType) => {
   roleFormRef.value?.open(row);
+};
+
+const openDataPermission = (row: RowType) => {
+  dataPermissionRef.value?.open(row);
 };
 
 const grantingPermissions = (row: RowType) => {
@@ -218,7 +224,15 @@ const deleteByIds = (row?: RowType) => {
           @click="grantingPermissions(row)"
           v-if="hasAccessByCodes(['sys:role:linkRoleAndMenus'])"
         >
-          {{ $t('system.role.grantingPermissions') }}
+          {{ $t('system.role.permissions') }}
+        </ElButton>
+        <ElButton
+          type="primary"
+          link
+          @click="openDataPermission(row)"
+          v-if="hasAccessByCodes(['sys:role:update'])"
+        >
+          {{ $t('system.role.dataPermission') }}
         </ElButton>
         <ElButton
           type="primary"
@@ -239,6 +253,7 @@ const deleteByIds = (row?: RowType) => {
       </template>
     </Grid>
     <RoleForm ref="roleFormRef" :grid-api="gridApi" />
+    <DataPermissionDrawer ref="dataPermissionRef" :grid-api="gridApi" />
     <GrantingPermissionsForm ref="grantingPermissionsRef" :grid-api="gridApi" />
     <RoleRecycleForm ref="roleRecycleRef" :grid-api="gridApi" />
   </Page>

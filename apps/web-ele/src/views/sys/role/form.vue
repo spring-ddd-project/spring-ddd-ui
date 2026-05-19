@@ -9,14 +9,11 @@ import { ElMessage } from 'element-plus';
 import { useVbenForm } from '#/adapter/form';
 import { createRole, updateRole } from '#/api/sys/role';
 
-import ColumnPermissionModal from './column-permission.vue';
-
 const props = defineProps<{
   gridApi: any;
 }>();
 
 const writeForm = ref<Record<string, any>>({});
-const columnPermissionRef = ref();
 
 const [Form, formApi] = useVbenForm({
   showDefaultActions: false,
@@ -49,65 +46,6 @@ const [Form, formApi] = useVbenForm({
       rules: 'required',
     },
     {
-      component: 'Select',
-      componentProps: {
-        multiple: true,
-        options: [
-          { label: '部门 (Dept)', value: 'dept' },
-          { label: '岗位 (Post)', value: 'post' },
-          { label: '用户 (User)', value: 'user' },
-          { label: '本人 (Self)', value: 'self' },
-        ],
-      },
-      fieldName: 'dimensions',
-      label: '权限维度',
-    },
-    {
-      component: 'ApiTreeSelect',
-      componentProps: {
-        api: async () => {
-          const { getDeptTreeApi } = await import('#/api/sys/dept');
-          return getDeptTreeApi();
-        },
-        multiple: true,
-        placeholder: '请选择部门',
-      },
-      fieldName: 'deptIds',
-      label: '指定部门',
-      dependencies: {
-        if: (values) => values.dimensions?.includes('dept'),
-        triggerFields: ['dimensions'],
-      },
-    },
-    {
-      component: 'Select',
-      componentProps: {
-        multiple: true,
-        options: [],
-        placeholder: '请选择岗位',
-      },
-      fieldName: 'postIds',
-      label: '指定岗位',
-      dependencies: {
-        if: (values) => values.dimensions?.includes('post'),
-        triggerFields: ['dimensions'],
-      },
-    },
-    {
-      component: 'Select',
-      componentProps: {
-        multiple: true,
-        options: [],
-        placeholder: '请选择用户',
-      },
-      fieldName: 'userIds',
-      label: '指定用户',
-      dependencies: {
-        if: (values) => values.dimensions?.includes('user'),
-        triggerFields: ['dimensions'],
-      },
-    },
-    {
       component: 'Switch',
       componentProps: {
         class: 'w-auto',
@@ -134,22 +72,10 @@ const [Modal, modalApi] = useVbenModal({
     formApi.validate().then(async (e) => {
       if (e.valid) {
         const values = await formApi.getValues();
-        const dimensions = values.dimensions || [];
-
-        const dataPermission = {
-          rowScope: {
-            deptIds: dimensions.includes('dept') ? values.deptIds : [],
-            postIds: dimensions.includes('post') ? values.postIds : [],
-            userIds: dimensions.includes('user') ? values.userIds : [],
-            self: dimensions.includes('self'),
-          },
-          columnRules: writeForm.value.columnRules || [],
-        };
-
         const submitData = {
           ...writeForm.value,
           ...values,
-          dataPermission,
+          dataPermission: writeForm.value.dataPermission || null,
           id: writeForm.value.id,
         };
 
@@ -166,40 +92,13 @@ const [Modal, modalApi] = useVbenModal({
   cancelText: $t('system.common.button.cancel'),
 });
 
-const openColumnPermission = () => {
-  columnPermissionRef.value?.open(writeForm.value.columnRules || []);
-};
-
-const onColumnPermissionChange = (data: any[]) => {
-  writeForm.value.columnRules = data;
-};
-
 const open = (row: any) => {
   if (row?.id) {
     const editRow = { ...row };
-    const dp = editRow.dataPermission || {};
-
-    const dimensions: string[] = [];
-    if (dp.rowScope?.deptIds?.length > 0) dimensions.push('dept');
-    if (dp.rowScope?.postIds?.length > 0) dimensions.push('post');
-    if (dp.rowScope?.userIds?.length > 0) dimensions.push('user');
-    if (dp.rowScope?.self) dimensions.push('self');
-
-    const formValues = {
-      ...editRow,
-      dimensions,
-      deptIds: dp.rowScope?.deptIds || [],
-      postIds: dp.rowScope?.postIds || [],
-      userIds: dp.rowScope?.userIds || [],
-    };
-
-    writeForm.value = {
-      ...editRow,
-      columnRules: dp.columnRules || [],
-    };
-    formApi.setValues(formValues);
+    writeForm.value = { ...editRow };
+    formApi.setValues(editRow);
   } else {
-    writeForm.value = { columnRules: [] };
+    writeForm.value = {};
     formApi.resetForm();
   }
   modalApi.open();
@@ -212,23 +111,5 @@ defineExpose({ open, close });
 <template>
   <Modal class="w-[40%]" :title="$t('system.common.alert.form')">
     <Form style="width: auto" />
-    <div style="margin-bottom: 20px; margin-left: 130px">
-      <ElButton type="primary" @click="openColumnPermission">
-        {{ $t('system.columnPermission.configButton') }}
-      </ElButton>
-      <span
-        v-if="writeForm.columnRules && writeForm.columnRules.length > 0"
-        class="ml-4 text-gray-500"
-      >
-        ({{ $t('system.columnPermission.configuredCount', { count: writeForm.columnRules.length }) }})
-      </span>
-      <span v-else class="ml-4 text-sm text-gray-400">
-        ({{ $t('system.columnPermission.defaultAccess') }})
-      </span>
-    </div>
   </Modal>
-  <ColumnPermissionModal
-    ref="columnPermissionRef"
-    @change="onColumnPermissionChange"
-  />
 </template>
