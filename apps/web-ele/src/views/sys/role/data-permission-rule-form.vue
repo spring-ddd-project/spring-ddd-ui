@@ -50,7 +50,8 @@ const [Form, formApi] = useVbenForm({
           return getTree({});
         },
         multiple: true,
-        placeholder: $t('system.common.placeholder.input') + $t('system.dept.deptName'),
+        placeholder:
+          $t('system.common.placeholder.input') + $t('system.dept.deptName'),
       },
       fieldName: 'dimensionIds',
       label: $t('system.role.specifyDept'),
@@ -101,7 +102,8 @@ const [Form, formApi] = useVbenForm({
       component: 'Select',
       componentProps: {
         options: [],
-        placeholder: $t('system.common.placeholder.input') + $t('system.role.scope'),
+        placeholder:
+          $t('system.common.placeholder.input') + $t('system.role.scope'),
         onChange: (value: string) => {
           const entity = allEntities.value.find((e) => e.entityCode === value);
           currentEntityColumns.value = entity?.columns || [];
@@ -117,7 +119,9 @@ const [Form, formApi] = useVbenForm({
       componentProps: {
         multiple: true,
         options: [],
-        placeholder: $t('system.common.placeholder.input') + $t('system.role.visibleColumns'),
+        placeholder:
+          $t('system.common.placeholder.input') +
+          $t('system.role.visibleColumns'),
       },
       fieldName: 'columns',
       label: $t('system.role.visibleColumns'),
@@ -212,7 +216,9 @@ const open = (row?: any) => {
   formApi.resetForm();
   currentEntityColumns.value = [];
   if (row) {
-    const entity = allEntities.value.find((e) => e.entityCode === row.entityCode);
+    const entity = allEntities.value.find(
+      (e) => e.entityCode === row.entityCode,
+    );
     currentEntityColumns.value = entity?.columns || [];
     formApi.setValues({
       dimensionType: row.dimensionType || 'all',

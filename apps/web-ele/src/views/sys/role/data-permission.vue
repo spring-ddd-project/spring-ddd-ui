@@ -64,7 +64,8 @@ const [ScopeForm, scopeFormApi] = useVbenForm({
           return getTree({});
         },
         multiple: true,
-        placeholder: $t('system.common.placeholder.input') + $t('system.dept.deptName'),
+        placeholder:
+          $t('system.common.placeholder.input') + $t('system.dept.deptName'),
       },
       fieldName: 'deptIds',
       label: $t('system.role.specifyDept'),
@@ -103,7 +104,11 @@ const gridOptions: any = {
             user: $t('system.user.title'),
             self: $t('system.role.selfData'),
           };
-          return map[row.dimensionType] || row.dimensionType || $t('system.role.allData');
+          return (
+            map[row.dimensionType] ||
+            row.dimensionType ||
+            $t('system.role.allData')
+          );
         },
       },
     },
@@ -113,7 +118,8 @@ const gridOptions: any = {
       slots: {
         default: ({ row }: any) => {
           if (row.dimensionType === 'self') return $t('system.role.selfData');
-          if (row.dimensionType === 'all' || !row.dimensionType) return $t('system.role.allData');
+          if (row.dimensionType === 'all' || !row.dimensionType)
+            return $t('system.role.allData');
           if (row.dimensionIds && row.dimensionIds.length > 0) {
             return row.dimensionIds.join(', ');
           }
@@ -261,12 +267,16 @@ defineExpose({ open, close });
 <template>
   <Drawer class="w-[50%]" :title="$t('system.role.dataPermissionDrawerTitle')">
     <div class="mb-6">
-      <h3 class="mb-2 text-base font-semibold">{{ $t('system.role.rowScope') }}</h3>
+      <h3 class="mb-2 text-base font-semibold">
+        {{ $t('system.role.rowScope') }}
+      </h3>
       <ScopeForm style="width: auto" />
     </div>
 
     <div class="mb-2 flex items-center justify-between">
-      <h3 class="text-base font-semibold">{{ $t('system.role.columnRules') }}</h3>
+      <h3 class="text-base font-semibold">
+        {{ $t('system.role.columnRules') }}
+      </h3>
       <ElButton type="primary" size="small" @click="openAddRule">
         + {{ $t('system.common.button.add') }}
       </ElButton>
@@ -283,9 +293,6 @@ defineExpose({ open, close });
       </template>
     </Grid>
 
-    <DataPermissionRuleForm
-      ref="ruleFormRef"
-      @confirm="onRuleConfirm"
-    />
+    <DataPermissionRuleForm ref="ruleFormRef" @confirm="onRuleConfirm" />
   </Drawer>
 </template>
