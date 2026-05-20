@@ -13,6 +13,42 @@ const emit = defineEmits<{
   (e: 'confirm', data: any): void;
 }>();
 
+function flattenDeptTree(nodes: any[]): Map<number, string> {
+  const map = new Map<number, string>();
+  const traverse = (list: any[]) => {
+    list.forEach((node) => {
+      map.set(node.id, node.deptName);
+      if (node.children && node.children.length > 0) {
+        traverse(node.children);
+      }
+    });
+  };
+  traverse(nodes);
+  return map;
+}
+
+const fetchUsersWithDept = async () => {
+  const [{ getUserPage }, { getTree }] = await Promise.all([
+    import('#/api/sys/user'),
+    import('#/api/sys/dept'),
+  ]);
+  const [userRes, deptRes] = await Promise.all([
+    getUserPage({ pageNum: 1, pageSize: 10_000 }),
+    getTree({}),
+  ]);
+  const items = userRes?.data?.items || [];
+  const deptMap = flattenDeptTree(deptRes?.data || []);
+  return {
+    code: 0,
+    data: {
+      items: items.map((item: any) => ({
+        ...item,
+        displayLabel: `${item.username}-${deptMap.get(item.deptId) || '未知部门'}`,
+      })),
+    },
+  };
+};
+
 const allEntities = ref<any[]>([]);
 const currentEntityColumns = ref<any[]>([]);
 const loading = ref(false);
@@ -45,10 +81,17 @@ const [Form, formApi] = useVbenForm({
     {
       component: 'ApiTreeSelect',
       componentProps: {
+        allowClear: true,
+        showSearch: true,
+        treeNodeFilterProp: 'deptName',
         api: async () => {
           const { getTree } = await import('#/api/sys/dept');
           return getTree({});
         },
+        resultField: 'data',
+        labelField: 'deptName',
+        valueField: 'id',
+        childrenField: 'children',
         multiple: true,
         placeholder:
           $t('system.common.placeholder.input') + $t('system.dept.deptName'),
@@ -61,11 +104,20 @@ const [Form, formApi] = useVbenForm({
       },
     },
     {
-      component: 'Input',
+      component: 'ApiSelect',
       componentProps: {
-        placeholder: '请输入用户ID，多个用逗号分隔',
+        allowClear: true,
+        filterOption: true,
+        api: fetchUsersWithDept,
+        resultField: 'data.list',
+        labelField: 'displayLabel',
+        valueField: 'id',
+        showSearch: true,
+        clearable: true,
+        multiple: true,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.title')}`,
       },
-      fieldName: 'dimensionIdsText',
+      fieldName: 'dimensionUserIds',
       label: $t('system.role.specifyUser'),
       dependencies: {
         if: (values) => values.dimensionType === 'user',
@@ -187,10 +239,7 @@ const [Modal, modalApi] = useVbenModal({
         if (values.dimensionType === 'dept') {
           dimensionIds = values.dimensionIds || [];
         } else if (values.dimensionType === 'user') {
-          dimensionIds = (values.dimensionIdsText || '')
-            .split(',')
-            .map((s: string) => Number(s.trim()))
-            .filter((n: number) => !Number.isNaN(n));
+          dimensionIds = values.dimensionUserIds || [];
         }
 
         const rule = {
@@ -223,7 +272,7 @@ const open = (row?: any) => {
     formApi.setValues({
       dimensionType: row.dimensionType || 'all',
       dimensionIds: row.dimensionIds || [],
-      dimensionIdsText: row.dimensionIds?.join(',') || '',
+      dimensionUserIds: row.dimensionIds || [],
       entityCode: row.entityCode,
       columns: row.columns || [],
     });
