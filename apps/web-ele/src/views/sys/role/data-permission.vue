@@ -15,6 +15,42 @@ const props = defineProps<{
   gridApi: any;
 }>();
 
+function flattenDeptTree(nodes: any[]): Map<number, string> {
+  const map = new Map<number, string>();
+  const traverse = (list: any[]) => {
+    list.forEach((node) => {
+      map.set(node.id, node.deptName);
+      if (node.children && node.children.length > 0) {
+        traverse(node.children);
+      }
+    });
+  };
+  traverse(nodes);
+  return map;
+}
+
+const fetchUsersWithDept = async () => {
+  const [{ getUserPage }, { getTree }] = await Promise.all([
+    import('#/api/sys/user'),
+    import('#/api/sys/dept'),
+  ]);
+  const [userRes, deptRes] = await Promise.all([
+    getUserPage({ pageNum: 1, pageSize: 10_000 }),
+    getTree({}),
+  ]);
+  const items = userRes?.data?.items || [];
+  const deptMap = flattenDeptTree(deptRes?.data || []);
+  return {
+    code: 0,
+    data: {
+      items: items.map((item: any) => ({
+        ...item,
+        displayLabel: `${item.username}-${deptMap.get(item.deptId) || '未知部门'}`,
+      })),
+    },
+  };
+};
+
 const currentRole = ref<any>({});
 const columnRules = ref<any[]>([]);
 const ruleFormRef = ref();
@@ -59,10 +95,17 @@ const [ScopeForm, scopeFormApi] = useVbenForm({
     {
       component: 'ApiTreeSelect',
       componentProps: {
+        allowClear: true,
+        showSearch: true,
+        treeNodeFilterProp: 'deptName',
         api: async () => {
           const { getTree } = await import('#/api/sys/dept');
           return getTree({});
         },
+        resultField: 'data',
+        labelField: 'deptName',
+        valueField: 'id',
+        childrenField: 'children',
         multiple: true,
         placeholder:
           $t('system.common.placeholder.input') + $t('system.dept.deptName'),
@@ -75,11 +118,20 @@ const [ScopeForm, scopeFormApi] = useVbenForm({
       },
     },
     {
-      component: 'Input',
+      component: 'ApiSelect',
       componentProps: {
-        placeholder: '请输入用户ID，多个用逗号分隔',
+        allowClear: true,
+        filterOption: true,
+        api: fetchUsersWithDept,
+        resultField: 'data.list',
+        labelField: 'displayLabel',
+        valueField: 'id',
+        showSearch: true,
+        clearable: true,
+        multiple: true,
+        placeholder: `${$t('system.common.placeholder.input')} ${$t('system.user.title')}`,
       },
-      fieldName: 'userIdsText',
+      fieldName: 'userIds',
       label: $t('system.role.specifyUser'),
       dependencies: {
         if: (values) => values.dimensions?.includes('user'),
@@ -156,7 +208,7 @@ const gridOptions: any = {
   },
 };
 
-const [Grid, gridApi] = useVbenVxeGrid({ gridOptions });
+const [Grid, vxeGridApi] = useVbenVxeGrid({ gridOptions });
 
 const [Drawer, drawerApi] = useVbenDrawer({
   onOpenChange: (isOpen) => {
@@ -172,13 +224,13 @@ const [Drawer, drawerApi] = useVbenDrawer({
         dataScope: dp.dataScope || currentRole.value.dataScope || 1,
         dimensions,
         deptIds: rs.deptIds || [],
-        userIdsText: rs.userIds?.join(',') || '',
+        userIds: rs.userIds || [],
       });
 
       columnRules.value = dp.columnRules || [];
       nextTick(() => {
-        if (gridApi.grid?.loadData) {
-          gridApi.grid.loadData(columnRules.value);
+        if (vxeGridApi.grid?.loadData) {
+          vxeGridApi.grid.loadData(columnRules.value);
         }
       });
     }
@@ -194,12 +246,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
         rowScope: {
           deptIds: dimensions.includes('dept') ? scopeValues.deptIds : [],
           postIds: [],
-          userIds: dimensions.includes('user')
-            ? (scopeValues.userIdsText || '')
-                .split(',')
-                .map((s: string) => Number(s.trim()))
-                .filter((n: number) => !Number.isNaN(n))
-            : [],
+          userIds: dimensions.includes('user') ? scopeValues.userIds || [] : [],
           self: dimensions.includes('self'),
         },
         columnRules: columnRules.value,
@@ -215,8 +262,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
       ElMessage.success($t('system.common.save.success'));
       props.gridApi.reload();
       drawerApi.close();
-    } catch (err: any) {
-      ElMessage.error($t('system.common.save.error') + ': ' + err.message);
+    } catch (error: any) {
+      ElMessage.error(`${$t('system.common.save.error')}: ${error.message}`);
     } finally {
       drawerApi.setState({ loading: false });
     }
@@ -243,8 +290,8 @@ const openEditRule = (row: any, index: number) => {
 
 const deleteRule = (index: number) => {
   columnRules.value.splice(index, 1);
-  if (gridApi.grid?.loadData) {
-    gridApi.grid.loadData(columnRules.value);
+  if (vxeGridApi.grid?.loadData) {
+    vxeGridApi.grid.loadData(columnRules.value);
   }
 };
 
@@ -254,8 +301,8 @@ const onRuleConfirm = (rule: any) => {
   } else {
     columnRules.value.push(rule);
   }
-  if (gridApi.grid?.loadData) {
-    gridApi.grid.loadData(columnRules.value);
+  if (vxeGridApi.grid?.loadData) {
+    vxeGridApi.grid.loadData(columnRules.value);
   }
 };
 
