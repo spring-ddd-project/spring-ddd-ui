@@ -18,7 +18,6 @@ import AggregateForm from './form.vue';
 const { hasAccessByCodes } = useAccess();
 
 const infoId = ref();
-const fullData = ref<string[]>([]);
 
 interface RowType {
   id: string;
@@ -78,7 +77,6 @@ const gridOptions: VxeTableGridOptions<RowType> = {
   toolbarConfig: {
     custom: true,
     export: true,
-    // import: true,
     refresh: true,
     zoom: true,
     search: true,
@@ -89,18 +87,25 @@ const [Grid, gridLocalApi] = useVbenVxeGrid({
   gridOptions,
 });
 
+const computeUsedValues = (excludeId?: string): Set<string> => {
+  const set = new Set<string>();
+  gridLocalApi.grid.getFullData().forEach((item: RowType) => {
+    if (excludeId && item.id === excludeId) return;
+    try {
+      JSON.parse(item.objectValue).forEach((v: string) => set.add(v));
+    } catch {
+      /* ignore invalid JSON */
+    }
+  });
+  return set;
+};
+
 const openForm = () => {
-  fullData.value = gridLocalApi.grid
-    .getFullData()
-    .map((item) => item.objectValue);
-  aggregateFormRef.value?.open(infoId.value, fullData.value);
+  aggregateFormRef.value?.openAdd(infoId.value, computeUsedValues());
 };
 
 const editRow = (row: RowType) => {
-  fullData.value = gridLocalApi.grid
-    .getCheckboxRecords()
-    .map((item) => item.objectValue);
-  aggregateFormRef.value?.open(row, fullData.value);
+  aggregateFormRef.value?.openEdit(row, computeUsedValues(row.id));
 };
 
 const deleteByIds = (row?: RowType) => {

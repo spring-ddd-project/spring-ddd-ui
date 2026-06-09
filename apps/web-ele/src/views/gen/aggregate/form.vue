@@ -14,14 +14,21 @@ const props = defineProps<{
   gridApi: any;
 }>();
 
-const writeForm = ref<Record<string, any>>({});
-const infoId = ref();
-const entityList = ref([]);
+const mode = ref<'add' | 'edit'>('add');
+const infoId = ref<string>('');
+const editData = ref<any>(null);
+const usedObjectValues = ref<Set<string>>(new Set());
+
+const parseObjectValue = (val: string): string[] => {
+  try {
+    return JSON.parse(val) as string[];
+  } catch {
+    return [];
+  }
+};
 
 const clear = () => {
-  writeForm.value = {};
-  infoId.value = '';
-  entityList.value = [];
+  editData.value = null;
   formApi.resetForm();
 };
 
@@ -43,7 +50,7 @@ const [Form, formApi] = useVbenForm({
         allowClear: true,
         filterOption: true,
         showSearch: true,
-        options: entityList.value,
+        options: [],
         clearable: true,
         multiple: true,
         placeholder: `${$t('system.common.placeholder.input')} ${$t('codegen.aggregate.objectValue')}`,
@@ -99,18 +106,39 @@ const [Form, formApi] = useVbenForm({
   ],
 });
 
+const loadAndFilterEntities = async (id: string, used: Set<string>) => {
+  const resp = await getJaveEntityInfo(id);
+  const allEntities = resp.map((item: any) => ({
+    label: `${item.propJavaEntity} - ${item.propColumnComment}`,
+    value: item.propJavaEntity,
+  }));
+  const filtered = allEntities.filter((item: any) => !used.has(item.value));
+  formApi.updateSchema([
+    {
+      componentProps: {
+        options: filtered,
+      },
+      fieldName: 'objectValue',
+    },
+  ]);
+};
+
 const [Drawer, drawerApi] = useVbenDrawer({
   onConfirm: () => {
     formApi.validate().then(async (e) => {
       if (e.valid) {
-        Object.assign(writeForm.value, await formApi.getValues());
-        writeForm.value.infoId = infoId.value;
-        writeForm.value.objectValue = JSON.stringify(
-          writeForm.value.objectValue,
-        );
-        await (writeForm.value.id
-          ? updateAggregate(writeForm.value)
-          : createAggregate(writeForm.value));
+        const values = await formApi.getValues();
+        const payload: Record<string, any> = {
+          ...values,
+          infoId: infoId.value,
+          objectValue: JSON.stringify(values.objectValue),
+        };
+        if (mode.value === 'edit' && editData.value?.id) {
+          payload.id = editData.value.id;
+        }
+        await (mode.value === 'edit' && editData.value?.id
+          ? updateAggregate(payload)
+          : createAggregate(payload));
         ElMessage.success($t('system.common.save.success'));
         props.gridApi.reload();
       } else {
@@ -123,68 +151,29 @@ const [Drawer, drawerApi] = useVbenDrawer({
   cancelText: $t('system.common.button.cancel'),
 });
 
-const open = (row: any, fData: string[]) => {
-  if (row?.id) {
-    const objectValueArray = (() => {
-      try {
-        return JSON.parse(row.objectValue);
-      } catch {
-        return [];
-      }
-    })();
-
-    writeForm.value = {
-      ...row,
-      objectValue: objectValueArray,
-    };
-
-    infoId.value = row.infoId;
-    formApi.setValues(writeForm.value);
-  } else {
-    infoId.value = row;
-    getEntityInfo(infoId.value, fData);
-  }
+const openAdd = (id: string, usedValues: Set<string>) => {
+  mode.value = 'add';
+  infoId.value = id;
+  usedObjectValues.value = usedValues;
+  clear();
+  loadAndFilterEntities(infoId.value, usedObjectValues.value);
   drawerApi.open();
 };
 
-const close = () => {
-  clear();
-  drawerApi.close();
-};
-
-defineExpose({ open, close });
-
-const getEntityInfo = async (infoId: string, fData: string[]) => {
-  return await getJaveEntityInfo(infoId).then((resp: any) => {
-    const fullEntityList = (entityList.value = resp.map((item: any) => ({
-      label: `${item.propJavaEntity} - ${item.propColumnComment}`,
-      value: item.propJavaEntity,
-    })));
-
-    const excludeValues: Set<any> = new Set(
-      fData.flatMap((str) => {
-        try {
-          return JSON.parse(str) as string[];
-        } catch {
-          return [];
-        }
-      }),
-    );
-
-    entityList.value = fullEntityList.filter(
-      (item: any) => !excludeValues.has(item.value),
-    );
-
-    formApi.updateSchema([
-      {
-        componentProps: {
-          options: entityList.value,
-        },
-        fieldName: 'objectValue',
-      },
-    ]);
+const openEdit = (row: any, usedValues: Set<string>) => {
+  mode.value = 'edit';
+  infoId.value = row.infoId;
+  editData.value = row;
+  usedObjectValues.value = usedValues;
+  loadAndFilterEntities(infoId.value, usedObjectValues.value);
+  formApi.setValues({
+    ...editData.value,
+    objectValue: parseObjectValue(editData.value.objectValue),
   });
+  drawerApi.open();
 };
+
+defineExpose({ openAdd, openEdit });
 </script>
 
 <template>
