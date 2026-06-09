@@ -76,13 +76,13 @@ defineExpose({ open, close });
 
 <template>
   <Modal
-    class="w-[100%]"
+    class="w-[100%] gen-preview-modal"
     :title="$t('codegen.table.form')"
     :destroy-on-close="true"
     :fullscreen="true"
   >
     <ColPage
-      auto-content-height
+      :auto-content-height="false"
       :description="$t('codegen.preview.value')"
       v-bind="props"
       :title="$t('codegen.preview.title')"
@@ -116,3 +116,16 @@ defineExpose({ open, close });
     </ColPage>
   </Modal>
 </template>
+
+<style>
+/* 让 Page 根元素在 Modal 中占满可用高度，从而使左右面板都能垂直铺满 */
+.gen-preview-modal .relative.min-h-40 {
+  display: flex;
+  flex-direction: column;
+}
+.gen-preview-modal .relative.min-h-40 > .relative {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+</style>
