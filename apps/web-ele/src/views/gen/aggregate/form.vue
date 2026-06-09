@@ -124,22 +124,6 @@ const loadAndFilterEntities = async (id: string, used: Set<string>) => {
 };
 
 const [Drawer, drawerApi] = useVbenDrawer({
-  onOpen: async () => {
-    if (!infoId.value) return;
-    if (mode.value === 'add') {
-      clear();
-    }
-    await loadAndFilterEntities(infoId.value, usedObjectValues.value);
-    if (mode.value === 'edit' && editData.value) {
-      formApi.setValues({
-        ...editData.value,
-        objectValue: parseObjectValue(editData.value.objectValue),
-      });
-    }
-  },
-  onClosed: () => {
-    clear();
-  },
   onConfirm: () => {
     formApi.validate().then(async (e) => {
       if (e.valid) {
@@ -171,6 +155,8 @@ const openAdd = (id: string, usedValues: Set<string>) => {
   mode.value = 'add';
   infoId.value = id;
   usedObjectValues.value = usedValues;
+  clear();
+  loadAndFilterEntities(infoId.value, usedObjectValues.value);
   drawerApi.open();
 };
 
@@ -179,6 +165,11 @@ const openEdit = (row: any, usedValues: Set<string>) => {
   infoId.value = row.infoId;
   editData.value = row;
   usedObjectValues.value = usedValues;
+  loadAndFilterEntities(infoId.value, usedObjectValues.value);
+  formApi.setValues({
+    ...editData.value,
+    objectValue: parseObjectValue(editData.value.objectValue),
+  });
   drawerApi.open();
 };
 
