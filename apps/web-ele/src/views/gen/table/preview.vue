@@ -76,7 +76,7 @@ defineExpose({ open, close });
 
 <template>
   <Modal
-    class="w-[100%] gen-preview-modal"
+    class="gen-preview-modal w-[100%]"
     :title="$t('codegen.table.form')"
     :destroy-on-close="true"
     :fullscreen="true"
@@ -110,7 +110,7 @@ defineExpose({ open, close });
         body-class="flex-1 overflow-auto p-4"
       >
         <div class="font-mono text-sm">
-          <pre class="whitespace-pre-wrap">{{ rightLabel }}</pre>
+          <pre class="m-0 whitespace-pre-wrap">{{ rightLabel }}</pre>
         </div>
       </ElCard>
     </ColPage>
@@ -118,14 +118,19 @@ defineExpose({ open, close });
 </template>
 
 <style>
-/* 让 Page 根元素在 Modal 中占满可用高度，从而使左右面板都能垂直铺满 */
 .gen-preview-modal .relative.min-h-40 {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 .gen-preview-modal .relative.min-h-40 > .relative {
   display: flex;
   flex-direction: column;
   height: 100%;
+}
+.gen-preview-modal .relative.min-h-40 > .relative > .h-full.p-4 {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
 }
 </style>
