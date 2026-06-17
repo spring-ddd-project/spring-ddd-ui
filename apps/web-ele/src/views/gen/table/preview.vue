@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { TreeNodeData } from 'element-plus';
 
-import { reactive, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 
 import { ColPage, useVbenForm, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
@@ -12,6 +12,60 @@ import { codeDownload } from '#/api/gen/table';
 
 const writeForm = ref();
 const rightLabel = ref();
+
+interface PreviewTreeNode {
+  label: string;
+  value: string;
+  children?: PreviewTreeNode[];
+}
+
+/**
+ * 压缩单 child 目录链，类似 IDEA 的 Compact Empty Middle Packages
+ */
+function compressTreeNodes(nodes: PreviewTreeNode[]): PreviewTreeNode[] {
+  return nodes.map((node) => {
+    const compressed = compressNode(node);
+    return {
+      ...compressed,
+      children: compressed.children
+        ? compressTreeNodes(compressed.children)
+        : undefined,
+    };
+  });
+}
+
+function compressNode(node: PreviewTreeNode): PreviewTreeNode {
+  // 叶子节点（文件）或空目录，不压缩
+  if (!node.children || node.children.length === 0) {
+    return node;
+  }
+
+  // 多个子节点，不压缩
+  if (node.children.length !== 1) {
+    return node;
+  }
+
+  const [onlyChild] = node.children;
+
+  if (!onlyChild) {
+    return node;
+  }
+
+  // 唯一子节点也是目录，才压缩；如果是文件，保留当前目录层级
+  if (onlyChild.children && onlyChild.children.length > 0) {
+    return compressNode({
+      label: `${node.label}.${onlyChild.label}`,
+      value: onlyChild.value,
+      children: onlyChild.children,
+    });
+  }
+
+  return node;
+}
+
+const treeData = computed<PreviewTreeNode[]>(() =>
+  compressTreeNodes(writeForm.value || []),
+);
 
 const props = reactive({
   leftCollapsedWidth: 5,
@@ -92,7 +146,7 @@ defineExpose({ open, close });
         <div class="flex h-full flex-col overflow-hidden">
           <div class="flex-1 overflow-auto">
             <ElTree
-              :data="writeForm"
+              :data="treeData"
               :props="defaultProps"
               :expand-on-click-node="true"
               accordion
