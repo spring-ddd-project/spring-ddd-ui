@@ -20,15 +20,51 @@ interface PreviewTreeNode {
 }
 
 /**
- * 压缩单 child 目录链，类似 IDEA 的 Compact Empty Middle Packages
+ * 压缩 src/main/java 下的单 child 包名链，类似 IDEA 的 Compact Empty Middle Packages
  */
-function compressTreeNodes(nodes: PreviewTreeNode[]): PreviewTreeNode[] {
+function compressTreeNodes(
+  nodes: PreviewTreeNode[],
+  path: string[] = [],
+): PreviewTreeNode[] {
+  return nodes.map((node) => {
+    const currentPath = [...path, node.label];
+    const children = node.children
+      ? compressTreeNodes(node.children, currentPath)
+      : undefined;
+
+    // 当路径为 src/main/java 时，对其直接子节点压缩包名
+    if (isSrcMainJavaPath(currentPath)) {
+      return {
+        ...node,
+        children: children ? compressJavaPackages(children) : undefined,
+      };
+    }
+
+    return {
+      ...node,
+      children,
+    };
+  });
+}
+
+function isSrcMainJavaPath(path: string[]): boolean {
+  const src = path.at(-3);
+  const main = path.at(-2);
+  const java = path.at(-1);
+  return (
+    src?.toLowerCase() === 'src' &&
+    main?.toLowerCase() === 'main' &&
+    java?.toLowerCase() === 'java'
+  );
+}
+
+function compressJavaPackages(nodes: PreviewTreeNode[]): PreviewTreeNode[] {
   return nodes.map((node) => {
     const compressed = compressNode(node);
     return {
       ...compressed,
       children: compressed.children
-        ? compressTreeNodes(compressed.children)
+        ? compressJavaPackages(compressed.children)
         : undefined,
     };
   });
