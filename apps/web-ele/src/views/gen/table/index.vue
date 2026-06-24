@@ -52,7 +52,6 @@ const formOptions: VbenFormProps = {
       fieldName: 'databaseName',
       label: $t('codegen.info.databaseName'),
       labelWidth: 120,
-      rules: 'required',
     },
     {
       component: 'Input',
@@ -103,11 +102,17 @@ const gridOptions: VxeTableGridOptions<RowType> = {
   proxyConfig: {
     ajax: {
       query: async ({ page }, formValues) => {
-        return await getTablePage({
+        const resp: any = await getTablePage({
           pageNum: page.currentPage,
           pageSize: page.pageSize,
           ...formValues,
         });
+        if (resp?.databaseName && !formValues?.databaseName) {
+          await gridApi.formApi.setValues({
+            databaseName: resp.databaseName,
+          });
+        }
+        return resp;
       },
     },
   },
