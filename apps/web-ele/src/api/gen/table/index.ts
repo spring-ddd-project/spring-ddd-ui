@@ -22,11 +22,12 @@ export async function codePreview() {
   return requestClient.post('/gen/table/preview', null, {});
 }
 
-export async function codeDownload() {
+export async function codeDownload(tableName?: string) {
+  const fileName = tableName ? `${tableName}.zip` : 'ddd_files.zip';
   return requestClient.download<Blob>('/gen/table/download').then((blob) => {
     downloadFileFromBlobPart({
       source: blob,
-      fileName: 'ddd_files.zip',
+      fileName,
     });
   });
 }
