@@ -162,7 +162,7 @@ const aggregateConfig = (row: RowType) => {
 const generate = async (row: RowType) => {
   await codeGenerate(row?.tableName);
   await codePreview().then((resp: any) => {
-    previewModalRef.value?.open(resp);
+    previewModalRef.value?.open(resp, row?.tableName);
   });
 };
 

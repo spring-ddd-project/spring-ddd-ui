@@ -12,6 +12,7 @@ import { codeDownload } from '#/api/gen/table';
 
 const writeForm = ref();
 const rightLabel = ref();
+const currentTableName = ref('');
 
 interface PreviewTreeNode {
   label: string;
@@ -124,7 +125,7 @@ const [Modal, modalApi] = useVbenModal({
     if (!open) modalApi.setState({ loading: false });
   },
   onConfirm: () => {
-    codeDownload().then(() => {
+    codeDownload(currentTableName.value).then(() => {
       ElMessage.success($t('codegen.table.button.generate.result'));
     });
     modalApi.setState({ loading: false }).close();
@@ -146,8 +147,9 @@ const nodeClick = (data: TreeNodeData) => {
   rightLabel.value = data.value;
 };
 
-const open = (row?: any) => {
+const open = (row?: any, tableName?: string) => {
   writeForm.value = {};
+  currentTableName.value = tableName || '';
   if (row) {
     writeForm.value = row;
   }
@@ -213,11 +215,13 @@ defineExpose({ open, close });
   flex-direction: column;
   overflow: hidden;
 }
+
 .gen-preview-modal .relative.min-h-40 > .relative {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
+
 .gen-preview-modal .relative.min-h-40 > .relative > .h-full.p-4 {
   flex: 1 1 auto;
   min-height: 0;
