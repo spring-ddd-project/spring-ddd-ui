@@ -1,14 +1,104 @@
 {
-  "title": "Code Generation",
+  "title": "代码生成",
   "table": {
-    "title": "Table Management",
-    "tableName": "Table Name",
-    "tableComment": "Table Comment",
-    "className": "Class Name",
-    "createTime": "Create Time",
-    "tableCollation": "Table Collation",
+    "title": "表管理",
+    "tableSchema": "数据库名",
+    "tableName": "表名",
+    "tableComment": "表注释",
+    "className": "类名",
+    "createTime": "创建时间",
+    "tableCollation": "字符集",
     "button": {
-      "generate": "Generate"
+      "projectConfig": "第一步：项目配置",
+      "columnConfig": "第二步：列配置",
+      "aggregateConfig": "第三步：聚合配置",
+      "generate": {
+        "title": "第四步：生成代码",
+        "result": "生成成功",
+        "projectName": "请输入项目名称"
+      }
+    },
+    "form": "代码生成基础信息数据处理",
+    "sync": {
+      "title": "同步数据库",
+      "result": "同步成功"
     }
+  },
+  "info": {
+    "valueObject": "值对象配置",
+    "columnConfig": "列配置",
+    "databaseName": "数据库名",
+    "tableName": "表名",
+    "packageName": "包名",
+    "className": "类名",
+    "module": "模块名",
+    "project": "项目名",
+    "requestName": "请求名",
+    "propValueObject": "值对象",
+    "propColumnKey": "键",
+    "propColumnName": "名称",
+    "propColumnType": "类型",
+    "propColumnComment": "注释",
+    "propJavaEntity": "实体字段",
+    "propJavaType": "类型",
+    "propDictId": "字典",
+    "tableVisible": "显示",
+    "tableOrder": "排序",
+    "tableFilter": "查询",
+    "tableFilterComponent": "组件",
+    "tableFilterType": "类型",
+    "typescriptType": "TypeScript",
+    "formComponent": "组件",
+    "formVisible": "显示",
+    "formRequired": "必填",
+    "en": "英文",
+    "locale": "本地化",
+    "tableInfoConfig": "请先配置表信息后再继续操作。",
+    "tag": {
+      "title": "高级配置",
+      "attribute": "属性配置",
+      "table": "表格页",
+      "form": "表单页"
+    },
+    "group": {
+      "column": {
+        "title": "列映射",
+        "database": "数据库列",
+        "java": "Java 实体",
+        "i18n": "国际化"
+      },
+      "table": "表格页",
+      "form": "表单页"
+    }
+  },
+  "bind": {
+    "title": "列绑定",
+    "columnType": "列类型",
+    "entityType": "实体类型",
+    "typescriptType": "TypeScript 类型",
+    "componentType": "组件类型",
+    "columnTypeLowercaseOnly": "列类型（仅小写）"
+  },
+  "aggregate": {
+    "objectName": "对象名",
+    "objectValue": "对象值",
+    "objectType": "对象类型",
+    "hasCreated": "是否已创建",
+    "title": "聚合配置",
+    "radio": {
+      "root": "聚合根 ID",
+      "valueObject": "值对象",
+      "extend": "扩展信息",
+      "mask": "领域掩码"
+    }
+  },
+  "template": {
+    "title": "模板配置",
+    "name": "名称",
+    "content": "内容"
+  },
+  "preview": {
+    "title": "使用说明",
+    "value": "请参考 README 目录中的简短帮助文档。"
   }
 }
