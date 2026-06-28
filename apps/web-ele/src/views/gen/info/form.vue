@@ -53,7 +53,7 @@ interface RowType {
   propColumnComment: string;
   propJavaEntity: string;
   propJavaType: string;
-  tableVisible: string;
+  tableVisible: boolean;
   tableOrder: boolean;
   tableFilter: boolean;
   tableFilterComponent: number;
