@@ -21,7 +21,7 @@ const recycleFormRef = ref();
 
 interface RowType {
   id: string;
-  parentId: null | number;
+  parentId: null | string;
   name: string;
   permission: string;
   path: string;
