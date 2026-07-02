@@ -4,6 +4,7 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 import { ref } from 'vue';
 
 import { confirm, useVbenModal } from '@vben/common-ui';
+import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
 
 import { ElButton, ElMessage } from 'element-plus';
@@ -22,11 +23,12 @@ const menuFormRef = ref();
 
 interface RowType {
   id: string;
-  parentId: null | number;
+  parentId: null | string;
   name: string;
   permission: string;
   path: string;
   menuType: number;
+  deleteStatus?: boolean;
 }
 
 const gridOptions: VxeGridProps<RowType> = {
@@ -85,6 +87,7 @@ const gridOptions: VxeGridProps<RowType> = {
     parentField: 'parentId',
     rowField: 'id',
     transform: true,
+    expandAll: true,
   },
   toolbarConfig: {
     custom: true,
@@ -99,10 +102,21 @@ const [Grid, localGridApi] = useVbenVxeGrid({
   gridOptions,
 });
 
+const expandAll = () => {
+  localGridApi.grid?.setAllTreeExpand(true);
+};
+
+const collapseAll = () => {
+  localGridApi.grid?.setAllTreeExpand(false);
+};
+
 const wipeByIds = (row?: RowType) => {
   const ids: string[] = row
     ? [row.id]
-    : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
+    : localGridApi.grid
+        .getCheckboxRecords()
+        .filter((item: RowType) => item.deleteStatus)
+        .map((item: RowType) => item.id);
 
   if (ids.length === 0) {
     ElMessage.warning($t('system.common.delete.warning'));
@@ -126,7 +140,10 @@ const wipeByIds = (row?: RowType) => {
 const restoreByIds = (row?: RowType) => {
   const ids: string[] = row
     ? [row.id]
-    : localGridApi.grid.getCheckboxRecords().map((item) => item.id);
+    : localGridApi.grid
+        .getCheckboxRecords()
+        .filter((item: RowType) => item.deleteStatus)
+        .map((item: RowType) => item.id);
 
   if (ids.length === 0) {
     ElMessage.warning($t('system.common.restore.warning'));
@@ -170,6 +187,37 @@ defineExpose({ open, close });
       <template #menuType="{ row }">
         <Dict dict-key="menu_types" :value="row.menuType" />
       </template>
+      <template #menuName="{ row }">
+        <div class="flex w-full items-center gap-1">
+          <div class="size-5 flex-shrink-0">
+            <IconifyIcon
+              v-if="row.menuType === 3"
+              icon="carbon:security"
+              class="size-full"
+            />
+            <IconifyIcon
+              v-else-if="row.meta?.icon"
+              :icon="row.meta?.icon || 'carbon:circle-dash'"
+              class="size-full"
+            />
+          </div>
+          <span class="flex-auto" v-if="row.menuType !== 3">
+            {{ $t(row.meta?.title) }}
+          </span>
+          <span class="flex-auto" v-if="row.menuType === 3">
+            {{ $t(row.name) }}
+          </span>
+          <div class="items-center justify-end"></div>
+        </div>
+      </template>
+      <template #toolbar-tools>
+        <ElButton class="mr-2" bg text type="primary" @click="expandAll">
+          {{ $t('system.common.button.expand') }}
+        </ElButton>
+        <ElButton type="primary" bg text @click="collapseAll">
+          {{ $t('system.common.button.collapse') }}
+        </ElButton>
+      </template>
       <template #toolbar-actions>
         <ElButton class="mr-2" bg text type="success" @click="restoreByIds()">
           {{ $t('system.common.button.restore') }}
@@ -179,10 +227,20 @@ defineExpose({ open, close });
         </ElButton>
       </template>
       <template #action="{ row }">
-        <ElButton type="success" link @click="restoreByIds(row)">
+        <ElButton
+          v-if="row.deleteStatus"
+          type="success"
+          link
+          @click="restoreByIds(row)"
+        >
           {{ $t('system.common.button.restore') }}
         </ElButton>
-        <ElButton type="danger" link @click="wipeByIds(row)">
+        <ElButton
+          v-if="row.deleteStatus"
+          type="danger"
+          link
+          @click="wipeByIds(row)"
+        >
           {{ $t('system.common.button.wipe') }}
         </ElButton>
       </template>
