@@ -38,7 +38,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
       await queryMenusByRoleId({
         roleId: writeForm.value?.id,
       }).then((resp: any) => {
-        selectedTreeData.value = resp.map((item: any) => item.menuId);
+        selectedTreeData.value = resp.map((item: any) => String(item.menuId));
         formApi.setValues({
           permissions: selectedTreeData.value,
         });
@@ -108,7 +108,8 @@ function getNodeClass(node: Recordable<any>) {
           bordered
           :default-expanded-level="2"
           :get-node-class="getNodeClass"
-          v-bind="slotProps"
+          :model-value="slotProps.componentField.modelValue"
+          @update:model-value="slotProps.componentField['onUpdate:modelValue']"
           value-field="id"
           label-field="name"
           icon-field="meta.icon"
