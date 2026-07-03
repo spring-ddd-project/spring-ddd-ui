@@ -64,6 +64,25 @@ const [Form, formApi] = useVbenForm({
         valueField: 'id',
         childrenField: 'children',
         checkStrictly: true,
+        lazy: true,
+        props: { label: 'name', children: 'children', isLeaf: 'isLeaf' },
+        load: (node: any, resolve: (data: any[]) => void) => {
+          if (node.isLeaf) {
+            resolve([]);
+            return;
+          }
+          getMenuTreeWithoutPermission(node.data?.id)
+            .then((children: any[]) => {
+              const normalized = (children || []).map((item: any) => ({
+                ...item,
+                label: item.name,
+                value: item.id,
+                isLeaf: !item.hasChildren,
+              }));
+              resolve(normalized);
+            })
+            .catch(() => resolve([]));
+        },
       },
       fieldName: 'parentId',
       label: $t('system.menu.parent.label'),
