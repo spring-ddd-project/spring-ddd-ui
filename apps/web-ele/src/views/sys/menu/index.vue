@@ -11,7 +11,7 @@ import { ElButton, ElMessage } from 'element-plus';
 
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { delById, getMenusPage } from '#/api/sys/menu';
+import { delById, getMenuTreeWithoutPermission } from '#/api/sys/menu';
 
 import MenuForm from './form.vue';
 import RecycleForm from './recycle.vue';
@@ -63,9 +63,8 @@ const gridOptions: VxeGridProps<RowType> = {
   proxyConfig: {
     ajax: {
       query: async () => {
-        return await getMenusPage({
-          page: false,
-        });
+        const items = await getMenuTreeWithoutPermission();
+        return { items, total: items.length };
       },
     },
   },
@@ -84,7 +83,10 @@ const gridOptions: VxeGridProps<RowType> = {
   treeConfig: {
     parentField: 'parentId',
     rowField: 'id',
-    transform: true,
+    transform: false,
+    lazy: true,
+    hasChild: 'hasChildren',
+    loadMethod: ({ row }) => getMenuTreeWithoutPermission(row.id),
   },
   toolbarConfig: {
     custom: true,
@@ -165,10 +167,10 @@ const deleteById = (row?: RowType) => {
             />
           </div>
           <span class="flex-auto" v-if="row.menuType !== 3">
-            {{ $t(row.meta?.title) }}
+            {{ row.meta?.title ? $t(row.meta.title) : row.name }}
           </span>
-          <span class="flex-auto" v-if="row.menuType === 3">
-            {{ $t(row.name) }}
+          <span class="flex-auto" v-else>
+            {{ row.name }}
           </span>
           <div class="items-center justify-end"></div>
         </div>
