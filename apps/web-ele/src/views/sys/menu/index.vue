@@ -121,6 +121,30 @@ const collapseAll = () => {
   gridApi.grid?.setAllTreeExpand(false);
 };
 
+/**
+ * Capture currently expanded tree node ids before mutating data.
+ * VxeGrid lazy tree retains expand state in row metadata; we persist
+ * the set of expanded ids so we can restore the view after reload.
+ */
+function captureExpandedIds(): Set<string> {
+  const records = gridApi.grid?.getTreeExpandRecords() || [];
+  return new Set(records.map((row: RowType) => row.id));
+}
+
+/**
+ * Restore tree expansion for the ids captured before reload.
+ * Uses getRowById to find the new row instances after data refresh.
+ */
+async function restoreExpandedIds(ids: Set<string>) {
+  if (!ids.size || !gridApi.grid) return;
+  for (const id of ids) {
+    const row = gridApi.grid.getRowById(id);
+    if (row) {
+      await gridApi.grid.setTreeExpand(row, true);
+    }
+  }
+}
+
 const deleteById = (row?: RowType) => {
   const ids: string[] = row
     ? [row.id]
@@ -136,8 +160,10 @@ const deleteById = (row?: RowType) => {
     icon: 'error',
   }).then(async () => {
     try {
+      const expandedIds = captureExpandedIds();
       await delById(ids);
       await gridApi.reload();
+      await restoreExpandedIds(expandedIds);
       ElMessage.success($t('system.common.delete.success'));
     } catch {
       ElMessage.error($t('system.common.delete.error'));
