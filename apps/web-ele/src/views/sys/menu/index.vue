@@ -13,8 +13,8 @@ import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { delById, getMenuTreeWithoutPermission } from '#/api/sys/menu';
 
-import { refreshParentSubtree } from './helper';
 import MenuForm from './form.vue';
+import { refreshParentSubtree } from './helper';
 import RecycleForm from './recycle.vue';
 
 const menuFormRef = ref();

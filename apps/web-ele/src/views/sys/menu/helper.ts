@@ -8,7 +8,10 @@ import { getMenuTreeWithoutPermission } from '#/api/sys/menu';
  *
  * Falls back to a full grid reload for root-level operations (parentId null).
  */
-export async function refreshParentSubtree(gridApi: any, parentId?: string | null) {
+export async function refreshParentSubtree(
+  gridApi: any,
+  parentId?: null | string,
+) {
   if (!parentId) {
     await gridApi.reload();
     return;

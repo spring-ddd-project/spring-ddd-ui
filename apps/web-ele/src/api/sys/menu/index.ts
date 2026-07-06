@@ -16,7 +16,9 @@ export async function update(data: any) {
   return requestClient.put('/sys/menu/update', data);
 }
 
-export async function getMenuTreeWithoutPermission(parentId?: string | number | null) {
+export async function getMenuTreeWithoutPermission(
+  parentId?: null | number | string,
+) {
   return requestClient.post('/sys/menu/getMenuTreeWithoutPermission', null, {
     params: parentId !== undefined && parentId !== null ? { parentId } : {},
   });

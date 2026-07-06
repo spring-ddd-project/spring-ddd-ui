@@ -276,15 +276,15 @@ const [Modal, modalApi] = useVbenModal({
         ElMessage.success($t('system.common.save.success'));
         const newParentId = writeForm.value.parentId;
         // Refresh both old and new parent subtrees when the parent changes.
-        if (originalParentId !== newParentId) {
+        if (originalParentId === newParentId) {
+          await refreshParentSubtree(props.gridApi, newParentId);
+        } else {
           if (!originalParentId || !newParentId) {
             await props.gridApi.reload();
           } else {
             await refreshParentSubtree(props.gridApi, originalParentId);
             await refreshParentSubtree(props.gridApi, newParentId);
           }
-        } else {
-          await refreshParentSubtree(props.gridApi, newParentId);
         }
       } else {
         ElMessage.error($t('system.common.validation.error'));

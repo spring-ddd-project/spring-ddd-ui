@@ -12,8 +12,9 @@ import { ElButton, ElMessage } from 'element-plus';
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getMenusRecyclePage, restoreById, wipeById } from '#/api/sys/menu';
-import { refreshParentSubtree } from './helper';
+
 import MenuForm from './form.vue';
+import { refreshParentSubtree } from './helper';
 
 const props = defineProps<{
   gridApi: any;
