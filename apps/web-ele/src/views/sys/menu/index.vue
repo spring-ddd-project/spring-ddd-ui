@@ -13,13 +13,14 @@ import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { delById, getMenuTreeWithoutPermission } from '#/api/sys/menu';
 
+import { refreshParentSubtree } from './helper';
 import MenuForm from './form.vue';
 import RecycleForm from './recycle.vue';
 
 const menuFormRef = ref();
 const recycleFormRef = ref();
 
-interface RowType {
+export interface RowType {
   id: string;
   parentId: null | string;
   name: string;
@@ -88,6 +89,9 @@ const gridOptions: VxeGridProps<RowType> = {
     hasChild: 'hasChildren',
     loadMethod: ({ row }) => getMenuTreeWithoutPermission(row.id),
   },
+  rowConfig: {
+    keyField: 'id',
+  },
   toolbarConfig: {
     custom: true,
     export: true,
@@ -121,28 +125,9 @@ const collapseAll = () => {
   gridApi.grid?.setAllTreeExpand(false);
 };
 
-/**
- * Capture currently expanded tree node ids before mutating data.
- * VxeGrid lazy tree retains expand state in row metadata; we persist
- * the set of expanded ids so we can restore the view after reload.
- */
-function captureExpandedIds(): Set<string> {
-  const records = gridApi.grid?.getTreeExpandRecords() || [];
-  return new Set(records.map((row: RowType) => row.id));
-}
-
-/**
- * Restore tree expansion for the ids captured before reload.
- * Uses getRowById to find the new row instances after data refresh.
- */
-async function restoreExpandedIds(ids: Set<string>) {
-  if (!ids.size || !gridApi.grid) return;
-  for (const id of ids) {
-    const row = gridApi.grid.getRowById(id);
-    if (row) {
-      await gridApi.grid.setTreeExpand(row, true);
-    }
-  }
+async function refreshSubtreeByRow(row?: RowType) {
+  const targetRow = row || gridApi.grid.getCheckboxRecords()[0];
+  await refreshParentSubtree(gridApi, targetRow?.parentId);
 }
 
 const deleteById = (row?: RowType) => {
@@ -160,10 +145,8 @@ const deleteById = (row?: RowType) => {
     icon: 'error',
   }).then(async () => {
     try {
-      const expandedIds = captureExpandedIds();
       await delById(ids);
-      await gridApi.reload();
-      await restoreExpandedIds(expandedIds);
+      await refreshSubtreeByRow(row);
       ElMessage.success($t('system.common.delete.success'));
     } catch {
       ElMessage.error($t('system.common.delete.error'));
