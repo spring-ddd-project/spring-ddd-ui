@@ -9,6 +9,8 @@ import { ElMessage } from 'element-plus';
 import { useVbenForm } from '#/adapter/form';
 import { create, getMenuTreeWithoutPermission, update } from '#/api/sys/menu';
 
+import { refreshParentSubtree } from './helper';
+
 const props = defineProps<{
   gridApi: any;
 }>();
@@ -261,6 +263,7 @@ const [Modal, modalApi] = useVbenModal({
   onConfirm: () => {
     formApi.validate().then(async (e) => {
       if (e.valid) {
+        const originalParentId = writeForm.value.parentId;
         Object.assign(writeForm.value, await formApi.getValues());
         writeForm.value.order = writeForm.value.meta?.order;
         writeForm.value.icon = writeForm.value.meta?.icon;
@@ -271,7 +274,18 @@ const [Modal, modalApi] = useVbenModal({
           ? update(writeForm.value)
           : create(writeForm.value));
         ElMessage.success($t('system.common.save.success'));
-        props.gridApi.reload();
+        const newParentId = writeForm.value.parentId;
+        // Refresh both old and new parent subtrees when the parent changes.
+        if (originalParentId === newParentId) {
+          await refreshParentSubtree(props.gridApi, newParentId);
+        } else {
+          if (!originalParentId || !newParentId) {
+            await props.gridApi.reload();
+          } else {
+            await refreshParentSubtree(props.gridApi, originalParentId);
+            await refreshParentSubtree(props.gridApi, newParentId);
+          }
+        }
       } else {
         ElMessage.error($t('system.common.validation.error'));
       }

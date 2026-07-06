@@ -14,12 +14,13 @@ import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { delById, getMenuTreeWithoutPermission } from '#/api/sys/menu';
 
 import MenuForm from './form.vue';
+import { refreshParentSubtree } from './helper';
 import RecycleForm from './recycle.vue';
 
 const menuFormRef = ref();
 const recycleFormRef = ref();
 
-interface RowType {
+export interface RowType {
   id: string;
   parentId: null | string;
   name: string;
@@ -88,6 +89,9 @@ const gridOptions: VxeGridProps<RowType> = {
     hasChild: 'hasChildren',
     loadMethod: ({ row }) => getMenuTreeWithoutPermission(row.id),
   },
+  rowConfig: {
+    keyField: 'id',
+  },
   toolbarConfig: {
     custom: true,
     export: true,
@@ -121,6 +125,11 @@ const collapseAll = () => {
   gridApi.grid?.setAllTreeExpand(false);
 };
 
+async function refreshSubtreeByRow(row?: RowType) {
+  const targetRow = row || gridApi.grid.getCheckboxRecords()[0];
+  await refreshParentSubtree(gridApi, targetRow?.parentId);
+}
+
 const deleteById = (row?: RowType) => {
   const ids: string[] = row
     ? [row.id]
@@ -137,7 +146,7 @@ const deleteById = (row?: RowType) => {
   }).then(async () => {
     try {
       await delById(ids);
-      await gridApi.reload();
+      await refreshSubtreeByRow(row);
       ElMessage.success($t('system.common.delete.success'));
     } catch {
       ElMessage.error($t('system.common.delete.error'));
