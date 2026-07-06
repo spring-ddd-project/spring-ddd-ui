@@ -12,7 +12,7 @@ import { ElButton, ElMessage } from 'element-plus';
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getMenusRecyclePage, restoreById, wipeById } from '#/api/sys/menu';
-
+import { refreshParentSubtree } from './helper';
 import MenuForm from './form.vue';
 
 const props = defineProps<{
@@ -155,9 +155,10 @@ const restoreByIds = (row?: RowType) => {
     icon: 'error',
   }).then(async () => {
     try {
+      const targetRow = row || localGridApi.grid.getCheckboxRecords()[0];
       await restoreById(ids);
       await localGridApi.reload();
-      await props.gridApi.reload();
+      await refreshParentSubtree(props.gridApi, targetRow?.parentId);
       ElMessage.success($t('system.common.restore.success'));
     } catch {
       ElMessage.error($t('system.common.restore.error'));
