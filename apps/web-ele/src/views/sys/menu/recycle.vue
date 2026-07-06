@@ -12,14 +12,44 @@ import { ElButton, ElMessage } from 'element-plus';
 import Dict from '#/adapter/component/Dict.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { getMenusRecyclePage, restoreById, wipeById } from '#/api/sys/menu';
-
 import MenuForm from './form.vue';
+
+interface RowType {
+  id: string;
+  parentId: null | string;
+  name: string;
+  permission: string;
+  path: string;
+  menuType: number;
+  deleteStatus?: boolean;
+}
 
 const props = defineProps<{
   gridApi: any;
 }>();
 
 const menuFormRef = ref();
+
+/**
+ * Capture currently expanded main tree node ids.
+ */
+function captureExpandedIds(): Set<string> {
+  const records = props.gridApi.grid?.getTreeExpandRecords() || [];
+  return new Set(records.map((row: RowType) => row.id));
+}
+
+/**
+ * Restore main tree expansion for the ids captured before reload.
+ */
+async function restoreExpandedIds(ids: Set<string>) {
+  if (!ids.size || !props.gridApi.grid) return;
+  for (const id of ids) {
+    const row = props.gridApi.grid.getRowById(id);
+    if (row) {
+      await props.gridApi.grid.setTreeExpand(row, true);
+    }
+  }
+}
 
 interface RowType {
   id: string;
@@ -155,9 +185,11 @@ const restoreByIds = (row?: RowType) => {
     icon: 'error',
   }).then(async () => {
     try {
+      const expandedIds = captureExpandedIds();
       await restoreById(ids);
       await localGridApi.reload();
       await props.gridApi.reload();
+      await restoreExpandedIds(expandedIds);
       ElMessage.success($t('system.common.restore.success'));
     } catch {
       ElMessage.error($t('system.common.restore.error'));

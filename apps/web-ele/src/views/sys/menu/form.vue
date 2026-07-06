@@ -9,11 +9,41 @@ import { ElMessage } from 'element-plus';
 import { useVbenForm } from '#/adapter/form';
 import { create, getMenuTreeWithoutPermission, update } from '#/api/sys/menu';
 
+interface RowType {
+  id: string;
+  parentId: null | string;
+  name: string;
+  permission: string;
+  path: string;
+  menuType: number;
+}
+
 const props = defineProps<{
   gridApi: any;
 }>();
 
 const writeForm = ref<Record<string, any>>({});
+
+/**
+ * Capture currently expanded tree node ids before mutating data.
+ */
+function captureExpandedIds(): Set<string> {
+  const records = props.gridApi.grid?.getTreeExpandRecords() || [];
+  return new Set(records.map((row: RowType) => row.id));
+}
+
+/**
+ * Restore tree expansion for the ids captured before reload.
+ */
+async function restoreExpandedIds(ids: Set<string>) {
+  if (!ids.size || !props.gridApi.grid) return;
+  for (const id of ids) {
+    const row = props.gridApi.grid.getRowById(id);
+    if (row) {
+      await props.gridApi.grid.setTreeExpand(row, true);
+    }
+  }
+}
 
 const [Form, formApi] = useVbenForm({
   showDefaultActions: false,
@@ -271,7 +301,9 @@ const [Modal, modalApi] = useVbenModal({
           ? update(writeForm.value)
           : create(writeForm.value));
         ElMessage.success($t('system.common.save.success'));
-        props.gridApi.reload();
+        const expandedIds = captureExpandedIds();
+        await props.gridApi.reload();
+        await restoreExpandedIds(expandedIds);
       } else {
         ElMessage.error($t('system.common.validation.error'));
       }
