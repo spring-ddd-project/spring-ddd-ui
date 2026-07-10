@@ -8,7 +8,9 @@ import { ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
 import { getTree } from '#/api/sys/dept';
+import { getTree as getPostTree } from '#/api/sys/post';
 import { createUser, updateUser } from '#/api/sys/user/';
+import { batchSaveUserPost, getUserPostList } from '#/api/sys/userPost';
 
 const props = defineProps<{
   gridApi: any;
@@ -63,6 +65,24 @@ const [Form, formApi] = useVbenForm({
       fieldName: 'deptId',
       label: $t('system.dept.deptId'),
       rules: 'required',
+    },
+    {
+      component: 'ApiTreeSelect',
+      componentProps: {
+        multiple: true,
+        allowClear: true,
+        showSearch: true,
+        treeNodeFilterProp: 'postName',
+        api: getPostTree,
+        resultField: 'data',
+        labelField: 'postName',
+        valueField: 'id',
+        childrenField: 'children',
+        checkStrictly: true,
+        placeholder: `${$t('system.common.placeholder.select')} ${$t('system.post.postName')}`,
+      },
+      fieldName: 'postIds',
+      label: $t('system.post.postName'),
     },
     {
       component: 'RadioGroup',
@@ -123,10 +143,17 @@ const [Modal, modalApi] = useVbenModal({
   onConfirm: () => {
     formApi.validate().then(async (e) => {
       if (e.valid) {
-        Object.assign(writeForm.value, await formApi.getValues());
-        await (writeForm.value.id
-          ? updateUser(writeForm.value)
-          : createUser(writeForm.value));
+        const values = await formApi.getValues();
+        const postIds = values.postIds || [];
+        const userData = { ...values };
+        delete userData.postIds;
+
+        const userId = userData.id
+          ? await updateUser(userData).then(() => userData.id)
+          : await createUser(userData);
+
+        await batchSaveUserPost({ userId, postIds });
+
         ElMessage.success($t('system.common.save.success'));
         props.gridApi.reload();
       } else {
@@ -144,6 +171,12 @@ const open = (row: any) => {
   if (row?.id) {
     writeForm.value = row;
     formApi.setValues(row);
+    getUserPostList({ userId: row.id }).then((resp: any) => {
+      const list = resp?.data || resp || [];
+      formApi.setValues({
+        postIds: list.map((item: any) => String(item.postId)),
+      });
+    });
   } else {
     formApi.resetForm();
   }
