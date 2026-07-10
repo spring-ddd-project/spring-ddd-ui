@@ -1,5 +1,93 @@
 {
-  "title": "System Management",
+  "title": "系统管理",
+  "menu": {
+    "title": "菜单管理",
+    "menuType": {
+      "label": "菜单类型",
+      "catalog": "目录",
+      "menu": "菜单",
+      "button": "按钮"
+    },
+    "parent": {
+      "placeholder": "留空则作为根菜单",
+      "label": "上级菜单",
+      "help": "留空则作为根菜单"
+    },
+    "globalTitle": "全局标题",
+    "name": "菜单名称",
+    "path": {
+      "label": "路由路径",
+      "help": "该属性显示在浏览器地址栏"
+    },
+    "component": {
+      "label": "组件路径",
+      "help": "Vue 文件路径"
+    },
+    "api": {
+      "label": "API",
+      "help": "API"
+    },
+    "redirect": "重定向",
+    "permission": {
+      "label": "权限标识",
+      "help": "该属性声明并绑定 API 访问权限"
+    },
+    "icon": "图标",
+    "order": "排序",
+    "affix": "固定标签",
+    "basicLayout": "无基础布局",
+    "visible": "是否可见",
+    "embedded": "嵌入式",
+    "status": "状态"
+  },
+  "role": {
+    "title": "角色管理",
+    "roleId": "角色",
+    "assign": "分配角色",
+    "label": "角色名称",
+    "code": "角色编码",
+    "desc": "角色描述",
+    "scope": "数据范围",
+    "owner": "是否拥有者",
+    "status": "状态",
+    "permissions": "权限"
+  },
+  "user": {
+    "title": "用户管理",
+    "userInfo": "用户信息",
+    "username": "用户名",
+    "password": "密码",
+    "phone": "电话",
+    "avatar": "头像",
+    "email": "邮箱",
+    "sex": "性别",
+    "lockStatus": "锁定状态"
+  },
+  "dept": {
+    "title": "部门管理",
+    "deptName": "部门名称",
+    "deptId": "部门",
+    "parent": {
+      "label": "上级部门",
+      "placeholder": "留空则作为根部门",
+      "help": "留空则作为根部门"
+    },
+    "order": "排序",
+    "status": "状态"
+  },
+  "dict": {
+    "title": "字典管理",
+    "label": "字典名称",
+    "code": "字典编码",
+    "order": "排序",
+    "status": "状态",
+    "item": {
+      "title": "字典项管理",
+      "form": "字典项数据处理",
+      "label": "项标签",
+      "value": "项值"
+    }
+  },
   "common": {
     "delete": {
       "warning": "请至少选择一项进行删除",
