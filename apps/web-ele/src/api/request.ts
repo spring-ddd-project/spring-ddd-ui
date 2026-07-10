@@ -16,6 +16,7 @@ import { useAccessStore } from '@vben/stores';
 import { ElMessage } from 'element-plus';
 
 import { useAuthStore } from '#/store';
+import { router } from '#/router';
 
 import { refreshTokenApi } from './core';
 
@@ -67,6 +68,16 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
 
       config.headers.Authorization = formatToken(accessStore.accessToken);
       config.headers['Accept-Language'] = preferences.app.locale;
+
+      // 数据权限：根据当前路由匹配菜单，携带菜单 ID
+      const currentRoute = router.currentRoute.value;
+      const currentMenu = accessStore.getMenuByPath(currentRoute.path) as {
+        id?: number | string;
+      } | undefined;
+      if (currentMenu?.id) {
+        config.headers['X-Menu-Id'] = String(currentMenu.id);
+      }
+
       return config;
     },
   });
