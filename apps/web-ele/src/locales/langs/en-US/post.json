@@ -1,0 +1,15 @@
+{
+  "title": "Post Management",
+  "post": {
+    "title": "Post Management",
+    "code": "Post Code",
+    "postName": "Post Name",
+    "parent": {
+      "label": "Parent Post",
+      "placeholder": "If left blank, this will be set as the root post.",
+      "help": "Leave blank to make this a root post."
+    },
+    "order": "Order",
+    "status": "Status"
+  }
+}

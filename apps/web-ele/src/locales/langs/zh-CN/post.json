@@ -1,0 +1,15 @@
+{
+  "title": "岗位管理",
+  "post": {
+    "title": "岗位管理",
+    "code": "岗位编码",
+    "postName": "岗位名称",
+    "parent": {
+      "label": "上级岗位",
+      "placeholder": "留空则作为根岗位",
+      "help": "留空则作为根岗位"
+    },
+    "order": "排序",
+    "status": "状态"
+  }
+}
