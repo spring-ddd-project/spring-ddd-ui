@@ -15,10 +15,11 @@ import { useAccessStore } from '@vben/stores';
 
 import { ElMessage } from 'element-plus';
 
-import { useAuthStore } from '#/store';
 import { router } from '#/router';
+import { useAuthStore } from '#/store';
 
 import { refreshTokenApi } from './core';
+import { findMenuIdByPath } from './utils/menu-resolver';
 
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 
@@ -71,11 +72,14 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
 
       // 数据权限：根据当前路由匹配菜单，携带菜单 ID
       const currentRoute = router.currentRoute.value;
-      const currentMenu = accessStore.getMenuByPath(currentRoute.path) as {
-        id?: number | string;
-      } | undefined;
-      if (currentMenu?.id) {
-        config.headers['X-Menu-Id'] = String(currentMenu.id);
+      const currentMenu = accessStore.getMenuByPath(currentRoute.path) as
+        | undefined
+        | {
+            id?: number | string;
+          };
+      const menuId = currentMenu?.id || findMenuIdByPath(currentRoute.path);
+      if (menuId) {
+        config.headers['X-Menu-Id'] = String(menuId);
       }
 
       return config;
