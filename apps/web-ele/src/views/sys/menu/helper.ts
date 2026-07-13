@@ -31,10 +31,7 @@ export async function refreshParentSubtree(
   // loadTreeChildren method.
   const refMaps = gridApi.grid?.getRefMaps?.();
   const tableInstance = refMaps?.refTable?.value;
-  if (tableInstance && typeof tableInstance.loadTreeChildren === 'function') {
-    await tableInstance.loadTreeChildren(parentRow, children);
-  } else {
-    // Fallback should never happen in this vxe-table version.
-    await gridApi.reload();
-  }
+  tableInstance && typeof tableInstance.loadTreeChildren === 'function'
+    ? await tableInstance.loadTreeChildren(parentRow, children)
+    : await gridApi.reload();
 }
