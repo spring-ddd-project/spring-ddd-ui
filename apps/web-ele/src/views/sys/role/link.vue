@@ -145,7 +145,7 @@ function onDataScopeChange(menuId: number, value: number) {
 <template>
   <Drawer class="w-[45%]" :title="$t('system.common.alert.permissions')">
     <Form>
-      <template #permissions="_slotProps">
+      <template #permissions>
         <VbenTree
           :tree-data="treeData"
           multiple
