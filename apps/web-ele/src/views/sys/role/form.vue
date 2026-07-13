@@ -111,10 +111,12 @@ const [Modal, modalApi] = useVbenModal({
           : createRole(writeForm.value));
         ElMessage.success($t('system.common.save.success'));
         props.gridApi.reload();
+        await modalApi.setState({ loading: false });
+        await modalApi.close();
       } else {
         ElMessage.error($t('system.common.validation.error'));
+        await modalApi.setState({ loading: false });
       }
-      await modalApi.setState({ loading: false }).close();
     });
   },
   confirmText: $t('system.common.button.confirm'),
