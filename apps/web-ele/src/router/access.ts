@@ -9,6 +9,7 @@ import { preferences } from '@vben/preferences';
 import { ElMessage } from 'element-plus';
 
 import { getAllMenusApi } from '#/api';
+import { saveRawMenus } from '#/api/utils/menu-resolver';
 import { BasicLayout, IFrameView } from '#/layouts';
 import { $t } from '#/locales';
 
@@ -29,7 +30,10 @@ async function generateAccess(options: GenerateMenuAndRoutesOptions) {
         duration: 1500,
         message: `${$t('common.loadingMenu')}...`,
       });
-      return await getAllMenusApi();
+      const menus = await getAllMenusApi();
+      // Keep the raw menu tree so request interceptor can resolve X-Menu-Id by path.
+      saveRawMenus(menus);
+      return menus;
     },
     // 可以指定没有权限跳转403页面
     forbiddenComponent,

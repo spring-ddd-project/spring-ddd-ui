@@ -7,7 +7,7 @@ import { $t } from '@vben/locales';
 import { ElMessage } from 'element-plus';
 
 import { useVbenForm } from '#/adapter/form';
-import { createRole, updateRole } from '#/api/sys/role';
+import { createPost, getTree, updatePost } from '#/api/sys/post';
 
 const props = defineProps<{
   gridApi: any;
@@ -23,60 +23,44 @@ const [Form, formApi] = useVbenForm({
       class: 'w-full',
     },
     colon: true,
-    labelWidth: 130,
+    labelWidth: 200,
   },
   submitOnChange: true,
   schema: [
     {
-      component: 'Input',
-      fieldName: 'roleName',
-      label: $t('system.role.label'),
-      rules: 'required',
-    },
-    {
-      component: 'Input',
-      fieldName: 'roleCode',
-      label: $t('system.role.code'),
-      rules: 'required',
-    },
-    {
-      component: 'Input',
-      fieldName: 'roleDesc',
-      label: $t('system.role.desc'),
-      rules: 'required',
-    },
-    {
-      component: 'Select',
+      component: 'ApiTreeSelect',
       componentProps: {
         allowClear: true,
-        filterOption: true,
-        options: [
-          {
-            label: 'All',
-            value: 0,
-          },
-          {
-            label: 'Department Only',
-            value: 1,
-          },
-          {
-            label: 'Department and Children',
-            value: 2,
-          },
-          {
-            label: 'Personal',
-            value: 3,
-          },
-          {
-            label: 'Post',
-            value: 4,
-          },
-        ],
+        placeholder: $t('system.post.parent.placeholder'),
         showSearch: true,
+        treeNodeFilterProp: 'postName',
+        api: getTree,
+        resultField: 'data',
+        labelField: 'postName',
+        valueField: 'id',
+        childrenField: 'children',
+        checkStrictly: true,
       },
-      fieldName: 'dataScope',
-      defaultValue: 0,
-      label: $t('system.role.scope'),
+      fieldName: 'parentId',
+      label: $t('system.post.parent.label'),
+      help: $t('system.post.parent.help'),
+    },
+    {
+      component: 'Input',
+      fieldName: 'postCode',
+      label: $t('system.post.code'),
+      rules: 'required',
+    },
+    {
+      component: 'Input',
+      fieldName: 'postName',
+      label: $t('system.post.postName'),
+      rules: 'required',
+    },
+    {
+      component: 'InputNumber',
+      fieldName: 'sortOrder',
+      label: $t('system.post.order'),
       rules: 'required',
     },
     {
@@ -84,18 +68,8 @@ const [Form, formApi] = useVbenForm({
       componentProps: {
         class: 'w-auto',
       },
-      fieldName: 'ownerStatus',
-      label: $t('system.role.owner'),
-      defaultValue: false,
-      rules: 'required',
-    },
-    {
-      component: 'Switch',
-      componentProps: {
-        class: 'w-auto',
-      },
-      fieldName: 'roleStatus',
-      label: $t('system.role.status'),
+      fieldName: 'postStatus',
+      label: $t('system.post.status'),
       defaultValue: true,
     },
   ],
@@ -107,16 +81,14 @@ const [Modal, modalApi] = useVbenModal({
       if (e.valid) {
         Object.assign(writeForm.value, await formApi.getValues());
         await (writeForm.value.id
-          ? updateRole(writeForm.value)
-          : createRole(writeForm.value));
+          ? updatePost(writeForm.value)
+          : createPost(writeForm.value));
         ElMessage.success($t('system.common.save.success'));
         props.gridApi.reload();
-        await modalApi.setState({ loading: false });
-        await modalApi.close();
       } else {
         ElMessage.error($t('system.common.validation.error'));
-        await modalApi.setState({ loading: false });
       }
+      await modalApi.setState({ loading: false }).close();
     });
   },
   confirmText: $t('system.common.button.confirm'),
@@ -128,6 +100,7 @@ const open = (row: any) => {
     writeForm.value = row;
     formApi.setValues(row);
   } else {
+    writeForm.value = {};
     formApi.resetForm();
   }
   modalApi.open();
@@ -138,7 +111,7 @@ defineExpose({ open, close });
 </script>
 
 <template>
-  <Modal class="w-[40%]" :title="$t('system.common.alert.form')">
+  <Modal class="w-[65%]" :title="$t('system.common.alert.form')">
     <Form style="width: auto" />
   </Modal>
 </template>
